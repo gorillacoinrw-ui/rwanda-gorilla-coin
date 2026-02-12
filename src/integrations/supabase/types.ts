@@ -14,16 +14,227 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      app_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          value: Json
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          value: Json
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          value?: Json
+        }
+        Relationships: []
+      }
+      mining_sessions: {
+        Row: {
+          coins_earned: number | null
+          completed_at: string | null
+          created_at: string
+          id: string
+          started_at: string
+          user_id: string
+        }
+        Insert: {
+          coins_earned?: number | null
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          started_at?: string
+          user_id: string
+        }
+        Update: {
+          coins_earned?: number | null
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          started_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          coin_balance: number
+          created_at: string
+          display_name: string | null
+          id: string
+          language: string | null
+          phone: string | null
+          referral_code: string
+          referred_by: string | null
+          total_mined: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          coin_balance?: number
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          language?: string | null
+          phone?: string | null
+          referral_code: string
+          referred_by?: string | null
+          total_mined?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          coin_balance?: number
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          language?: string | null
+          phone?: string | null
+          referral_code?: string
+          referred_by?: string | null
+          total_mined?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_referred_by_fkey"
+            columns: ["referred_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      referrals: {
+        Row: {
+          bonus_credited: boolean | null
+          created_at: string
+          id: string
+          referred_id: string
+          referrer_id: string
+        }
+        Insert: {
+          bonus_credited?: boolean | null
+          created_at?: string
+          id?: string
+          referred_id: string
+          referrer_id: string
+        }
+        Update: {
+          bonus_credited?: boolean | null
+          created_at?: string
+          id?: string
+          referred_id?: string
+          referrer_id?: string
+        }
+        Relationships: []
+      }
+      tax_records: {
+        Row: {
+          amount: number
+          collected_at: string
+          id: string
+          trade_id: string
+        }
+        Insert: {
+          amount: number
+          collected_at?: string
+          id?: string
+          trade_id: string
+        }
+        Update: {
+          amount?: number
+          collected_at?: string
+          id?: string
+          trade_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tax_records_trade_id_fkey"
+            columns: ["trade_id"]
+            isOneToOne: false
+            referencedRelation: "trades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trades: {
+        Row: {
+          amount: number
+          buyer_id: string | null
+          created_at: string
+          id: string
+          price_rwf: number
+          seller_id: string
+          status: string
+          tax_amount: number | null
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          buyer_id?: string | null
+          created_at?: string
+          id?: string
+          price_rwf: number
+          seller_id: string
+          status?: string
+          tax_amount?: number | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          buyer_id?: string | null
+          created_at?: string
+          id?: string
+          price_rwf?: number
+          seller_id?: string
+          status?: string
+          tax_amount?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_referral_code: { Args: never; Returns: string }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +361,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+    },
   },
 } as const
