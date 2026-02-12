@@ -1,4 +1,4 @@
-import { Copy, Share2 } from "lucide-react";
+import { Copy, Share2, MessageCircle, Facebook, Instagram, Youtube, Link } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 
@@ -8,18 +8,32 @@ interface ReferralCardProps {
 }
 
 const ReferralCard = ({ referralCode, referralCount }: ReferralCardProps) => {
-  const copyCode = () => {
-    navigator.clipboard.writeText(referralCode);
-    toast({ title: "Copied!", description: "Referral code copied to clipboard" });
+  const inviteLink = `${window.location.origin}/auth?ref=${referralCode}`;
+  const shareText = `Join Gorilla Coin 🦍💰! Use my referral code: ${referralCode} to get 10 free coins! Sign up here: ${inviteLink}`;
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(inviteLink);
+    toast({ title: "Copied!", description: "Invite link copied to clipboard" });
   };
 
-  const shareApp = () => {
-    const text = `Join Gorilla Coin! Use my referral code: ${referralCode} to get 10 free coins! 🦍💰`;
+  const shareWhatsApp = () => {
+    window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, "_blank");
+  };
+
+  const shareFacebook = () => {
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(inviteLink)}&quote=${encodeURIComponent(shareText)}`, "_blank");
+  };
+
+  const shareInstagram = () => {
+    navigator.clipboard.writeText(shareText);
+    toast({ title: "Text copied!", description: "Paste it in your Instagram story or DM" });
+  };
+
+  const shareNative = () => {
     if (navigator.share) {
-      navigator.share({ title: "Gorilla Coin", text });
+      navigator.share({ title: "Gorilla Coin", text: shareText, url: inviteLink });
     } else {
-      navigator.clipboard.writeText(text);
-      toast({ title: "Copied!", description: "Share text copied to clipboard" });
+      copyLink();
     }
   };
 
@@ -32,12 +46,22 @@ const ReferralCard = ({ referralCode, referralCount }: ReferralCardProps) => {
         Earn <span className="text-primary font-semibold">15 coins</span> for each friend who joins!
       </p>
 
-      <div className="flex items-center gap-2 bg-muted rounded-lg p-3 mb-3">
+      {/* Referral code */}
+      <div className="flex items-center gap-2 bg-muted rounded-lg p-3 mb-2">
         <code className="flex-1 text-primary font-display font-bold text-sm tracking-widest">
           {referralCode}
         </code>
-        <button onClick={copyCode} className="text-muted-foreground hover:text-primary transition-colors">
+        <button onClick={copyLink} className="text-muted-foreground hover:text-primary transition-colors">
           <Copy className="w-4 h-4" />
+        </button>
+      </div>
+
+      {/* Invite link preview */}
+      <div className="flex items-center gap-2 bg-muted/50 rounded-lg p-2.5 mb-3">
+        <Link className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+        <span className="text-[11px] text-muted-foreground truncate">{inviteLink}</span>
+        <button onClick={copyLink} className="text-muted-foreground hover:text-primary transition-colors shrink-0">
+          <Copy className="w-3.5 h-3.5" />
         </button>
       </div>
 
@@ -46,13 +70,45 @@ const ReferralCard = ({ referralCode, referralCount }: ReferralCardProps) => {
         <span className="text-xs text-accent font-semibold">+{referralCount * 15} coins earned</span>
       </div>
 
+      {/* Social share buttons */}
+      <div className="grid grid-cols-4 gap-2 mb-3">
+        <button
+          onClick={shareWhatsApp}
+          className="flex flex-col items-center gap-1 py-2.5 rounded-lg bg-[#25D366]/10 hover:bg-[#25D366]/20 transition-colors"
+        >
+          <MessageCircle className="w-5 h-5 text-[#25D366]" />
+          <span className="text-[9px] text-muted-foreground">WhatsApp</span>
+        </button>
+        <button
+          onClick={shareFacebook}
+          className="flex flex-col items-center gap-1 py-2.5 rounded-lg bg-[#1877F2]/10 hover:bg-[#1877F2]/20 transition-colors"
+        >
+          <Facebook className="w-5 h-5 text-[#1877F2]" />
+          <span className="text-[9px] text-muted-foreground">Facebook</span>
+        </button>
+        <button
+          onClick={shareInstagram}
+          className="flex flex-col items-center gap-1 py-2.5 rounded-lg bg-[#E4405F]/10 hover:bg-[#E4405F]/20 transition-colors"
+        >
+          <Instagram className="w-5 h-5 text-[#E4405F]" />
+          <span className="text-[9px] text-muted-foreground">Instagram</span>
+        </button>
+        <button
+          onClick={shareNative}
+          className="flex flex-col items-center gap-1 py-2.5 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors"
+        >
+          <Share2 className="w-5 h-5 text-primary" />
+          <span className="text-[9px] text-muted-foreground">More</span>
+        </button>
+      </div>
+
       <Button
-        onClick={shareApp}
+        onClick={copyLink}
         variant="outline"
         className="w-full border-primary/30 text-primary hover:bg-primary/10"
       >
-        <Share2 className="w-4 h-4 mr-2" />
-        Share Invite Link
+        <Copy className="w-4 h-4 mr-2" />
+        Copy Invite Link
       </Button>
     </div>
   );
