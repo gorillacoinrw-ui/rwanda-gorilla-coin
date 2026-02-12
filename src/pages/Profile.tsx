@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import AppLayout from "@/components/AppLayout";
-import { User, Settings, Globe, Shield, LogOut, Camera, Loader2 } from "lucide-react";
+import { User, Settings, Globe, Shield, LogOut, Camera, Loader2, Mail, Phone } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/use-profile";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -145,7 +145,7 @@ const Profile = () => {
           {[
             { icon: Shield, label: "Security & 2FA" },
             { icon: Globe, label: "Language" },
-            { icon: Settings, label: "Settings" },
+          { icon: Settings, label: "Settings" },
           ].map((item) => (
             <button
               key={item.label}
@@ -155,6 +155,25 @@ const Profile = () => {
               {item.label}
             </button>
           ))}
+        </div>
+
+        {/* Customer Support */}
+        <div className="bg-gradient-card rounded-xl border border-border p-5 space-y-3">
+          <h3 className="text-sm font-display font-semibold text-foreground">Customer Support</h3>
+          <a
+            href="mailto:gorillacoinrw@gmail.com"
+            className="flex items-center gap-3 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <Mail className="w-4 h-4" />
+            gorillacoinrw@gmail.com
+          </a>
+          <a
+            href="tel:0785790765"
+            className="flex items-center gap-3 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <Phone className="w-4 h-4" />
+            0785790765
+          </a>
         </div>
 
         <button
