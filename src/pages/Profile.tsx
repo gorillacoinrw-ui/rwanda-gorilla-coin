@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import AppLayout from "@/components/AppLayout";
-import { User, Settings, Globe, Shield, LogOut, Camera, Loader2, Mail, Phone } from "lucide-react";
+import { User, Settings, Globe, Shield, LogOut, Camera, Loader2, Mail, Phone, Check } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/use-profile";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -11,17 +11,38 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
+  DialogDescription,
 } from "@/components/ui/dialog";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
+
+const LANGUAGES = [
+  { code: "en", label: "English" },
+  { code: "rw", label: "Kinyarwanda" },
+  { code: "fr", label: "Français" },
+];
 
 const Profile = () => {
   const { user, signOut } = useAuth();
   const { profile, isLoading, updateProfile, uploadAvatar, referralCount } = useProfile();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Edit profile
   const [editOpen, setEditOpen] = useState(false);
   const [displayName, setDisplayName] = useState("");
   const [phone, setPhone] = useState("");
+
+  // Security
+  const [securityOpen, setSecurityOpen] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [changingPassword, setChangingPassword] = useState(false);
+
+  // Language
+  const [langOpen, setLangOpen] = useState(false);
+
+  // Settings
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -37,6 +58,33 @@ const Profile = () => {
   const saveProfile = () => {
     updateProfile.mutate({ display_name: displayName, phone });
     setEditOpen(false);
+  };
+
+  const handleChangePassword = async () => {
+    if (newPassword.length < 6) {
+      toast({ title: "Password too short", description: "Minimum 6 characters", variant: "destructive" });
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast({ title: "Passwords don't match", variant: "destructive" });
+      return;
+    }
+    setChangingPassword(true);
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    setChangingPassword(false);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Password updated!" });
+      setNewPassword("");
+      setConfirmPassword("");
+      setSecurityOpen(false);
+    }
+  };
+
+  const handleLanguageSelect = (code: string) => {
+    updateProfile.mutate({ language: code });
+    setLangOpen(false);
   };
 
   if (isLoading) {
@@ -107,54 +155,37 @@ const Profile = () => {
 
         {/* Menu items */}
         <div className="bg-gradient-card rounded-xl border border-border overflow-hidden">
-          <Dialog open={editOpen} onOpenChange={setEditOpen}>
-            <DialogTrigger asChild>
-              <button
-                onClick={openEdit}
-                className="w-full flex items-center gap-3 px-5 py-4 text-sm text-foreground hover:bg-muted/50 transition-colors"
-              >
-                <User className="w-4 h-4 text-muted-foreground" />
-                Edit Profile
-              </button>
-            </DialogTrigger>
-            <DialogContent className="bg-card border-border">
-              <DialogHeader>
-                <DialogTitle className="font-display text-gradient-gold">Edit Profile</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4 pt-2">
-                <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">Display Name</label>
-                  <Input value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">Phone</label>
-                  <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+250..." />
-                </div>
-                <Button
-                  onClick={saveProfile}
-                  className="w-full bg-gradient-gold text-primary-foreground font-display"
-                  disabled={updateProfile.isPending}
-                >
-                  {updateProfile.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                  Save
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-
-          {[
-            { icon: Shield, label: "Security & 2FA" },
-            { icon: Globe, label: "Language" },
-          { icon: Settings, label: "Settings" },
-          ].map((item) => (
-            <button
-              key={item.label}
-              className="w-full flex items-center gap-3 px-5 py-4 text-sm text-foreground hover:bg-muted/50 transition-colors border-t border-border"
-            >
-              <item.icon className="w-4 h-4 text-muted-foreground" />
-              {item.label}
-            </button>
-          ))}
+          <button
+            onClick={openEdit}
+            className="w-full flex items-center gap-3 px-5 py-4 text-sm text-foreground hover:bg-muted/50 transition-colors"
+          >
+            <User className="w-4 h-4 text-muted-foreground" />
+            Edit Profile
+          </button>
+          <button
+            onClick={() => setSecurityOpen(true)}
+            className="w-full flex items-center gap-3 px-5 py-4 text-sm text-foreground hover:bg-muted/50 transition-colors border-t border-border"
+          >
+            <Shield className="w-4 h-4 text-muted-foreground" />
+            Security & 2FA
+          </button>
+          <button
+            onClick={() => setLangOpen(true)}
+            className="w-full flex items-center gap-3 px-5 py-4 text-sm text-foreground hover:bg-muted/50 transition-colors border-t border-border"
+          >
+            <Globe className="w-4 h-4 text-muted-foreground" />
+            Language
+            <span className="ml-auto text-xs text-muted-foreground uppercase">
+              {profile?.language ?? "en"}
+            </span>
+          </button>
+          <button
+            onClick={() => setSettingsOpen(true)}
+            className="w-full flex items-center gap-3 px-5 py-4 text-sm text-foreground hover:bg-muted/50 transition-colors border-t border-border"
+          >
+            <Settings className="w-4 h-4 text-muted-foreground" />
+            Settings
+          </button>
         </div>
 
         {/* Customer Support */}
@@ -184,6 +215,124 @@ const Profile = () => {
           Sign Out
         </button>
       </div>
+
+      {/* Edit Profile Dialog */}
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent className="bg-card border-border">
+          <DialogHeader>
+            <DialogTitle className="font-display text-gradient-gold">Edit Profile</DialogTitle>
+            <DialogDescription>Update your display name and phone number.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            <div>
+              <label className="text-xs text-muted-foreground mb-1 block">Display Name</label>
+              <Input value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground mb-1 block">Phone</label>
+              <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+250..." />
+            </div>
+            <Button
+              onClick={saveProfile}
+              className="w-full bg-gradient-gold text-primary-foreground font-display"
+              disabled={updateProfile.isPending}
+            >
+              {updateProfile.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+              Save
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Security & 2FA Dialog */}
+      <Dialog open={securityOpen} onOpenChange={setSecurityOpen}>
+        <DialogContent className="bg-card border-border">
+          <DialogHeader>
+            <DialogTitle className="font-display text-gradient-gold">Security & 2FA</DialogTitle>
+            <DialogDescription>Change your password to keep your account secure.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            <div>
+              <label className="text-xs text-muted-foreground mb-1 block">New Password</label>
+              <Input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Min 6 characters"
+              />
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground mb-1 block">Confirm Password</label>
+              <Input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Repeat password"
+              />
+            </div>
+            <Button
+              onClick={handleChangePassword}
+              className="w-full bg-gradient-gold text-primary-foreground font-display"
+              disabled={changingPassword}
+            >
+              {changingPassword ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+              Update Password
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Language Dialog */}
+      <Dialog open={langOpen} onOpenChange={setLangOpen}>
+        <DialogContent className="bg-card border-border">
+          <DialogHeader>
+            <DialogTitle className="font-display text-gradient-gold">Language</DialogTitle>
+            <DialogDescription>Choose your preferred language.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-1 pt-2">
+            {LANGUAGES.map((lang) => (
+              <button
+                key={lang.code}
+                onClick={() => handleLanguageSelect(lang.code)}
+                className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm transition-colors ${
+                  profile?.language === lang.code
+                    ? "bg-primary/10 text-primary font-semibold"
+                    : "text-foreground hover:bg-muted/50"
+                }`}
+              >
+                {lang.label}
+                {profile?.language === lang.code && <Check className="w-4 h-4 text-primary" />}
+              </button>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Settings Dialog */}
+      <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
+        <DialogContent className="bg-card border-border">
+          <DialogHeader>
+            <DialogTitle className="font-display text-gradient-gold">Settings</DialogTitle>
+            <DialogDescription>App preferences and account settings.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            <div className="flex items-center justify-between py-2">
+              <span className="text-sm text-foreground">Email</span>
+              <span className="text-sm text-muted-foreground">{user?.email}</span>
+            </div>
+            <div className="flex items-center justify-between py-2">
+              <span className="text-sm text-foreground">Referral Code</span>
+              <span className="text-sm font-mono text-primary">{profile?.referral_code}</span>
+            </div>
+            <div className="flex items-center justify-between py-2">
+              <span className="text-sm text-foreground">Member Since</span>
+              <span className="text-sm text-muted-foreground">
+                {profile?.created_at ? new Date(profile.created_at).toLocaleDateString() : "—"}
+              </span>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </AppLayout>
   );
 };
