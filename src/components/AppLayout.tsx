@@ -1,12 +1,13 @@
 import { ReactNode } from "react";
 import { Home, Pickaxe, ArrowLeftRight, User } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const navItems = [
-  { icon: Home, label: "Home", path: "/" },
-  { icon: Pickaxe, label: "Mine", path: "/mine" },
-  { icon: ArrowLeftRight, label: "Trade", path: "/trade" },
-  { icon: User, label: "Profile", path: "/profile" },
+  { icon: Home, labelKey: "nav.home", path: "/" },
+  { icon: Pickaxe, labelKey: "nav.mine", path: "/mine" },
+  { icon: ArrowLeftRight, labelKey: "nav.trade", path: "/trade" },
+  { icon: User, labelKey: "nav.profile", path: "/profile" },
 ];
 
 interface AppLayoutProps {
@@ -16,22 +17,20 @@ interface AppLayoutProps {
 const AppLayout = ({ children }: AppLayoutProps) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Flag accent stripe at top */}
       <div className="h-1 w-full flex">
         <div className="flex-1 bg-rwanda-blue" />
         <div className="flex-1 bg-rwanda-yellow" />
         <div className="flex-1 bg-rwanda-green" />
       </div>
 
-      {/* Main content */}
       <main className="flex-1 overflow-y-auto pb-20">
         {children}
       </main>
 
-      {/* Bottom navigation */}
       <nav className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-lg border-t border-border z-50">
         <div className="flex items-center justify-around h-16 max-w-md mx-auto">
           {navItems.map((item) => {
@@ -45,7 +44,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
                 }`}
               >
                 <item.icon className={`w-5 h-5 ${isActive ? "drop-shadow-[0_0_8px_hsl(48,95%,55%)]" : ""}`} />
-                <span className="text-[10px] font-medium tracking-wide">{item.label}</span>
+                <span className="text-[10px] font-medium tracking-wide">{t(item.labelKey)}</span>
               </button>
             );
           })}
