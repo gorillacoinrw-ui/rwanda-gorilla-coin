@@ -170,33 +170,51 @@ export type Database = {
           amount: number
           buyer_id: string | null
           created_at: string
+          escrow_started_at: string | null
+          expires_at: string | null
           id: string
+          max_amount: number
+          min_amount: number
+          payment_method: string
           price_rwf: number
           seller_id: string
           status: string
           tax_amount: number | null
+          trade_type: string
           updated_at: string
         }
         Insert: {
           amount: number
           buyer_id?: string | null
           created_at?: string
+          escrow_started_at?: string | null
+          expires_at?: string | null
           id?: string
+          max_amount?: number
+          min_amount?: number
+          payment_method?: string
           price_rwf: number
           seller_id: string
           status?: string
           tax_amount?: number | null
+          trade_type?: string
           updated_at?: string
         }
         Update: {
           amount?: number
           buyer_id?: string | null
           created_at?: string
+          escrow_started_at?: string | null
+          expires_at?: string | null
           id?: string
+          max_amount?: number
+          min_amount?: number
+          payment_method?: string
           price_rwf?: number
           seller_id?: string
           status?: string
           tax_amount?: number | null
+          trade_type?: string
           updated_at?: string
         }
         Relationships: []
