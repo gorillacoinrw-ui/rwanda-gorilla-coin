@@ -1,1 +1,4 @@
 project_id = "ukssjjpfiewqvvlscohy"
+
+[functions.manage-escrow]
+verify_jwt = false
