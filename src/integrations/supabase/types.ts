@@ -175,6 +175,7 @@ export type Database = {
           id: string
           max_amount: number
           min_amount: number
+          payment_details: string | null
           payment_method: string
           price_rwf: number
           seller_id: string
@@ -192,6 +193,7 @@ export type Database = {
           id?: string
           max_amount?: number
           min_amount?: number
+          payment_details?: string | null
           payment_method?: string
           price_rwf: number
           seller_id: string
@@ -209,6 +211,7 @@ export type Database = {
           id?: string
           max_amount?: number
           min_amount?: number
+          payment_details?: string | null
           payment_method?: string
           price_rwf?: number
           seller_id?: string
