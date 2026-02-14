@@ -129,7 +129,7 @@ const TradePage = () => {
 
   return (
     <AppLayout>
-      <div className="max-w-md mx-auto px-4 py-6 space-y-4">
+      <div className="max-w-md md:max-w-4xl lg:max-w-6xl mx-auto px-4 py-6 space-y-4">
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-display font-bold text-gradient-gold tracking-wider">
             P2P Market
@@ -165,7 +165,7 @@ const TradePage = () => {
         </div>
 
         {/* Order list */}
-        <div className="space-y-3">
+        <div className="space-y-3 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-4 md:space-y-0">
           {isLoading && (
             <p className="text-center text-muted-foreground text-sm py-8">Loading...</p>
           )}
