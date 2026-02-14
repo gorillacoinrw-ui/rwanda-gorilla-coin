@@ -255,7 +255,7 @@ Deno.serve(async (req) => {
     });
   } catch (err) {
     console.error("manage-escrow error:", err);
-    const message = err instanceof Error ? err.message : String(err);
+    const message = err instanceof Error ? err.message : (typeof err === 'object' && err !== null && 'message' in err) ? (err as { message: string }).message : String(err);
     return new Response(JSON.stringify({ error: message }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
