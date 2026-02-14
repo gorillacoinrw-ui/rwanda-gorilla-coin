@@ -27,24 +27,24 @@ const AppLayout = ({ children }: AppLayoutProps) => {
         <div className="flex-1 bg-rwanda-green" />
       </div>
 
-      <main className="flex-1 overflow-y-auto pb-20">
+      <main className="flex-1 overflow-y-auto pb-20 md:pb-6 md:pt-20">
         {children}
       </main>
 
-      <nav className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-lg border-t border-border z-50">
-        <div className="flex items-center justify-around h-16 max-w-md mx-auto">
+      <nav className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-lg border-t border-border z-50 md:top-0 md:bottom-auto md:border-t-0 md:border-b">
+        <div className="flex items-center justify-around h-16 max-w-md md:max-w-4xl lg:max-w-6xl mx-auto md:justify-end md:gap-2">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
               <button
                 key={item.path}
                 onClick={() => navigate(item.path)}
-                className={`flex flex-col items-center gap-0.5 px-4 py-2 transition-colors ${
+                className={`flex flex-col md:flex-row items-center gap-0.5 md:gap-2 px-4 py-2 transition-colors ${
                   isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 <item.icon className={`w-5 h-5 ${isActive ? "drop-shadow-[0_0_8px_hsl(48,95%,55%)]" : ""}`} />
-                <span className="text-[10px] font-medium tracking-wide">{t(item.labelKey)}</span>
+                <span className="text-[10px] md:text-sm font-medium tracking-wide">{t(item.labelKey)}</span>
               </button>
             );
           })}

@@ -17,7 +17,7 @@ const Index = () => {
 
   return (
     <AppLayout>
-      <div className="max-w-md mx-auto px-4 py-6 space-y-6">
+      <div className="max-w-md md:max-w-4xl lg:max-w-6xl mx-auto px-4 py-6 space-y-6">
         <div className="text-center">
           <h1 className="text-xl font-display font-bold text-gradient-gold tracking-wider">
             GORILLA COIN

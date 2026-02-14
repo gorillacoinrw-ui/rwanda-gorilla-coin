@@ -8,7 +8,7 @@ const Mine = () => {
 
   return (
     <AppLayout>
-      <div className="max-w-md mx-auto px-4 py-6 space-y-6">
+      <div className="max-w-md md:max-w-2xl lg:max-w-4xl mx-auto px-4 py-6 space-y-6">
         <h1 className="text-xl font-display font-bold text-gradient-gold tracking-wider text-center">
           Mining Station
         </h1>
