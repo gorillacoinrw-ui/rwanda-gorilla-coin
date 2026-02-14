@@ -13,6 +13,7 @@ export type Trade = {
   status: string;
   trade_type: string;
   payment_method: string;
+  payment_details: string | null;
   min_amount: number;
   max_amount: number;
   tax_amount: number | null;
@@ -112,6 +113,7 @@ export function useTrades() {
       amount: number;
       price_rwf: number;
       payment_method: string;
+      payment_details: string;
       min_amount: number;
       max_amount: number;
     }) => {
@@ -124,6 +126,7 @@ export function useTrades() {
           amount: trade.amount,
           price_rwf: trade.price_rwf,
           payment_method: trade.payment_method,
+          payment_details: trade.payment_details,
           min_amount: trade.min_amount,
           max_amount: trade.max_amount,
         }])

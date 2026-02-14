@@ -79,6 +79,7 @@ const TradePage = () => {
   const [paymentMethod, setPaymentMethod] = useState("mtn");
   const [minAmount, setMinAmount] = useState("");
   const [maxAmount, setMaxAmount] = useState("");
+  const [paymentDetails, setPaymentDetails] = useState("");
 
   const handleCreate = () => {
     const amt = parseInt(amount);
@@ -95,12 +96,18 @@ const TradePage = () => {
       return;
     }
 
+    if (!paymentDetails.trim()) {
+      toast({ title: "Payment details required", description: "Enter your phone number or account info so the buyer can pay you.", variant: "destructive" });
+      return;
+    }
+
     createTrade.mutate(
       {
         trade_type: tradeType,
         amount: amt,
         price_rwf: price,
         payment_method: paymentMethod,
+        payment_details: paymentDetails.trim(),
         min_amount: minAmt,
         max_amount: maxAmt,
       },
@@ -111,6 +118,7 @@ const TradePage = () => {
           setPriceRwf("");
           setMinAmount("");
           setMaxAmount("");
+          setPaymentDetails("");
         },
       }
     );
@@ -303,6 +311,22 @@ const TradePage = () => {
                 </div>
               </div>
 
+              {/* Payment Details */}
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">
+                  {paymentMethod === "bank" ? "Bank Account Number" : "Phone Number"}
+                </label>
+                <Input
+                  type="text"
+                  placeholder={paymentMethod === "bank" ? "e.g. 0012345678" : "e.g. 0781234567"}
+                  value={paymentDetails}
+                  onChange={(e) => setPaymentDetails(e.target.value)}
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Buyers will see this to send you payment
+                </p>
+              </div>
+
               {amount && priceRwf && (
                 <div className="bg-muted rounded-lg p-3 text-sm space-y-1">
                   <div className="flex justify-between">
@@ -464,13 +488,24 @@ function MyTradeCard({
       </div>
 
       {isEscrow && (
-        <div className="bg-muted/50 rounded-lg p-3 text-xs text-muted-foreground flex items-start gap-2">
-          <Clock className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
-          <span>
-            {isSeller
-              ? "Waiting for buyer's payment. Confirm once received."
-              : "Send payment to the seller, then wait for confirmation."}
-          </span>
+        <div className="space-y-2">
+          <div className="bg-muted/50 rounded-lg p-3 text-xs text-muted-foreground flex items-start gap-2">
+            <Clock className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
+            <span>
+              {isSeller
+                ? "Waiting for buyer's payment. Confirm once received."
+                : "Send payment to the seller, then wait for confirmation."}
+            </span>
+          </div>
+          {!isSeller && trade.payment_details && (
+            <div className="bg-primary/10 rounded-lg p-3 text-xs space-y-1">
+              <span className="font-semibold text-primary">Payment Details:</span>
+              <p className="text-foreground font-mono">{trade.payment_details}</p>
+              <p className="text-muted-foreground">
+                Send {(trade.amount * Number(trade.price_rwf)).toLocaleString()} RWF via {pm?.label ?? trade.payment_method}
+              </p>
+            </div>
+          )}
         </div>
       )}
 
