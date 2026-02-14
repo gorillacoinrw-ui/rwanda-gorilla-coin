@@ -3,6 +3,7 @@ import AppLayout from "@/components/AppLayout";
 import { useTrades, Trade } from "@/hooks/use-trades";
 import { useProfile } from "@/hooks/use-profile";
 import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -88,6 +89,11 @@ const TradePage = () => {
     if (!amt || amt <= 0) return;
     if (!price || price <= 0) return;
     if (minAmt > maxAmt) return;
+
+    if (tradeType === "sell" && (profile?.coin_balance ?? 0) < amt) {
+      toast({ title: "Insufficient balance", description: `You need ${amt} GOR but only have ${profile?.coin_balance ?? 0} GOR.`, variant: "destructive" });
+      return;
+    }
 
     createTrade.mutate(
       {
