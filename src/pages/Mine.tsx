@@ -43,7 +43,7 @@ const Mine = () => {
             </li>
             <li className="flex items-start gap-2">
               <span className="text-primary">•</span>
-              Earn 1 Gorilla Coin per cycle
+              Earn 24 Gorilla Coins per cycle
             </li>
             <li className="flex items-start gap-2">
               <span className="text-primary">•</span>
