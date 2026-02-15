@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import AppLayout from "@/components/AppLayout";
 import { useTrades, Trade } from "@/hooks/use-trades";
 import { useProfile } from "@/hooks/use-profile";
@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -22,9 +23,16 @@ import {
   Landmark,
   CheckCircle,
   XCircle,
+  Search,
+  ChevronDown,
+  User,
+  AlertTriangle,
+  Copy,
+  Filter,
 } from "lucide-react";
 
 const PAYMENT_METHODS = [
+  { id: "all", label: "All Payments", icon: Filter },
   { id: "mtn", label: "MTN MoMo", icon: Phone },
   { id: "airtel", label: "Airtel Money", icon: Phone },
   { id: "bank", label: "Bank Transfer", icon: Landmark },
@@ -50,9 +58,33 @@ function EscrowTimer({ expiresAt }: { expiresAt: string }) {
   const isUrgent = remaining < 5 * 60 * 1000;
 
   return (
-    <span className={`font-mono text-sm font-semibold ${isUrgent ? "text-destructive" : "text-primary"}`}>
-      ⏱ {formatTime(remaining)}
+    <span className={`font-mono text-sm font-bold ${isUrgent ? "text-destructive animate-pulse" : "text-primary"}`}>
+      {formatTime(remaining)}
     </span>
+  );
+}
+
+function EscrowProgress({ expiresAt }: { expiresAt: string }) {
+  const [progress, setProgress] = useState(100);
+
+  useEffect(() => {
+    const total = 20 * 60 * 1000;
+    const calc = () => {
+      const rem = new Date(expiresAt).getTime() - Date.now();
+      setProgress(Math.max(0, (rem / total) * 100));
+    };
+    calc();
+    const interval = setInterval(calc, 1000);
+    return () => clearInterval(interval);
+  }, [expiresAt]);
+
+  return (
+    <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
+      <div
+        className={`h-full rounded-full transition-all duration-1000 ${progress < 25 ? "bg-destructive" : "bg-primary"}`}
+        style={{ width: `${progress}%` }}
+      />
+    </div>
   );
 }
 
@@ -69,8 +101,12 @@ const TradePage = () => {
     cancelTrade,
   } = useTrades();
 
-  const [tab, setTab] = useState<"buy" | "sell" | "my">("buy");
+  const [tab, setTab] = useState<"buy" | "sell">("buy");
+  const [subTab, setSubTab] = useState<"p2p" | "orders">("p2p");
+  const [paymentFilter, setPaymentFilter] = useState("all");
+  const [amountFilter, setAmountFilter] = useState("");
   const [createOpen, setCreateOpen] = useState(false);
+  const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null);
 
   // Create form
   const [tradeType, setTradeType] = useState<"sell" | "buy">("sell");
@@ -124,139 +160,264 @@ const TradePage = () => {
     );
   };
 
-  const sellOrders = openTrades.filter((t) => t.trade_type === "sell" && t.seller_id !== user?.id);
-  const buyOrders = openTrades.filter((t) => t.trade_type === "buy" && t.seller_id !== user?.id);
+  const filteredOrders = useMemo(() => {
+    const orders = openTrades.filter((t) => {
+      if (tab === "buy") return t.trade_type === "sell" && t.seller_id !== user?.id;
+      return t.trade_type === "buy" && t.seller_id !== user?.id;
+    });
+
+    return orders.filter((t) => {
+      if (paymentFilter !== "all" && t.payment_method !== paymentFilter) return false;
+      if (amountFilter) {
+        const filterAmt = parseFloat(amountFilter);
+        if (filterAmt && (filterAmt < t.min_amount || filterAmt > t.max_amount)) return false;
+      }
+      return true;
+    });
+  }, [openTrades, tab, paymentFilter, amountFilter, user?.id]);
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast({ title: "Copied!" });
+  };
 
   return (
     <AppLayout>
-      <div className="max-w-md md:max-w-4xl lg:max-w-6xl mx-auto px-4 py-6 space-y-4">
-        <div className="flex items-center justify-between">
-          <h1 className="text-xl font-display font-bold text-gradient-gold tracking-wider">
-            P2P Market
+      <div className="max-w-md md:max-w-5xl lg:max-w-7xl mx-auto px-4 py-4 space-y-0">
+
+        {/* ===== Top Header ===== */}
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-lg md:text-xl font-display font-bold text-gradient-gold tracking-wider">
+            P2P Trading
           </h1>
-          <Button size="sm" onClick={() => setCreateOpen(true)} className="gap-1.5">
-            <Plus className="w-4 h-4" /> Create Order
-          </Button>
+          <div className="flex items-center gap-3">
+            <div className="hidden md:flex items-center gap-1.5 text-sm text-muted-foreground">
+              <Shield className="w-4 h-4 text-primary" />
+              <span>Escrow Protected</span>
+            </div>
+            <Button size="sm" onClick={() => setCreateOpen(true)} className="gap-1.5">
+              <Plus className="w-4 h-4" /> Post Ad
+            </Button>
+          </div>
         </div>
 
-        {/* Balance */}
-        <div className="bg-gradient-card rounded-xl border border-border p-4 flex items-center justify-between">
-          <span className="text-sm text-muted-foreground">Your Balance</span>
-          <span className="font-display font-bold text-primary text-lg">
-            {profile?.coin_balance?.toLocaleString() ?? 0} GOR
-          </span>
+        {/* ===== Sub Tabs: P2P / My Orders ===== */}
+        <div className="flex items-center gap-6 border-b border-border mb-4">
+          <button
+            onClick={() => setSubTab("p2p")}
+            className={`pb-3 text-sm font-medium border-b-2 transition-colors ${
+              subTab === "p2p"
+                ? "border-primary text-primary"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            P2P
+          </button>
+          <button
+            onClick={() => setSubTab("orders")}
+            className={`pb-3 text-sm font-medium border-b-2 transition-colors relative ${
+              subTab === "orders"
+                ? "border-primary text-primary"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            My Orders
+            {myTrades.length > 0 && (
+              <span className="absolute -top-1 -right-4 w-4 h-4 rounded-full bg-destructive text-destructive-foreground text-[10px] flex items-center justify-center">
+                {myTrades.length}
+              </span>
+            )}
+          </button>
         </div>
 
-        {/* Tabs */}
-        <div className="flex gap-1 bg-muted rounded-lg p-1">
-          {(["buy", "sell", "my"] as const).map((t) => (
-            <button
-              key={t}
-              onClick={() => setTab(t)}
-              className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
-                tab === t
-                  ? "bg-card text-primary shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {t === "my" ? "My Trades" : t === "buy" ? "Buy GOR" : "Sell GOR"}
-            </button>
-          ))}
-        </div>
+        {subTab === "p2p" && (
+          <>
+            {/* ===== Buy/Sell Toggle (Binance style) ===== */}
+            <div className="flex items-center gap-0 mb-4">
+              <button
+                onClick={() => setTab("buy")}
+                className={`px-6 py-2.5 text-sm font-semibold rounded-l-lg transition-all ${
+                  tab === "buy"
+                    ? "bg-accent text-accent-foreground"
+                    : "bg-muted text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Buy
+              </button>
+              <button
+                onClick={() => setTab("sell")}
+                className={`px-6 py-2.5 text-sm font-semibold rounded-r-lg transition-all ${
+                  tab === "sell"
+                    ? "bg-destructive text-destructive-foreground"
+                    : "bg-muted text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Sell
+              </button>
 
-        {/* Order list */}
-        <div className="space-y-3 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-4 md:space-y-0">
-          {isLoading && (
-            <p className="text-center text-muted-foreground text-sm py-8">Loading...</p>
-          )}
+              {/* Asset badge */}
+              <div className="ml-4 hidden md:flex items-center gap-2 px-3 py-1.5 bg-muted rounded-lg text-sm">
+                <span className="font-semibold text-foreground">GOR</span>
+                <ChevronDown className="w-3 h-3 text-muted-foreground" />
+              </div>
+            </div>
 
-          {tab === "buy" && !isLoading && sellOrders.length === 0 && (
-            <EmptyState text="No sell orders available yet" />
-          )}
-          {tab === "sell" && !isLoading && buyOrders.length === 0 && (
-            <EmptyState text="No buy orders available yet" />
-          )}
-          {tab === "my" && !isLoading && myTrades.length === 0 && (
-            <EmptyState text="You have no active trades" />
-          )}
+            {/* ===== Filters Row ===== */}
+            <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 mb-4">
+              {/* Amount filter */}
+              <div className="relative flex-shrink-0 w-full md:w-56">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  placeholder="Enter amount"
+                  value={amountFilter}
+                  onChange={(e) => setAmountFilter(e.target.value)}
+                  className="pl-9 h-9 text-sm"
+                />
+              </div>
 
-          {tab === "buy" &&
-            sellOrders.map((trade) => (
-              <OrderCard
-                key={trade.id}
-                trade={trade}
-                userId={user?.id ?? ""}
-                onAccept={() => acceptTrade.mutate(trade.id)}
-                accepting={acceptTrade.isPending}
-              />
-            ))}
+              {/* Payment method chips */}
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
+                {PAYMENT_METHODS.map((pm) => (
+                  <button
+                    key={pm.id}
+                    onClick={() => setPaymentFilter(pm.id)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border transition-colors ${
+                      paymentFilter === pm.id
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground"
+                    }`}
+                  >
+                    <pm.icon className="w-3 h-3" />
+                    {pm.label}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-          {tab === "sell" &&
-            buyOrders.map((trade) => (
-              <OrderCard
-                key={trade.id}
-                trade={trade}
-                userId={user?.id ?? ""}
-                onAccept={() => acceptTrade.mutate(trade.id)}
-                accepting={acceptTrade.isPending}
-              />
-            ))}
+            {/* ===== Table Header (desktop) ===== */}
+            <div className="hidden md:grid md:grid-cols-[2fr_1.5fr_1.5fr_1fr_1fr] gap-4 px-4 py-2 text-xs text-muted-foreground font-medium border-b border-border">
+              <span>Advertiser</span>
+              <span>Price</span>
+              <span>Available / Limit</span>
+              <span>Payment</span>
+              <span className="text-right">Trade</span>
+            </div>
 
-          {tab === "my" &&
-            myTrades.map((trade) => (
-              <MyTradeCard
-                key={trade.id}
-                trade={trade}
-                userId={user?.id ?? ""}
-                onConfirm={() => confirmTrade.mutate(trade.id)}
-                onCancel={() => cancelTrade.mutate(trade.id)}
-                confirming={confirmTrade.isPending}
-                cancelling={cancelTrade.isPending}
-              />
-            ))}
-        </div>
+            {/* ===== Order Rows ===== */}
+            <div className="divide-y divide-border">
+              {isLoading && (
+                <div className="py-12 text-center text-muted-foreground text-sm">Loading orders...</div>
+              )}
+              {!isLoading && filteredOrders.length === 0 && (
+                <div className="py-12 text-center space-y-3">
+                  <ArrowLeftRight className="w-10 h-10 text-muted-foreground mx-auto" />
+                  <p className="text-sm text-muted-foreground">No ads found</p>
+                </div>
+              )}
+              {filteredOrders.map((trade) => (
+                <AdvertiserRow
+                  key={trade.id}
+                  trade={trade}
+                  tab={tab}
+                  onAccept={() => acceptTrade.mutate(trade.id)}
+                  accepting={acceptTrade.isPending}
+                />
+              ))}
+            </div>
+          </>
+        )}
 
-        {/* Create dialog */}
+        {/* ===== My Orders Tab ===== */}
+        {subTab === "orders" && (
+          <div className="space-y-3">
+            {/* Balance card */}
+            <div className="bg-gradient-card rounded-xl border border-border p-4 flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Available Balance</span>
+              <span className="font-display font-bold text-primary text-lg">
+                {profile?.coin_balance?.toLocaleString() ?? 0} GOR
+              </span>
+            </div>
+
+            {myTrades.length === 0 && !isLoading && (
+              <div className="py-12 text-center space-y-3">
+                <ArrowLeftRight className="w-10 h-10 text-muted-foreground mx-auto" />
+                <p className="text-sm text-muted-foreground">No active orders</p>
+                <p className="text-xs text-muted-foreground">Your open and in-progress trades will appear here</p>
+              </div>
+            )}
+
+            <div className="space-y-3 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-4 md:space-y-0">
+              {myTrades.map((trade) => (
+                <MyOrderCard
+                  key={trade.id}
+                  trade={trade}
+                  userId={user?.id ?? ""}
+                  onConfirm={() => confirmTrade.mutate(trade.id)}
+                  onCancel={() => cancelTrade.mutate(trade.id)}
+                  confirming={confirmTrade.isPending}
+                  cancelling={cancelTrade.isPending}
+                  onCopy={copyToClipboard}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ===== Create Order Dialog ===== */}
         <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-          <DialogContent className="max-w-sm">
+          <DialogContent className="max-w-md">
             <DialogHeader>
-              <DialogTitle className="font-display text-gradient-gold">Create Order</DialogTitle>
-              <DialogDescription>Set your trade terms</DialogDescription>
+              <DialogTitle className="font-display text-gradient-gold">Post Trading Ad</DialogTitle>
+              <DialogDescription>Set your price and payment terms</DialogDescription>
             </DialogHeader>
 
             <div className="space-y-4">
               {/* Buy/Sell toggle */}
-              <div className="flex gap-1 bg-muted rounded-lg p-1">
+              <div className="flex gap-0">
                 <button
                   onClick={() => setTradeType("sell")}
-                  className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
+                  className={`flex-1 py-2.5 text-sm font-semibold rounded-l-lg transition-all ${
                     tradeType === "sell"
-                      ? "bg-destructive/20 text-destructive"
-                      : "text-muted-foreground"
+                      ? "bg-destructive text-destructive-foreground"
+                      : "bg-muted text-muted-foreground"
                   }`}
                 >
                   I want to Sell
                 </button>
                 <button
                   onClick={() => setTradeType("buy")}
-                  className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
+                  className={`flex-1 py-2.5 text-sm font-semibold rounded-r-lg transition-all ${
                     tradeType === "buy"
-                      ? "bg-accent/20 text-accent"
-                      : "text-muted-foreground"
+                      ? "bg-accent text-accent-foreground"
+                      : "bg-muted text-muted-foreground"
                   }`}
                 >
                   I want to Buy
                 </button>
               </div>
 
+              {/* Asset + Fiat row */}
+              <div className="flex items-center gap-3 p-3 bg-muted rounded-lg text-sm">
+                <span className="text-muted-foreground">Asset</span>
+                <span className="font-semibold text-foreground">GOR</span>
+                <span className="mx-2 text-border">|</span>
+                <span className="text-muted-foreground">Fiat</span>
+                <span className="font-semibold text-foreground">RWF</span>
+              </div>
+
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">Amount (GOR)</label>
+                <label className="text-xs text-muted-foreground mb-1 block">Total Amount (GOR)</label>
                 <Input
                   type="number"
                   placeholder="e.g. 500"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                 />
+                {tradeType === "sell" && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Balance: {profile?.coin_balance?.toLocaleString() ?? 0} GOR
+                  </p>
+                )}
               </div>
 
               <div>
@@ -271,7 +432,7 @@ const TradePage = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">Min Amount</label>
+                  <label className="text-xs text-muted-foreground mb-1 block">Order Limit Min</label>
                   <Input
                     type="number"
                     placeholder="1"
@@ -280,7 +441,7 @@ const TradePage = () => {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">Max Amount</label>
+                  <label className="text-xs text-muted-foreground mb-1 block">Order Limit Max</label>
                   <Input
                     type="number"
                     placeholder="1000"
@@ -294,7 +455,7 @@ const TradePage = () => {
               <div>
                 <label className="text-xs text-muted-foreground mb-2 block">Payment Method</label>
                 <div className="grid grid-cols-3 gap-2">
-                  {PAYMENT_METHODS.map((pm) => (
+                  {PAYMENT_METHODS.filter((pm) => pm.id !== "all").map((pm) => (
                     <button
                       key={pm.id}
                       onClick={() => setPaymentMethod(pm.id)}
@@ -328,17 +489,23 @@ const TradePage = () => {
               </div>
 
               {amount && priceRwf && (
-                <div className="bg-muted rounded-lg p-3 text-sm space-y-1">
+                <div className="bg-muted rounded-lg p-3 text-sm space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Total</span>
+                    <span className="text-muted-foreground">Total Value</span>
                     <span className="font-semibold text-foreground">
                       {(parseInt(amount) * parseFloat(priceRwf)).toLocaleString()} RWF
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Tax (25%)</span>
-                    <span className="text-destructive">
-                      {Math.floor(parseInt(amount) * 0.25).toLocaleString()} GOR
+                    <span className="text-muted-foreground">Trading Fee (25%)</span>
+                    <span className="text-destructive text-xs">
+                      -{Math.floor(parseInt(amount) * 0.25).toLocaleString()} GOR
+                    </span>
+                  </div>
+                  <div className="border-t border-border pt-2 flex justify-between">
+                    <span className="text-muted-foreground">Buyer Receives</span>
+                    <span className="font-semibold text-accent">
+                      {(parseInt(amount) - Math.floor(parseInt(amount) * 0.25)).toLocaleString()} GOR
                     </span>
                   </div>
                 </div>
@@ -349,7 +516,7 @@ const TradePage = () => {
                 onClick={handleCreate}
                 disabled={createTrade.isPending || !amount || !priceRwf}
               >
-                {createTrade.isPending ? "Creating..." : "Create Order"}
+                {createTrade.isPending ? "Creating..." : `Post ${tradeType === "sell" ? "Sell" : "Buy"} Ad`}
               </Button>
             </div>
           </DialogContent>
@@ -359,91 +526,100 @@ const TradePage = () => {
   );
 };
 
-function EmptyState({ text }: { text: string }) {
-  return (
-    <div className="bg-gradient-card rounded-xl border border-border p-8 text-center space-y-3">
-      <ArrowLeftRight className="w-10 h-10 text-muted-foreground mx-auto" />
-      <p className="text-sm text-muted-foreground">{text}</p>
-    </div>
-  );
-}
-
-function OrderCard({
+/* ===== Advertiser Row (Binance-style) ===== */
+function AdvertiserRow({
   trade,
-  userId,
+  tab,
   onAccept,
   accepting,
 }: {
   trade: Trade;
-  userId: string;
+  tab: "buy" | "sell";
   onAccept: () => void;
   accepting: boolean;
 }) {
   const pm = PAYMENT_METHODS.find((p) => p.id === trade.payment_method);
-  const isSell = trade.trade_type === "sell";
+  const totalRwf = trade.amount * Number(trade.price_rwf);
 
   return (
-    <div className="bg-gradient-card rounded-xl border border-border p-4 space-y-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className={`w-2 h-2 rounded-full ${isSell ? "bg-destructive" : "bg-accent"}`} />
-          <span className="text-sm font-semibold text-foreground">
+    <div className="py-4 px-2 md:px-4 md:grid md:grid-cols-[2fr_1.5fr_1.5fr_1fr_1fr] md:items-center gap-4">
+      {/* Advertiser */}
+      <div className="flex items-center gap-3 mb-3 md:mb-0">
+        <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">
+          {(trade.seller_profile?.display_name ?? "T")[0].toUpperCase()}
+        </div>
+        <div>
+          <p className="text-sm font-medium text-foreground">
             {trade.seller_profile?.display_name ?? "Trader"}
-          </span>
-        </div>
-        <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-          isSell ? "bg-destructive/20 text-destructive" : "bg-accent/20 text-accent"
-        }`}>
-          {isSell ? "SELL" : "BUY"}
-        </span>
-      </div>
-
-      <div className="grid grid-cols-2 gap-2 text-sm">
-        <div>
-          <span className="text-muted-foreground text-xs">Price</span>
-          <p className="font-semibold text-foreground">{trade.price_rwf} RWF/GOR</p>
-        </div>
-        <div>
-          <span className="text-muted-foreground text-xs">Amount</span>
-          <p className="font-semibold text-foreground">{trade.amount.toLocaleString()} GOR</p>
-        </div>
-        <div>
-          <span className="text-muted-foreground text-xs">Limit</span>
-          <p className="text-foreground">{trade.min_amount} - {trade.max_amount} GOR</p>
-        </div>
-        <div>
-          <span className="text-muted-foreground text-xs">Payment</span>
-          <div className="flex items-center gap-1">
-            {pm && <pm.icon className="w-3 h-3 text-muted-foreground" />}
-            <span className="text-foreground">{pm?.label ?? trade.payment_method}</span>
-          </div>
+          </p>
+          <p className="text-xs text-muted-foreground">
+            {trade.seller_profile?.coin_balance?.toLocaleString() ?? 0} GOR balance
+          </p>
         </div>
       </div>
 
-      <div className="flex items-center justify-between pt-1 border-t border-border">
-        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-          <Shield className="w-3 h-3" /> Escrow Protected
+      {/* Price */}
+      <div className="flex justify-between md:block mb-2 md:mb-0">
+        <span className="text-xs text-muted-foreground md:hidden">Price</span>
+        <p className="text-sm font-semibold text-foreground">
+          {Number(trade.price_rwf).toLocaleString()} <span className="text-xs text-muted-foreground">RWF</span>
+        </p>
+      </div>
+
+      {/* Available / Limit */}
+      <div className="flex justify-between md:block mb-2 md:mb-0">
+        <span className="text-xs text-muted-foreground md:hidden">Available</span>
+        <div>
+          <p className="text-sm text-foreground">
+            <span className="font-medium">{trade.amount.toLocaleString()}</span>{" "}
+            <span className="text-xs text-muted-foreground">GOR</span>
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Limit {trade.min_amount.toLocaleString()}-{trade.max_amount.toLocaleString()} GOR
+          </p>
         </div>
+      </div>
+
+      {/* Payment */}
+      <div className="flex justify-between items-center md:block mb-3 md:mb-0">
+        <span className="text-xs text-muted-foreground md:hidden">Payment</span>
+        <div className="flex items-center gap-1.5">
+          <span className={`w-1 h-4 rounded-full ${
+            trade.payment_method === "mtn" ? "bg-[hsl(48,95%,55%)]" :
+            trade.payment_method === "airtel" ? "bg-destructive" : "bg-secondary"
+          }`} />
+          <span className="text-xs text-foreground">{pm?.label ?? trade.payment_method}</span>
+        </div>
+      </div>
+
+      {/* Action */}
+      <div className="flex justify-end">
         <Button
           size="sm"
           onClick={onAccept}
           disabled={accepting}
-          className={isSell ? "" : "bg-accent hover:bg-accent/90"}
+          className={`min-w-[80px] ${
+            tab === "buy"
+              ? "bg-accent hover:bg-accent/90 text-accent-foreground"
+              : "bg-destructive hover:bg-destructive/90 text-destructive-foreground"
+          }`}
         >
-          {isSell ? "Buy" : "Sell"} Now
+          {accepting ? "..." : tab === "buy" ? `Buy GOR` : `Sell GOR`}
         </Button>
       </div>
     </div>
   );
 }
 
-function MyTradeCard({
+/* ===== My Order Card ===== */
+function MyOrderCard({
   trade,
   userId,
   onConfirm,
   onCancel,
   confirming,
   cancelling,
+  onCopy,
 }: {
   trade: Trade;
   userId: string;
@@ -451,20 +627,37 @@ function MyTradeCard({
   onCancel: () => void;
   confirming: boolean;
   cancelling: boolean;
+  onCopy: (text: string) => void;
 }) {
   const isEscrow = trade.status === "escrow";
   const isSeller = trade.seller_id === userId;
   const pm = PAYMENT_METHODS.find((p) => p.id === trade.payment_method);
+  const totalRwf = trade.amount * Number(trade.price_rwf);
+
+  // Escrow steps
+  const steps = isEscrow
+    ? [
+        { label: "Order Created", done: true },
+        { label: "Payment Pending", done: false, active: true },
+        { label: "Coins Released", done: false },
+      ]
+    : [
+        { label: "Order Open", done: true, active: true },
+        { label: "Awaiting Match", done: false },
+        { label: "Complete", done: false },
+      ];
 
   return (
-    <div className="bg-gradient-card rounded-xl border border-border p-4 space-y-3">
-      <div className="flex items-center justify-between">
+    <div className="bg-gradient-card rounded-xl border border-border overflow-hidden">
+      {/* Header */}
+      <div className="px-4 py-3 flex items-center justify-between border-b border-border">
         <div className="flex items-center gap-2">
-          <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-            isEscrow ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground"
-          }`}>
+          <Badge
+            variant={isEscrow ? "default" : "secondary"}
+            className={isEscrow ? "bg-primary/20 text-primary border-primary/30" : ""}
+          >
             {trade.status.toUpperCase()}
-          </span>
+          </Badge>
           <span className="text-xs text-muted-foreground">
             {trade.trade_type === "sell" ? "Sell" : "Buy"} Order
           </span>
@@ -472,60 +665,99 @@ function MyTradeCard({
         {isEscrow && trade.expires_at && <EscrowTimer expiresAt={trade.expires_at} />}
       </div>
 
-      <div className="grid grid-cols-3 gap-2 text-sm">
+      {/* Progress bar */}
+      {isEscrow && trade.expires_at && (
+        <div className="px-4 pt-2">
+          <EscrowProgress expiresAt={trade.expires_at} />
+        </div>
+      )}
+
+      {/* Step indicators */}
+      <div className="px-4 py-3 flex items-center gap-2">
+        {steps.map((step, i) => (
+          <div key={i} className="flex items-center gap-1.5 flex-1">
+            <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${
+              step.done ? "bg-accent text-accent-foreground" :
+              step.active ? "bg-primary/20 text-primary border border-primary" :
+              "bg-muted text-muted-foreground"
+            }`}>
+              {step.done ? "✓" : i + 1}
+            </div>
+            <span className={`text-[10px] leading-tight ${step.active || step.done ? "text-foreground" : "text-muted-foreground"}`}>
+              {step.label}
+            </span>
+            {i < steps.length - 1 && (
+              <div className={`flex-1 h-px ${step.done ? "bg-accent" : "bg-border"}`} />
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Trade details */}
+      <div className="px-4 pb-3 grid grid-cols-3 gap-2 text-xs">
         <div>
-          <span className="text-muted-foreground text-xs">Amount</span>
-          <p className="font-semibold text-foreground">{trade.amount.toLocaleString()} GOR</p>
+          <span className="text-muted-foreground">Amount</span>
+          <p className="font-semibold text-foreground text-sm">{trade.amount.toLocaleString()} GOR</p>
         </div>
         <div>
-          <span className="text-muted-foreground text-xs">Price</span>
-          <p className="font-semibold text-foreground">{trade.price_rwf} RWF</p>
+          <span className="text-muted-foreground">Price</span>
+          <p className="font-semibold text-foreground text-sm">{Number(trade.price_rwf).toLocaleString()} RWF</p>
         </div>
         <div>
-          <span className="text-muted-foreground text-xs">Payment</span>
-          <p className="text-foreground">{pm?.label ?? trade.payment_method}</p>
+          <span className="text-muted-foreground">Total</span>
+          <p className="font-semibold text-foreground text-sm">{totalRwf.toLocaleString()} RWF</p>
         </div>
       </div>
 
+      {/* Escrow info */}
       {isEscrow && (
-        <div className="space-y-2">
-          <div className="bg-muted/50 rounded-lg p-3 text-xs text-muted-foreground flex items-start gap-2">
+        <div className="px-4 pb-3 space-y-2">
+          <div className="bg-muted/50 rounded-lg p-3 text-xs flex items-start gap-2">
             <Clock className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
-            <span>
+            <span className="text-muted-foreground">
               {isSeller
                 ? "Waiting for buyer's payment. Confirm once received."
-                : "Send payment to the seller, then wait for confirmation."}
+                : "Send payment to the seller within the time limit."}
             </span>
           </div>
           {!isSeller && trade.payment_details && (
-            <div className="bg-primary/10 rounded-lg p-3 text-xs space-y-1">
-              <span className="font-semibold text-primary">Payment Details:</span>
-              <p className="text-foreground font-mono">{trade.payment_details}</p>
-              <p className="text-muted-foreground">
-                Send {(trade.amount * Number(trade.price_rwf)).toLocaleString()} RWF via {pm?.label ?? trade.payment_method}
-              </p>
+            <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 text-xs space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="font-semibold text-primary flex items-center gap-1">
+                  <Landmark className="w-3 h-3" /> Payment Details
+                </span>
+                <button onClick={() => onCopy(trade.payment_details ?? "")} className="text-primary hover:text-primary/80">
+                  <Copy className="w-3 h-3" />
+                </button>
+              </div>
+              <p className="text-foreground font-mono text-sm">{trade.payment_details}</p>
+              <div className="flex items-center gap-1 text-muted-foreground">
+                {pm && <pm.icon className="w-3 h-3" />}
+                <span>Send <span className="font-semibold text-foreground">{totalRwf.toLocaleString()} RWF</span> via {pm?.label ?? trade.payment_method}</span>
+              </div>
             </div>
           )}
         </div>
       )}
 
-      <div className="flex gap-2 pt-1">
+      {/* Actions */}
+      <div className="px-4 pb-4 flex gap-2">
         {isEscrow && isSeller && (
           <Button
             size="sm"
-            className="flex-1 gap-1"
+            className="flex-1 gap-1 bg-accent hover:bg-accent/90"
             onClick={onConfirm}
             disabled={confirming}
           >
             <CheckCircle className="w-4 h-4" />
-            {confirming ? "..." : "Confirm Payment"}
+            {confirming ? "Confirming..." : "Payment Received"}
           </Button>
         )}
         {(trade.status === "open" || isEscrow) && (
           <Button
             size="sm"
             variant="outline"
-            className="flex-1 gap-1 border-destructive/50 text-destructive hover:bg-destructive/10"
+            className={`gap-1 border-destructive/50 text-destructive hover:bg-destructive/10 ${isEscrow && isSeller ? "" : "flex-1"}`}
             onClick={onCancel}
             disabled={cancelling}
           >
