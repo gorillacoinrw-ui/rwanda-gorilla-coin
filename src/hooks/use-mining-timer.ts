@@ -73,7 +73,7 @@ export function useMiningTimer() {
     const complete = async () => {
       const { error } = await supabase
         .from("mining_sessions")
-        .update({ completed_at: new Date().toISOString(), coins_earned: 1 })
+        .update({ completed_at: new Date().toISOString(), coins_earned: 24 })
         .eq("id", sessionId);
 
       if (!error && user) {
@@ -88,8 +88,8 @@ export function useMiningTimer() {
           await supabase
             .from("profiles")
             .update({
-              coin_balance: profile.coin_balance + 1,
-              total_mined: profile.total_mined + 1,
+              coin_balance: profile.coin_balance + 24,
+              total_mined: profile.total_mined + 24,
             })
             .eq("user_id", user.id);
         }
