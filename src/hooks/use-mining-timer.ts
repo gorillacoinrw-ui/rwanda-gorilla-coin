@@ -71,6 +71,15 @@ export function useMiningTimer() {
     if (!loaded || !sessionId || isMining || progress < 100) return;
 
     const complete = async () => {
+      // Only update if not already completed
+      const { data: session } = await supabase
+        .from("mining_sessions")
+        .select("completed_at")
+        .eq("id", sessionId)
+        .single();
+
+      if (session?.completed_at) return; // Already completed
+
       const { error } = await supabase
         .from("mining_sessions")
         .update({ completed_at: new Date().toISOString(), coins_earned: 24 })
