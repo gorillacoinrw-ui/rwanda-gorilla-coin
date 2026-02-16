@@ -6,6 +6,7 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.home": "Ahabanza",
     "nav.mine": "Gucukura",
     "nav.trade": "Guhana",
+    "nav.history": "Amateka",
     "nav.profile": "Umwirondoro",
 
     // Index
@@ -71,11 +72,21 @@ const translations: Record<Language, Record<string, string>> = {
     "trade.escrow": "Igihe gisigaye",
     "trade.confirm": "Emeza",
     "trade.cancel": "Hagarika",
+
+    // History
+    "history.title": "Amateka y'Ibikorwa",
+    "history.mining": "Gucukura",
+    "history.trades": "Ibicuruzwa",
+    "history.loading": "Gutegereza...",
+    "history.noMining": "Nta gucukura byabayeho",
+    "history.noTrades": "Nta bicuruzwa byabayeho",
+    "history.inProgress": "Biracyakora...",
   },
   en: {
     "nav.home": "Home",
     "nav.mine": "Mine",
     "nav.trade": "Trade",
+    "nav.history": "History",
     "nav.profile": "Profile",
 
     "app.title": "GORILLA COIN",
@@ -135,11 +146,20 @@ const translations: Record<Language, Record<string, string>> = {
     "trade.escrow": "Time left",
     "trade.confirm": "Confirm",
     "trade.cancel": "Cancel",
+
+    "history.title": "Activity History",
+    "history.mining": "Mining",
+    "history.trades": "Trades",
+    "history.loading": "Loading...",
+    "history.noMining": "No mining sessions yet",
+    "history.noTrades": "No trades yet",
+    "history.inProgress": "In progress...",
   },
   fr: {
     "nav.home": "Accueil",
     "nav.mine": "Miner",
     "nav.trade": "Échanger",
+    "nav.history": "Historique",
     "nav.profile": "Profil",
 
     "app.title": "GORILLA COIN",
@@ -199,6 +219,14 @@ const translations: Record<Language, Record<string, string>> = {
     "trade.escrow": "Temps restant",
     "trade.confirm": "Confirmer",
     "trade.cancel": "Annuler",
+
+    "history.title": "Historique des Activités",
+    "history.mining": "Minage",
+    "history.trades": "Échanges",
+    "history.loading": "Chargement...",
+    "history.noMining": "Aucune session de minage",
+    "history.noTrades": "Aucun échange",
+    "history.inProgress": "En cours...",
   },
 };
 
