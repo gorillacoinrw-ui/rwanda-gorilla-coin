@@ -178,6 +178,7 @@ export type Database = {
           payment_details: string | null
           payment_method: string
           price_rwf: number
+          proof_url: string | null
           seller_id: string
           status: string
           tax_amount: number | null
@@ -196,6 +197,7 @@ export type Database = {
           payment_details?: string | null
           payment_method?: string
           price_rwf: number
+          proof_url?: string | null
           seller_id: string
           status?: string
           tax_amount?: number | null
@@ -214,6 +216,7 @@ export type Database = {
           payment_details?: string | null
           payment_method?: string
           price_rwf?: number
+          proof_url?: string | null
           seller_id?: string
           status?: string
           tax_amount?: number | null

@@ -1,9 +1,10 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import AppLayout from "@/components/AppLayout";
 import { useTrades, Trade } from "@/hooks/use-trades";
 import { useProfile } from "@/hooks/use-profile";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -29,6 +30,9 @@ import {
   AlertTriangle,
   Copy,
   Filter,
+  Upload,
+  Image,
+  Eye,
 } from "lucide-react";
 
 const PAYMENT_METHODS = [
@@ -611,6 +615,145 @@ function AdvertiserRow({
   );
 }
 
+/* ===== Proof Upload Component ===== */
+function ProofUpload({ trade, userId }: { trade: Trade; userId: string }) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const [proofUrl, setProofUrl] = useState<string | null>((trade as any).proof_url ?? null);
+  const [viewOpen, setViewOpen] = useState(false);
+  const isBuyer = trade.buyer_id === userId;
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Only images allowed", variant: "destructive" });
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "File too large (max 5MB)", variant: "destructive" });
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop();
+      const path = `${userId}/${trade.id}.${ext}`;
+
+      const { error: uploadErr } = await supabase.storage
+        .from("trade-proofs")
+        .upload(path, file, { upsert: true });
+      if (uploadErr) throw uploadErr;
+
+      const { data: urlData } = supabase.storage
+        .from("trade-proofs")
+        .getPublicUrl(path);
+
+      const url = urlData.publicUrl;
+
+      await supabase
+        .from("trades")
+        .update({ proof_url: url } as any)
+        .eq("id", trade.id);
+
+      setProofUrl(url);
+      toast({ title: "Proof uploaded! 📸" });
+    } catch (err: any) {
+      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  if (!proofUrl && !isBuyer) return null;
+
+  return (
+    <div className="px-4 pb-3 space-y-2">
+      {isBuyer && !proofUrl && (
+        <div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleUpload}
+          />
+          <Button
+            size="sm"
+            variant="outline"
+            className="w-full gap-2 border-primary/50 text-primary hover:bg-primary/10"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+          >
+            <Upload className="w-4 h-4" />
+            {uploading ? "Uploading..." : "Upload Payment Proof"}
+          </Button>
+          <p className="text-[10px] text-muted-foreground mt-1 text-center">
+            Upload screenshot or forwarded message as proof
+          </p>
+        </div>
+      )}
+
+      {proofUrl && (
+        <div className="bg-accent/10 border border-accent/30 rounded-lg p-3 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-accent flex items-center gap-1">
+              <Image className="w-3 h-3" /> Payment Proof
+            </span>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-6 px-2 text-xs gap-1 text-primary"
+              onClick={() => setViewOpen(true)}
+            >
+              <Eye className="w-3 h-3" /> View
+            </Button>
+          </div>
+          <img
+            src={proofUrl}
+            alt="Payment proof"
+            className="w-full max-h-32 object-cover rounded-md cursor-pointer"
+            onClick={() => setViewOpen(true)}
+          />
+          {isBuyer && (
+            <>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleUpload}
+              />
+              <Button
+                size="sm"
+                variant="outline"
+                className="w-full text-xs gap-1"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+              >
+                <Upload className="w-3 h-3" />
+                {uploading ? "Uploading..." : "Replace Proof"}
+              </Button>
+            </>
+          )}
+        </div>
+      )}
+
+      <Dialog open={viewOpen} onOpenChange={setViewOpen}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Payment Proof</DialogTitle>
+          </DialogHeader>
+          {proofUrl && (
+            <img src={proofUrl} alt="Payment proof full" className="w-full rounded-lg" />
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
 /* ===== My Order Card ===== */
 function MyOrderCard({
   trade,
@@ -739,6 +882,9 @@ function MyOrderCard({
           )}
         </div>
       )}
+
+      {/* Proof upload */}
+      {isEscrow && <ProofUpload trade={trade} userId={userId} />}
 
       {/* Actions */}
       <div className="px-4 pb-4 flex gap-2">
