@@ -42,7 +42,7 @@ const MiningCard = ({ isMining, formattedTime, progress, miningComplete, onStart
         <div className="space-y-4 text-center">
           {miningComplete ? (
             <>
-              <p className="text-accent font-semibold">Mining complete! +1 Gorilla Coin earned 🎉</p>
+              <p className="text-accent font-semibold">Mining complete! +24 Gorilla Coins earned 🎉</p>
               <Button
                 onClick={onStartMining}
                 className="w-full bg-gradient-gold text-primary-foreground font-display font-semibold tracking-wider hover:opacity-90 transition-opacity"
