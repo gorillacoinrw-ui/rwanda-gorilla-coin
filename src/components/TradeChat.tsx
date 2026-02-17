@@ -25,7 +25,7 @@ export default function TradeChat({ tradeId }: { tradeId: string }) {
   useEffect(() => {
     if (!open) return;
     const fetchMessages = async () => {
-      const { data } = await supabase
+      const { data } = await (supabase as any)
         .from("trade_messages")
         .select("*")
         .eq("trade_id", tradeId)
@@ -60,7 +60,7 @@ export default function TradeChat({ tradeId }: { tradeId: string }) {
     if (!text.trim() || !user || sending) return;
     setSending(true);
     try {
-      await supabase.from("trade_messages").insert({
+      await (supabase as any).from("trade_messages").insert({
         trade_id: tradeId,
         sender_id: user.id,
         message: text.trim(),
