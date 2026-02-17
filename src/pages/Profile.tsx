@@ -1,9 +1,11 @@
 import { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import AppLayout from "@/components/AppLayout";
-import { User, Settings, Globe, Shield, LogOut, Camera, Loader2, Mail, Phone, Check } from "lucide-react";
+import { User, Settings, Globe, Shield, LogOut, Camera, Loader2, Mail, Phone, Check, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/use-profile";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAdminCheck } from "@/hooks/use-admin";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -28,6 +30,8 @@ const Profile = () => {
   const { user, signOut } = useAuth();
   const { profile, isLoading, updateProfile, uploadAvatar, referralCount } = useProfile();
   const { t, setLang } = useLanguage();
+  const { data: isAdmin } = useAdminCheck();
+  const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [editOpen, setEditOpen] = useState(false);
@@ -163,6 +167,12 @@ const Profile = () => {
             <Settings className="w-4 h-4 text-muted-foreground" />
             {t("profile.settings")}
           </button>
+          {isAdmin && (
+            <button onClick={() => navigate("/admin")} className="w-full flex items-center gap-3 px-5 py-4 text-sm text-primary hover:bg-muted/50 transition-colors border-t border-border font-semibold">
+              <ShieldCheck className="w-4 h-4" />
+              Admin Dashboard
+            </button>
+          )}
         </div>
 
         <div className="bg-gradient-card rounded-xl border border-border p-5 space-y-3">
