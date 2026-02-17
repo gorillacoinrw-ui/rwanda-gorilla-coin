@@ -34,6 +34,7 @@ import {
   Image,
   Eye,
 } from "lucide-react";
+import TradeChat from "@/components/TradeChat";
 
 const PAYMENT_METHODS = [
   { id: "all", label: "All Payments", icon: Filter },
@@ -885,6 +886,13 @@ function MyOrderCard({
 
       {/* Proof upload */}
       {isEscrow && <ProofUpload trade={trade} userId={userId} />}
+
+      {/* Trade chat */}
+      {isEscrow && (
+        <div className="px-4 pb-3">
+          <TradeChat tradeId={trade.id} />
+        </div>
+      )}
 
       {/* Actions */}
       <div className="px-4 pb-4 flex gap-2">
