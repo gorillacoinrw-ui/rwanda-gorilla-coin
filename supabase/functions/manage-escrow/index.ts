@@ -186,28 +186,60 @@ Deno.serve(async (req) => {
         });
       }
 
-      if (trade.status === "escrow") {
-        // Refund seller
-        const { data: sellerProfile } = await supabase
-          .from("profiles")
-          .select("coin_balance")
-          .eq("user_id", trade.seller_id)
-          .single();
+      // Prevent cancelling already completed/cancelled/expired trades
+      if (["completed", "cancelled", "expired"].includes(trade.status)) {
+        return new Response(JSON.stringify({ error: "Trade already finalized, cannot cancel" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
 
-        if (sellerProfile) {
-          await supabase
+      // Only trade participants can cancel
+      const isSeller = trade.seller_id === user.id;
+      const isBuyer = trade.buyer_id === user.id;
+      if (!isSeller && !isBuyer) {
+        return new Response(JSON.stringify({ error: "Only trade participants can cancel" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      if (trade.status === "escrow") {
+        // For sell orders: coins were deducted from the seller during accept.
+        // Refund goes back to the seller (the one whose coins are in escrow).
+        if (trade.trade_type === "sell") {
+          const { data: sellerProfile } = await supabase
             .from("profiles")
-            .update({ coin_balance: sellerProfile.coin_balance + trade.amount })
-            .eq("user_id", trade.seller_id);
+            .select("coin_balance")
+            .eq("user_id", trade.seller_id)
+            .single();
+
+          if (sellerProfile) {
+            await supabase
+              .from("profiles")
+              .update({ coin_balance: sellerProfile.coin_balance + trade.amount })
+              .eq("user_id", trade.seller_id);
+          }
         }
+        // For buy orders: if coins were held from the buyer, refund to buyer
+        // (Currently buy orders don't escrow coins, so no refund needed)
+      }
+
+      // If trade is still "open", only the creator (seller) can cancel
+      if (trade.status === "open" && !isSeller) {
+        return new Response(JSON.stringify({ error: "Only the order creator can cancel an open order" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
 
       await supabase
         .from("trades")
         .update({ status: "cancelled" })
-        .eq("id", trade_id);
+        .eq("id", trade_id)
+        .eq("status", trade.status); // Optimistic lock: only update if status hasn't changed
 
-      return new Response(JSON.stringify({ success: true }), {
+      return new Response(JSON.stringify({ success: true, cancelled_by: isSeller ? "seller" : "buyer" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
