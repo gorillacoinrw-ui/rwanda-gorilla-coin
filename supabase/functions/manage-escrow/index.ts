@@ -208,17 +208,35 @@ Deno.serve(async (req) => {
         // For sell orders: coins were deducted from the seller during accept.
         // Refund goes back to the seller (the one whose coins are in escrow).
         if (trade.trade_type === "sell") {
-          const { data: sellerProfile } = await supabase
+          const { data: sellerProfile, error: profileErr } = await supabase
             .from("profiles")
             .select("coin_balance")
             .eq("user_id", trade.seller_id)
             .single();
 
+          if (profileErr) {
+            console.error("Failed to fetch seller profile for refund:", profileErr);
+            return new Response(JSON.stringify({ error: "Failed to process refund" }), {
+              status: 500,
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+            });
+          }
+
           if (sellerProfile) {
-            await supabase
+            const newBalance = sellerProfile.coin_balance + trade.amount;
+            const { error: refundErr } = await supabase
               .from("profiles")
-              .update({ coin_balance: sellerProfile.coin_balance + trade.amount })
+              .update({ coin_balance: newBalance })
               .eq("user_id", trade.seller_id);
+
+            if (refundErr) {
+              console.error("Failed to refund seller:", refundErr);
+              return new Response(JSON.stringify({ error: "Failed to refund coins" }), {
+                status: 500,
+                headers: { ...corsHeaders, "Content-Type": "application/json" },
+              });
+            }
+            console.log(`Refunded ${trade.amount} GOR to seller ${trade.seller_id}. New balance: ${newBalance}`);
           }
         }
         // For buy orders: if coins were held from the buyer, refund to buyer
