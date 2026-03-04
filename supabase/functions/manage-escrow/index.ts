@@ -36,11 +36,124 @@ Deno.serve(async (req) => {
     });
   }
 
-  const { action, trade_id } = await req.json();
+  const { action, trade_id, trade_data } = await req.json();
+
+  // Helper: check if trading is still active (3-month window)
+  async function isTradingActive(): Promise<{ active: boolean; message?: string }> {
+    const { data } = await supabase
+      .from("app_settings")
+      .select("value")
+      .eq("key", "trading_start_date")
+      .single();
+    if (!data) return { active: true };
+    const startDate = new Date(String(data.value));
+    const threeMonthsLater = new Date(startDate);
+    threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
+    if (new Date() > threeMonthsLater) {
+      return { active: false, message: `Trading ended on ${threeMonthsLater.toLocaleDateString()}. The 3-month trading window has closed.` };
+    }
+    return { active: true };
+  }
 
   try {
+    // ===== CREATE ORDER (with coin locking for sell orders) =====
+    if (action === "create") {
+      const trading = await isTradingActive();
+      if (!trading.active) {
+        return new Response(JSON.stringify({ error: trading.message }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const { trade_type, amount, price_rwf, payment_method, payment_details, min_amount, max_amount } = trade_data;
+
+      if (trade_type === "sell") {
+        // Lock coins from seller's balance at creation time
+        const { data: sellerProfile, error: profileErr } = await supabase
+          .from("profiles")
+          .select("coin_balance")
+          .eq("user_id", user.id)
+          .single();
+
+        if (profileErr || !sellerProfile) {
+          return new Response(JSON.stringify({ error: "Could not fetch your profile" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        if (sellerProfile.coin_balance < amount) {
+          return new Response(JSON.stringify({ error: `Insufficient balance. You have ${sellerProfile.coin_balance} GOR but need ${amount} GOR.` }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        // Deduct coins (lock them)
+        const { error: deductErr } = await supabase
+          .from("profiles")
+          .update({ coin_balance: sellerProfile.coin_balance - amount })
+          .eq("user_id", user.id);
+
+        if (deductErr) {
+          return new Response(JSON.stringify({ error: "Failed to lock coins" }), {
+            status: 500,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+      }
+
+      // Create the trade
+      const { data: newTrade, error: insertErr } = await supabase
+        .from("trades")
+        .insert([{
+          seller_id: user.id,
+          trade_type,
+          amount,
+          price_rwf,
+          payment_method,
+          payment_details,
+          min_amount: min_amount || 1,
+          max_amount: max_amount || amount,
+        }])
+        .select()
+        .single();
+
+      if (insertErr) {
+        // If insert failed and we already deducted coins, refund
+        if (trade_type === "sell") {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("coin_balance")
+            .eq("user_id", user.id)
+            .single();
+          if (profile) {
+            await supabase.from("profiles")
+              .update({ coin_balance: profile.coin_balance + amount })
+              .eq("user_id", user.id);
+          }
+        }
+        throw insertErr;
+      }
+
+      console.log(`Trade created: ${newTrade.id}, type: ${trade_type}, amount: ${amount}. Coins ${trade_type === "sell" ? "locked" : "not locked"}.`);
+
+      return new Response(JSON.stringify({ success: true, trade: newTrade }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // ===== ACCEPT =====
     if (action === "accept") {
-      // Buyer accepts a sell order (or seller accepts a buy order)
+      const trading = await isTradingActive();
+      if (!trading.active) {
+        return new Response(JSON.stringify({ error: trading.message }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
       const { data: trade, error: fetchErr } = await supabase
         .from("trades")
         .select("*")
@@ -55,7 +168,6 @@ Deno.serve(async (req) => {
         });
       }
 
-      // Can't accept own trade
       if (trade.seller_id === user.id) {
         return new Response(JSON.stringify({ error: "Cannot accept your own trade" }), {
           status: 400,
@@ -65,19 +177,12 @@ Deno.serve(async (req) => {
 
       const expiresAt = new Date(Date.now() + 20 * 60 * 1000).toISOString();
 
-      // If it's a sell order, the acceptor is the buyer
-      // If it's a buy order, the acceptor is the seller
       const updateData: Record<string, unknown> = {
         status: "escrow",
+        buyer_id: user.id,
         escrow_started_at: new Date().toISOString(),
         expires_at: expiresAt,
       };
-
-      if (trade.trade_type === "sell") {
-        updateData.buyer_id = user.id;
-      } else {
-        updateData.buyer_id = user.id;
-      }
 
       const { error: updateErr } = await supabase
         .from("trades")
@@ -86,36 +191,16 @@ Deno.serve(async (req) => {
 
       if (updateErr) throw updateErr;
 
-      // For sell orders: deduct coins from seller's balance (escrow hold)
-      if (trade.trade_type === "sell") {
-        const { data: sellerProfile } = await supabase
-          .from("profiles")
-          .select("coin_balance")
-          .eq("user_id", trade.seller_id)
-          .single();
-
-        if (!sellerProfile || sellerProfile.coin_balance < trade.amount) {
-          // Revert trade
-          await supabase.from("trades").update({ status: "open", buyer_id: null, escrow_started_at: null, expires_at: null }).eq("id", trade_id);
-          return new Response(JSON.stringify({ error: "Seller has insufficient balance" }), {
-            status: 400,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
-
-        await supabase
-          .from("profiles")
-          .update({ coin_balance: sellerProfile.coin_balance - trade.amount })
-          .eq("user_id", trade.seller_id);
-      }
+      // For sell orders: coins are already locked at creation time, no need to deduct again
+      // For buy orders: no coin locking needed (buyer pays cash)
 
       return new Response(JSON.stringify({ success: true, expires_at: expiresAt }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
+    // ===== CONFIRM =====
     if (action === "confirm") {
-      // Seller confirms payment received → release coins to buyer
       const { data: trade, error: fetchErr } = await supabase
         .from("trades")
         .select("*")
@@ -130,7 +215,6 @@ Deno.serve(async (req) => {
         });
       }
 
-      // Only seller can confirm for sell orders
       if (trade.trade_type === "sell" && trade.seller_id !== user.id) {
         return new Response(JSON.stringify({ error: "Only the seller can confirm" }), {
           status: 400,
@@ -142,7 +226,7 @@ Deno.serve(async (req) => {
       const taxAmount = Math.floor(trade.amount * 0.25);
       const buyerReceives = trade.amount - taxAmount;
 
-      // Credit buyer
+      // Credit buyer with coins (minus tax)
       const { data: buyerProfile } = await supabase
         .from("profiles")
         .select("coin_balance")
@@ -156,6 +240,19 @@ Deno.serve(async (req) => {
           .eq("user_id", trade.buyer_id);
       }
 
+      // Add tax to tax pool
+      const { data: poolSetting } = await supabase
+        .from("app_settings")
+        .select("value")
+        .eq("key", "tax_pool_balance")
+        .single();
+      
+      const currentPool = Number(poolSetting?.value ?? 0);
+      await supabase
+        .from("app_settings")
+        .update({ value: currentPool + taxAmount })
+        .eq("key", "tax_pool_balance");
+
       // Update trade
       await supabase
         .from("trades")
@@ -167,11 +264,14 @@ Deno.serve(async (req) => {
         .from("tax_records")
         .insert({ trade_id: trade.id, amount: taxAmount });
 
+      console.log(`Trade ${trade.id} completed. Tax: ${taxAmount} GOR added to pool. Buyer receives: ${buyerReceives} GOR.`);
+
       return new Response(JSON.stringify({ success: true, tax: taxAmount, received: buyerReceives }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
+    // ===== CANCEL =====
     if (action === "cancel") {
       const { data: trade, error: fetchErr } = await supabase
         .from("trades")
@@ -186,7 +286,6 @@ Deno.serve(async (req) => {
         });
       }
 
-      // Prevent cancelling already completed/cancelled/expired trades
       if (["completed", "cancelled", "expired"].includes(trade.status)) {
         return new Response(JSON.stringify({ error: "Trade already finalized, cannot cancel" }), {
           status: 400,
@@ -194,7 +293,6 @@ Deno.serve(async (req) => {
         });
       }
 
-      // Only trade participants can cancel
       const isSeller = trade.seller_id === user.id;
       const isBuyer = trade.buyer_id === user.id;
       if (!isSeller && !isBuyer) {
@@ -204,46 +302,7 @@ Deno.serve(async (req) => {
         });
       }
 
-      if (trade.status === "escrow") {
-        // For sell orders: coins were deducted from the seller during accept.
-        // Refund goes back to the seller (the one whose coins are in escrow).
-        if (trade.trade_type === "sell") {
-          const { data: sellerProfile, error: profileErr } = await supabase
-            .from("profiles")
-            .select("coin_balance")
-            .eq("user_id", trade.seller_id)
-            .single();
-
-          if (profileErr) {
-            console.error("Failed to fetch seller profile for refund:", profileErr);
-            return new Response(JSON.stringify({ error: "Failed to process refund" }), {
-              status: 500,
-              headers: { ...corsHeaders, "Content-Type": "application/json" },
-            });
-          }
-
-          if (sellerProfile) {
-            const newBalance = sellerProfile.coin_balance + trade.amount;
-            const { error: refundErr } = await supabase
-              .from("profiles")
-              .update({ coin_balance: newBalance })
-              .eq("user_id", trade.seller_id);
-
-            if (refundErr) {
-              console.error("Failed to refund seller:", refundErr);
-              return new Response(JSON.stringify({ error: "Failed to refund coins" }), {
-                status: 500,
-                headers: { ...corsHeaders, "Content-Type": "application/json" },
-              });
-            }
-            console.log(`Refunded ${trade.amount} GOR to seller ${trade.seller_id}. New balance: ${newBalance}`);
-          }
-        }
-        // For buy orders: if coins were held from the buyer, refund to buyer
-        // (Currently buy orders don't escrow coins, so no refund needed)
-      }
-
-      // If trade is still "open", only the creator (seller) can cancel
+      // For open orders, only seller can cancel
       if (trade.status === "open" && !isSeller) {
         return new Response(JSON.stringify({ error: "Only the order creator can cancel an open order" }), {
           status: 400,
@@ -251,19 +310,124 @@ Deno.serve(async (req) => {
         });
       }
 
+      // Refund coins for sell orders (locked at creation)
+      if (trade.trade_type === "sell") {
+        const { data: sellerProfile, error: profileErr } = await supabase
+          .from("profiles")
+          .select("coin_balance")
+          .eq("user_id", trade.seller_id)
+          .single();
+
+        if (profileErr) {
+          console.error("Failed to fetch seller profile for refund:", profileErr);
+          return new Response(JSON.stringify({ error: "Failed to process refund" }), {
+            status: 500,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        if (sellerProfile) {
+          const newBalance = sellerProfile.coin_balance + trade.amount;
+          const { error: refundErr } = await supabase
+            .from("profiles")
+            .update({ coin_balance: newBalance })
+            .eq("user_id", trade.seller_id);
+
+          if (refundErr) {
+            console.error("Failed to refund seller:", refundErr);
+            return new Response(JSON.stringify({ error: "Failed to refund coins" }), {
+              status: 500,
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+            });
+          }
+          console.log(`Refunded ${trade.amount} GOR to seller ${trade.seller_id}. New balance: ${newBalance}`);
+        }
+      }
+
       await supabase
         .from("trades")
         .update({ status: "cancelled" })
         .eq("id", trade_id)
-        .eq("status", trade.status); // Optimistic lock: only update if status hasn't changed
+        .eq("status", trade.status);
 
       return new Response(JSON.stringify({ success: true, cancelled_by: isSeller ? "seller" : "buyer" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
+    // ===== FOUNDER SELL TAX =====
+    if (action === "founder_sell_tax") {
+      // Check if user is admin
+      const { data: roleData } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+
+      if (!roleData) {
+        return new Response(JSON.stringify({ error: "Only admins can sell tax pool" }), {
+          status: 403,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const { amount, price_rwf, payment_method, payment_details } = trade_data;
+
+      // Check tax pool
+      const { data: poolSetting } = await supabase
+        .from("app_settings")
+        .select("value")
+        .eq("key", "tax_pool_balance")
+        .single();
+
+      const poolBalance = Number(poolSetting?.value ?? 0);
+      if (poolBalance < amount) {
+        return new Response(JSON.stringify({ error: `Tax pool only has ${poolBalance} GOR. Cannot sell ${amount} GOR.` }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Deduct from tax pool
+      await supabase
+        .from("app_settings")
+        .update({ value: poolBalance - amount })
+        .eq("key", "tax_pool_balance");
+
+      // Create sell order (coins come from tax pool, not founder's balance)
+      const { data: newTrade, error: insertErr } = await supabase
+        .from("trades")
+        .insert([{
+          seller_id: user.id,
+          trade_type: "sell",
+          amount,
+          price_rwf,
+          payment_method: payment_method || "mtn",
+          payment_details: payment_details || "",
+          min_amount: 1,
+          max_amount: amount,
+        }])
+        .select()
+        .single();
+
+      if (insertErr) {
+        // Refund tax pool
+        await supabase.from("app_settings")
+          .update({ value: poolBalance })
+          .eq("key", "tax_pool_balance");
+        throw insertErr;
+      }
+
+      console.log(`Founder tax sell order created: ${newTrade.id}, amount: ${amount} GOR from tax pool.`);
+
+      return new Response(JSON.stringify({ success: true, trade: newTrade }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // ===== CHECK EXPIRED =====
     if (action === "check_expired") {
-      // Auto-cancel expired escrow trades
       const now = new Date().toISOString();
       const { data: expired } = await supabase
         .from("trades")
@@ -273,18 +437,20 @@ Deno.serve(async (req) => {
 
       if (expired && expired.length > 0) {
         for (const trade of expired) {
-          // Refund seller
-          const { data: sellerProfile } = await supabase
-            .from("profiles")
-            .select("coin_balance")
-            .eq("user_id", trade.seller_id)
-            .single();
-
-          if (sellerProfile) {
-            await supabase
+          // Refund seller for sell orders
+          if (trade.trade_type === "sell") {
+            const { data: sellerProfile } = await supabase
               .from("profiles")
-              .update({ coin_balance: sellerProfile.coin_balance + trade.amount })
-              .eq("user_id", trade.seller_id);
+              .select("coin_balance")
+              .eq("user_id", trade.seller_id)
+              .single();
+
+            if (sellerProfile) {
+              await supabase
+                .from("profiles")
+                .update({ coin_balance: sellerProfile.coin_balance + trade.amount })
+                .eq("user_id", trade.seller_id);
+            }
           }
 
           await supabase

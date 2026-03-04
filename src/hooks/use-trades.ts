@@ -72,7 +72,6 @@ export function useTrades() {
         .order("created_at", { ascending: false });
       if (error) throw error;
 
-      // Fetch seller profiles
       const sellerIds = [...new Set((data ?? []).map((t) => t.seller_id))];
       const { data: profiles } = await supabase
         .from("profiles")
@@ -118,25 +117,17 @@ export function useTrades() {
       max_amount: number;
     }) => {
       if (!user) throw new Error("Not authenticated");
-      const { data, error } = await supabase
-        .from("trades")
-        .insert([{
-          seller_id: user.id,
-          trade_type: trade.trade_type,
-          amount: trade.amount,
-          price_rwf: trade.price_rwf,
-          payment_method: trade.payment_method,
-          payment_details: trade.payment_details,
-          min_amount: trade.min_amount,
-          max_amount: trade.max_amount,
-        }])
-        .select()
-        .single();
+      // Use edge function for creation to handle coin locking server-side
+      const { data, error } = await supabase.functions.invoke("manage-escrow", {
+        body: { action: "create", trade_data: trade },
+      });
       if (error) throw error;
+      if (data?.error) throw new Error(data.error);
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["trades"] });
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
       toast({ title: "Order created! 🦍" });
     },
     onError: (err: Error) => {
@@ -201,6 +192,31 @@ export function useTrades() {
     },
   });
 
+  // Founder tax sell
+  const founderSellTax = useMutation({
+    mutationFn: async (trade: {
+      amount: number;
+      price_rwf: number;
+      payment_method: string;
+      payment_details: string;
+    }) => {
+      const { data, error } = await supabase.functions.invoke("manage-escrow", {
+        body: { action: "founder_sell_tax", trade_data: trade },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["trades"] });
+      queryClient.invalidateQueries({ queryKey: ["app_settings"] });
+      toast({ title: "Tax sell order created! 💰" });
+    },
+    onError: (err: Error) => {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    },
+  });
+
   return {
     openTrades: openTradesQuery.data ?? [],
     myTrades: myTradesQuery.data ?? [],
@@ -209,5 +225,6 @@ export function useTrades() {
     acceptTrade,
     confirmTrade,
     cancelTrade,
+    founderSellTax,
   };
 }
