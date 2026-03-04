@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import AppLayout from "@/components/AppLayout";
 import { useTrades, Trade } from "@/hooks/use-trades";
 import { useProfile } from "@/hooks/use-profile";
+import { useAppSettings } from "@/hooks/use-app-settings";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -96,6 +97,7 @@ function EscrowProgress({ expiresAt }: { expiresAt: string }) {
 const TradePage = () => {
   const { user } = useAuth();
   const { profile } = useProfile();
+  const { tradingActive, tradingDaysLeft } = useAppSettings();
   const {
     openTrades,
     myTrades,
@@ -190,6 +192,18 @@ const TradePage = () => {
     <AppLayout>
       <div className="max-w-md md:max-w-5xl lg:max-w-7xl mx-auto px-4 py-4 space-y-0">
 
+        {/* Trading window banner */}
+        {!tradingActive && (
+          <div className="mb-4 p-4 rounded-xl border border-destructive/30 bg-destructive/5 text-center">
+            <p className="text-sm font-medium text-destructive">Trading period has ended</p>
+            <p className="text-xs text-muted-foreground">The 3-month trading window has closed. New orders cannot be created.</p>
+          </div>
+        )}
+        {tradingActive && tradingDaysLeft <= 14 && (
+          <div className="mb-4 p-3 rounded-xl border border-primary/30 bg-primary/5 text-center">
+            <p className="text-xs text-muted-foreground">⏳ Trading closes in <span className="font-bold text-foreground">{tradingDaysLeft} days</span></p>
+          </div>
+        )}
         {/* ===== Top Header ===== */}
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-lg md:text-xl font-display font-bold text-gradient-gold tracking-wider">
@@ -200,7 +214,7 @@ const TradePage = () => {
               <Shield className="w-4 h-4 text-primary" />
               <span>Escrow Protected</span>
             </div>
-            <Button size="sm" onClick={() => setCreateOpen(true)} className="gap-1.5">
+            <Button size="sm" onClick={() => setCreateOpen(true)} className="gap-1.5" disabled={!tradingActive}>
               <Plus className="w-4 h-4" /> Post Ad
             </Button>
           </div>
