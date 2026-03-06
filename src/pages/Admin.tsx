@@ -34,7 +34,7 @@ const Admin = () => {
   const { user, loading: authLoading } = useAuth();
   const { data: isAdmin, isLoading: adminLoading } = useAdminCheck();
   const { users, trades, taxRecords, mining, referrals, stats, isLoading } = useAdminData();
-  const { adjustBalance, cancelTrade, updateSetting, setUserRole } = useAdminActions();
+  const { adjustBalance, cancelTrade, updateSetting, setUserRole, deleteUser } = useAdminActions();
   const { settings, baseValue, growthPer100, tradingStartDate } = useAppSettings();
 
   // Dialogs
