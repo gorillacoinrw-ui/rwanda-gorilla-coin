@@ -25,6 +25,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const { data: isAdmin } = useAdminCheck();
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -52,6 +53,21 @@ const AppLayout = ({ children }: AppLayoutProps) => {
               >
                 <item.icon className={`w-5 h-5 ${isActive ? "drop-shadow-[0_0_8px_hsl(48,95%,55%)]" : ""}`} />
                 <span className="text-[10px] md:text-sm font-medium tracking-wide">{t(item.labelKey)}</span>
+              </button>
+            );
+          })}
+          {isAdmin && adminNavItems.map((item) => {
+            const isActive = location.pathname === item.path;
+            return (
+              <button
+                key={item.path}
+                onClick={() => navigate(item.path)}
+                className={`flex flex-col md:flex-row items-center gap-0.5 md:gap-2 px-4 py-2 transition-colors ${
+                  isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <item.icon className={`w-5 h-5 ${isActive ? "drop-shadow-[0_0_8px_hsl(48,95%,55%)]" : ""}`} />
+                <span className="text-[10px] md:text-sm font-medium tracking-wide">{item.labelKey}</span>
               </button>
             );
           })}
