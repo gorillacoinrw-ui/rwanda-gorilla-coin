@@ -62,5 +62,16 @@ export function useAdminActions() {
     },
   });
 
-  return { adjustBalance, cancelTrade, updateSetting, setUserRole };
+  const deleteUser = useMutation({
+    mutationFn: (user_id: string) => adminAction("delete_user", { user_id }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin"] });
+      toast({ title: "User deleted", description: "User and all related data removed" });
+    },
+    onError: (err: Error) => {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    },
+  });
+
+  return { adjustBalance, cancelTrade, updateSetting, setUserRole, deleteUser };
 }

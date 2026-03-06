@@ -203,6 +203,52 @@ Deno.serve(async (req) => {
       });
     }
 
+    // ===== DELETE USER =====
+    if (action === "delete_user") {
+      const { user_id: targetUserId } = params;
+      if (!targetUserId) {
+        return new Response(JSON.stringify({ error: "user_id required" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Prevent self-deletion
+      if (targetUserId === user.id) {
+        return new Response(JSON.stringify({ error: "Cannot delete your own account" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Cancel any active trades for this user
+      const { data: activeTrades } = await supabase
+        .from("trades")
+        .select("id, trade_type, amount, seller_id, status")
+        .or(`seller_id.eq.${targetUserId},buyer_id.eq.${targetUserId}`)
+        .in("status", ["open", "escrow"]);
+
+      if (activeTrades) {
+        for (const trade of activeTrades) {
+          await supabase.from("trades").update({ status: "cancelled" }).eq("id", trade.id);
+        }
+      }
+
+      // Delete related data
+      await supabase.from("user_roles").delete().eq("user_id", targetUserId);
+      await supabase.from("referrals").delete().or(`referrer_id.eq.${targetUserId},referred_id.eq.${targetUserId}`);
+      await supabase.from("mining_sessions").delete().eq("user_id", targetUserId);
+      await supabase.from("profiles").delete().eq("user_id", targetUserId);
+
+      // Delete from auth
+      const { error: deleteAuthErr } = await supabase.auth.admin.deleteUser(targetUserId);
+      if (deleteAuthErr) throw deleteAuthErr;
+
+      console.log(`Admin ${user.id} deleted user ${targetUserId}`);
+
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     return new Response(JSON.stringify({ error: "Invalid action" }), {
       status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
