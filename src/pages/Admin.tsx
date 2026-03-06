@@ -45,6 +45,8 @@ const Admin = () => {
   const [roleDialog, setRoleDialog] = useState<{ open: boolean; userId: string; name: string }>({ open: false, userId: "", name: "" });
   const [selectedRole, setSelectedRole] = useState("user");
 
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; userId: string; name: string }>({ open: false, userId: "", name: "" });
+
   // Settings state
   const [editCoinBase, setEditCoinBase] = useState<string>("");
   const [editGrowth, setEditGrowth] = useState<string>("");
