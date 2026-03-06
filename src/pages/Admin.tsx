@@ -164,6 +164,14 @@ const Admin = () => {
                             >
                               <Crown className="w-3.5 h-3.5 mr-1" />Role
                             </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-7 px-2 text-xs text-destructive hover:text-destructive"
+                              onClick={() => setDeleteDialog({ open: true, userId: u.user_id, name: u.display_name || "User" })}
+                            >
+                              <Trash2 className="w-3.5 h-3.5 mr-1" />Delete
+                            </Button>
                           </div>
                         </TableCell>
                       </TableRow>
