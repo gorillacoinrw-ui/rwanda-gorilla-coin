@@ -1,7 +1,8 @@
 import { ReactNode } from "react";
-import { Home, Pickaxe, ArrowLeftRight, User, History } from "lucide-react";
+import { Home, Pickaxe, ArrowLeftRight, User, History, Shield, Crown } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAdminCheck } from "@/hooks/use-admin";
 
 const navItems = [
   { icon: Home, labelKey: "nav.home", path: "/" },
@@ -9,6 +10,11 @@ const navItems = [
   { icon: ArrowLeftRight, labelKey: "nav.trade", path: "/trade" },
   { icon: History, labelKey: "nav.history", path: "/history" },
   { icon: User, labelKey: "nav.profile", path: "/profile" },
+];
+
+const adminNavItems = [
+  { icon: Shield, labelKey: "Admin", path: "/admin" },
+  { icon: Crown, labelKey: "Founder", path: "/founder" },
 ];
 
 interface AppLayoutProps {
