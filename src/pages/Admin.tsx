@@ -484,6 +484,32 @@ const Admin = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Delete User Dialog */}
+      <Dialog open={deleteDialog.open} onOpenChange={(open) => { if (!open) setDeleteDialog({ open: false, userId: "", name: "" }); }}>
+        <DialogContent className="bg-card border-border">
+          <DialogHeader>
+            <DialogTitle className="text-destructive">Delete User: {deleteDialog.name}</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            This will permanently delete this user, cancel their active trades, and remove all related data. This action cannot be undone.
+          </p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteDialog({ open: false, userId: "", name: "" })}>Cancel</Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                deleteUser.mutate(deleteDialog.userId, {
+                  onSuccess: () => setDeleteDialog({ open: false, userId: "", name: "" }),
+                });
+              }}
+              disabled={deleteUser.isPending}
+            >
+              {deleteUser.isPending ? "Deleting..." : "Delete User"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AppLayout>
   );
 };
