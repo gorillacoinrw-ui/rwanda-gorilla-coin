@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Users, ArrowLeftRight, Pickaxe, Landmark, UserCheck, Shield, Settings, Coins, XCircle, Edit, Crown, Trash2 } from "lucide-react";
+import { Users, ArrowLeftRight, Pickaxe, Landmark, UserCheck, Shield, Settings, Coins, XCircle, Edit, Crown } from "lucide-react";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 
@@ -34,7 +34,7 @@ const Admin = () => {
   const { user, loading: authLoading } = useAuth();
   const { data: isAdmin, isLoading: adminLoading } = useAdminCheck();
   const { users, trades, taxRecords, mining, referrals, stats, isLoading } = useAdminData();
-  const { adjustBalance, cancelTrade, updateSetting, setUserRole, deleteUser } = useAdminActions();
+  const { adjustBalance, cancelTrade, updateSetting, setUserRole } = useAdminActions();
   const { settings, baseValue, growthPer100, tradingStartDate } = useAppSettings();
 
   // Dialogs
@@ -44,8 +44,6 @@ const Admin = () => {
 
   const [roleDialog, setRoleDialog] = useState<{ open: boolean; userId: string; name: string }>({ open: false, userId: "", name: "" });
   const [selectedRole, setSelectedRole] = useState("user");
-
-  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; userId: string; name: string }>({ open: false, userId: "", name: "" });
 
   // Settings state
   const [editCoinBase, setEditCoinBase] = useState<string>("");
@@ -163,14 +161,6 @@ const Admin = () => {
                               onClick={() => { setRoleDialog({ open: true, userId: u.user_id, name: u.display_name || "User" }); setSelectedRole("user"); }}
                             >
                               <Crown className="w-3.5 h-3.5 mr-1" />Role
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="h-7 px-2 text-xs text-destructive hover:text-destructive"
-                              onClick={() => setDeleteDialog({ open: true, userId: u.user_id, name: u.display_name || "User" })}
-                            >
-                              <Trash2 className="w-3.5 h-3.5 mr-1" />Delete
                             </Button>
                           </div>
                         </TableCell>
@@ -480,32 +470,6 @@ const Admin = () => {
               className="bg-primary text-primary-foreground"
             >
               {setUserRole.isPending ? "Saving..." : "Save Role"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Delete User Dialog */}
-      <Dialog open={deleteDialog.open} onOpenChange={(open) => { if (!open) setDeleteDialog({ open: false, userId: "", name: "" }); }}>
-        <DialogContent className="bg-card border-border">
-          <DialogHeader>
-            <DialogTitle className="text-destructive">Delete User: {deleteDialog.name}</DialogTitle>
-          </DialogHeader>
-          <p className="text-sm text-muted-foreground">
-            This will permanently delete this user, cancel their active trades, and remove all related data. This action cannot be undone.
-          </p>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteDialog({ open: false, userId: "", name: "" })}>Cancel</Button>
-            <Button
-              variant="destructive"
-              onClick={() => {
-                deleteUser.mutate(deleteDialog.userId, {
-                  onSuccess: () => setDeleteDialog({ open: false, userId: "", name: "" }),
-                });
-              }}
-              disabled={deleteUser.isPending}
-            >
-              {deleteUser.isPending ? "Deleting..." : "Delete User"}
             </Button>
           </DialogFooter>
         </DialogContent>
