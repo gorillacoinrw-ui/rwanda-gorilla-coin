@@ -8,6 +8,10 @@ import { useProfile } from "@/hooks/use-profile";
 import { useAppSettings } from "@/hooks/use-app-settings";
 import { useTrades } from "@/hooks/use-trades";
 import { useAuth } from "@/contexts/AuthContext";
+import { useAdminCheck } from "@/hooks/use-admin";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Shield, Crown } from "lucide-react";
 
 const Index = () => {
   const { isMining, formattedTime, progress, miningComplete, startMining } = useMiningTimer();
@@ -15,6 +19,8 @@ const Index = () => {
   const { baseValue, growthPer100 } = useAppSettings();
   const { user } = useAuth();
   const { myTrades } = useTrades();
+  const { data: isAdmin } = useAdminCheck();
+  const navigate = useNavigate();
 
   const balance = profile?.coin_balance ?? 0;
   const coinValue = baseValue + Math.floor((profile?.total_mined ?? 0) / 100) * growthPer100;
@@ -33,6 +39,27 @@ const Index = () => {
           </h1>
           <p className="text-xs text-muted-foreground mt-1">Rwanda's Digital Reward</p>
         </div>
+
+        {isAdmin && (
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              className="flex-1 gap-2 border-primary/30 text-primary hover:bg-primary/10"
+              onClick={() => navigate("/admin")}
+            >
+              <Shield className="w-4 h-4" />
+              Admin Panel
+            </Button>
+            <Button
+              variant="outline"
+              className="flex-1 gap-2 border-accent/30 text-accent hover:bg-accent/10"
+              onClick={() => navigate("/founder")}
+            >
+              <Crown className="w-4 h-4" />
+              Founder Dashboard
+            </Button>
+          </div>
+        )}
 
         <CoinDisplay balance={balance} coinValue={coinValue} lockedBalance={lockedBalance} />
 
