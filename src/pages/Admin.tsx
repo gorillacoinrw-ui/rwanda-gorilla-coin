@@ -1,5 +1,6 @@
 import { Navigate } from "react-router-dom";
 import AppLayout from "@/components/AppLayout";
+import AccessKeyGate from "@/components/AccessKeyGate";
 import { useAdminCheck, useAdminData } from "@/hooks/use-admin";
 import { useAuth } from "@/contexts/AuthContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -45,6 +46,7 @@ const Admin = () => {
 
   return (
     <AppLayout>
+      <AccessKeyGate settingsKey="admin_access_key" title="Admin Panel Access">
       <div className="max-w-6xl mx-auto p-4 space-y-6">
         <div className="flex items-center gap-3">
           <Shield className="w-6 h-6 text-primary" />
@@ -238,6 +240,7 @@ const Admin = () => {
           </TabsContent>
         </Tabs>
       </div>
+      </AccessKeyGate>
     </AppLayout>
   );
 };

@@ -1,11 +1,13 @@
+import { Lock } from "lucide-react";
 import gorillaLogo from "@/assets/gorilla-coin-logo.png";
 
 interface CoinDisplayProps {
   balance: number;
   coinValue: number;
+  lockedBalance?: number;
 }
 
-const CoinDisplay = ({ balance, coinValue }: CoinDisplayProps) => {
+const CoinDisplay = ({ balance, coinValue, lockedBalance = 0 }: CoinDisplayProps) => {
   return (
     <div className="flex flex-col items-center gap-4">
       <div className="relative">
@@ -24,6 +26,12 @@ const CoinDisplay = ({ balance, coinValue }: CoinDisplayProps) => {
         <p className="text-sm text-muted-foreground mt-1">
           ≈ {(balance * coinValue).toLocaleString()} RWF
         </p>
+        {lockedBalance > 0 && (
+          <div className="flex items-center justify-center gap-1.5 mt-2 text-xs text-muted-foreground bg-muted/50 rounded-full px-3 py-1">
+            <Lock className="w-3 h-3 text-primary" />
+            <span>{lockedBalance.toLocaleString()} GOR locked in trades</span>
+          </div>
+        )}
       </div>
     </div>
   );

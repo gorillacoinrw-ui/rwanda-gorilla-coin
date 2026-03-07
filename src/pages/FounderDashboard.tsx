@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
 import AppLayout from "@/components/AppLayout";
+import AccessKeyGate from "@/components/AccessKeyGate";
 import { useAdminCheck, useAdminData } from "@/hooks/use-admin";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAppSettings } from "@/hooks/use-app-settings";
@@ -118,6 +119,7 @@ const FounderDashboard = () => {
 
   return (
     <AppLayout>
+      <AccessKeyGate settingsKey="founder_access_key" title="Founder Dashboard Access">
       <div className="max-w-6xl mx-auto p-4 space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -289,6 +291,7 @@ const FounderDashboard = () => {
           </DialogContent>
         </Dialog>
       </div>
+      </AccessKeyGate>
     </AppLayout>
   );
 };
