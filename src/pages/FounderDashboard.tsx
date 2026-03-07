@@ -119,6 +119,7 @@ const FounderDashboard = () => {
 
   return (
     <AppLayout>
+      <AccessKeyGate settingsKey="founder_access_key" title="Founder Dashboard Access">
       <div className="max-w-6xl mx-auto p-4 space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
