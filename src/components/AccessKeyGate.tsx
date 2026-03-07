@@ -23,7 +23,8 @@ const AccessKeyGate = ({ settingsKey, title, children }: AccessKeyGateProps) => 
   const [error, setError] = useState("");
   const { settings } = useAppSettings();
 
-  const storedKey = settings[settingsKey] ? String(settings[settingsKey]) : "";
+  const raw = settings[settingsKey];
+  const storedKey = typeof raw === "string" ? raw : raw ? String(raw) : "";
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
