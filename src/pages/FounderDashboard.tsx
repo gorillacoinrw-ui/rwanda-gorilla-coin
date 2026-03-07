@@ -291,6 +291,7 @@ const FounderDashboard = () => {
           </DialogContent>
         </Dialog>
       </div>
+      </AccessKeyGate>
     </AppLayout>
   );
 };

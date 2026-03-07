@@ -240,6 +240,7 @@ const Admin = () => {
           </TabsContent>
         </Tabs>
       </div>
+      </AccessKeyGate>
     </AppLayout>
   );
 };
