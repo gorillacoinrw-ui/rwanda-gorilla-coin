@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
 import AppLayout from "@/components/AppLayout";
+import AccessKeyGate from "@/components/AccessKeyGate";
 import { useAdminCheck, useAdminData } from "@/hooks/use-admin";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAppSettings } from "@/hooks/use-app-settings";
