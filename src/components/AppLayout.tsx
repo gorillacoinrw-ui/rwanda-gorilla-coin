@@ -36,9 +36,13 @@ const AppLayout = ({ children }: AppLayoutProps) => {
         <NotificationBell />
       </div>
 
-      <main className="flex-1 overflow-y-auto pb-20 md:pb-6 md:pt-20">
+      <main className="flex-1 overflow-y-auto pb-28 md:pb-12 md:pt-20">
         {children}
       </main>
+
+      <div className="pb-16 md:pb-0">
+        <Footer />
+      </div>
 
       <nav className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-lg border-t border-border z-50 md:top-0 md:bottom-auto md:border-t-0 md:border-b">
         <div className="flex items-center justify-around h-16 max-w-md md:max-w-4xl lg:max-w-6xl mx-auto md:justify-end md:gap-2">
