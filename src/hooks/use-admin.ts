@@ -129,11 +129,25 @@ export function useAdminData() {
     enabled: !!user,
   });
 
+  const investmentsQuery = useQuery({
+    queryKey: ["admin", "investments"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("investments")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: !!user,
+  });
+
   const users = usersQuery.data ?? [];
   const trades = tradesQuery.data ?? [];
   const taxRecords = taxQuery.data ?? [];
   const mining = miningQuery.data ?? [];
   const referrals = referralsQuery.data ?? [];
+  const investments = investmentsQuery.data ?? [];
 
   const stats: AdminStats = {
     totalUsers: users.length,
@@ -149,6 +163,7 @@ export function useAdminData() {
     taxRecords,
     mining,
     referrals,
+    investments,
     stats,
     isLoading: usersQuery.isLoading || tradesQuery.isLoading,
   };

@@ -58,6 +58,19 @@ Gorilla Coin is Rwanda's first community-driven digital reward platform where us
 - Each referral earns 15 GOR for the referrer and 10 GOR for the new user
 - Once 100 users are reached, P2P trading opens automatically for everyone
 
+**Investment:**
+- Users can invest their GOR coins to earn 12% interest
+- Minimum investment: 50 GOR
+- Investment period: 7 days
+- Coins are locked during the investment period
+- Users CAN stop their investment early at any time
+- If stopped early, they get their full capital back PLUS proportional profit based on how much time has passed
+- If they wait the full 7 days, they get the full 12% return
+- Example: Invest 100 GOR → earn 12 GOR interest after 7 days (total 112 GOR returned)
+- Example early stop: Invest 100 GOR, stop after 3.5 days → get 100 GOR capital + 6 GOR profit (half of 12%)
+- Users can have multiple active investments at the same time
+- Investment page is accessible from the "Invest" tab in the navigation
+
 **Security:**
 - All trades use escrow protection
 - Email verification required for signup

@@ -9,7 +9,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useOnlinePresence } from "@/hooks/use-online-presence";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Users, ArrowLeftRight, Pickaxe, Landmark, UserCheck, Shield, Gift, Tv, BarChart3 } from "lucide-react";
+import { Users, ArrowLeftRight, Pickaxe, Landmark, UserCheck, Shield, Gift, Tv, BarChart3, TrendingUp } from "lucide-react";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -32,7 +32,7 @@ const statusColor = (s: string) => {
 const Admin = () => {
   const { user, loading: authLoading } = useAuth();
   const { data: isAdmin, isLoading: adminLoading } = useAdminCheck();
-  const { users, trades, taxRecords, mining, referrals, stats, isLoading } = useAdminData();
+  const { users, trades, taxRecords, mining, referrals, investments, stats, isLoading } = useAdminData();
   const { isOnline } = useOnlinePresence();
 
   if (authLoading || adminLoading) {
@@ -79,11 +79,12 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="analytics" className="w-full">
-          <TabsList className="grid w-full grid-cols-8">
+          <TabsList className="grid w-full grid-cols-9">
             <TabsTrigger value="analytics" className="text-xs gap-1"><BarChart3 className="w-3.5 h-3.5" />Analytics</TabsTrigger>
             <TabsTrigger value="users" className="text-xs gap-1"><Users className="w-3.5 h-3.5" />Users</TabsTrigger>
             <TabsTrigger value="tasks" className="text-xs gap-1"><Gift className="w-3.5 h-3.5" />Tasks</TabsTrigger>
             <TabsTrigger value="ads" className="text-xs gap-1"><Tv className="w-3.5 h-3.5" />Ads</TabsTrigger>
+            <TabsTrigger value="investments" className="text-xs gap-1"><TrendingUp className="w-3.5 h-3.5" />Invest</TabsTrigger>
             <TabsTrigger value="trades" className="text-xs gap-1"><ArrowLeftRight className="w-3.5 h-3.5" />Trades</TabsTrigger>
             <TabsTrigger value="mining" className="text-xs gap-1"><Pickaxe className="w-3.5 h-3.5" />Mining</TabsTrigger>
             <TabsTrigger value="tax" className="text-xs gap-1"><Landmark className="w-3.5 h-3.5" />Tax</TabsTrigger>
@@ -135,6 +136,64 @@ const Admin = () => {
           {/* Ads Tab */}
           <TabsContent value="ads" className="mt-4">
             <AdminAdManager />
+          </TabsContent>
+
+          {/* Investments Tab */}
+          <TabsContent value="investments" className="mt-4">
+            <div className="space-y-3">
+              <div className="grid grid-cols-3 gap-3">
+                <div className="p-3 rounded-lg bg-card border border-border text-center">
+                  <p className="text-xs text-muted-foreground">Active</p>
+                  <p className="text-lg font-bold text-primary">{investments.filter(i => i.status === "active").length}</p>
+                </div>
+                <div className="p-3 rounded-lg bg-card border border-border text-center">
+                  <p className="text-xs text-muted-foreground">Total Locked</p>
+                  <p className="text-lg font-bold text-foreground">{investments.filter(i => i.status === "active").reduce((s, i) => s + i.amount, 0)} GOR</p>
+                </div>
+                <div className="p-3 rounded-lg bg-card border border-border text-center">
+                  <p className="text-xs text-muted-foreground">Interest Paid</p>
+                  <p className="text-lg font-bold text-accent">{investments.filter(i => i.status === "claimed" || i.status === "stopped").reduce((s, i) => s + i.coins_earned, 0)} GOR</p>
+                </div>
+              </div>
+              <div className="rounded-lg border border-border overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>User</TableHead>
+                      <TableHead className="text-right">Amount</TableHead>
+                      <TableHead className="text-right">Interest</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Started</TableHead>
+                      <TableHead>Matures</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {investments.map((inv) => (
+                      <TableRow key={inv.id}>
+                        <TableCell className="text-xs">{userMap.get(inv.user_id) || inv.user_id.slice(0, 8)}</TableCell>
+                        <TableCell className="text-right font-mono">{inv.amount}</TableCell>
+                        <TableCell className="text-right font-mono text-accent">{inv.coins_earned}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className={`text-[10px] ${
+                            inv.status === "active" ? "bg-blue-500/10 text-blue-500 border-blue-500/20" :
+                            inv.status === "claimed" ? "bg-green-500/10 text-green-500 border-green-500/20" :
+                            inv.status === "stopped" ? "bg-yellow-500/10 text-yellow-500 border-yellow-500/20" :
+                            "bg-muted text-muted-foreground"
+                          }`}>
+                            {inv.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground">{fmt(inv.started_at)}</TableCell>
+                        <TableCell className="text-xs text-muted-foreground">{fmt(inv.matures_at)}</TableCell>
+                      </TableRow>
+                    ))}
+                    {investments.length === 0 && (
+                      <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-6">No investments yet</TableCell></TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
           </TabsContent>
 
           {/* Trades Tab */}
