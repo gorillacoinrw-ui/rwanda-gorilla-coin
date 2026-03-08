@@ -93,6 +93,11 @@ const Admin = () => {
             <TabsTrigger value="referrals" className="text-xs gap-1"><UserCheck className="w-3.5 h-3.5" />Referrals</TabsTrigger>
           </TabsList>
 
+          {/* Settings Tab */}
+          <TabsContent value="settings" className="mt-4">
+            <AdminSettings />
+          </TabsContent>
+
           {/* Analytics Tab */}
           <TabsContent value="analytics" className="mt-4">
             <AdminAnalytics />
