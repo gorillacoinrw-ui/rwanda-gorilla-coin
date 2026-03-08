@@ -3,8 +3,10 @@ import AppLayout from "@/components/AppLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { Pickaxe, ArrowLeftRight, Clock, CheckCircle, XCircle, Timer } from "lucide-react";
+import { Pickaxe, ArrowLeftRight, Clock, CheckCircle, XCircle, Timer, Trash2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 
 type MiningSession = {
