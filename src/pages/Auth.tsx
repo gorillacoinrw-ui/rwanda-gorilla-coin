@@ -45,7 +45,7 @@ const Auth = () => {
           password,
           options: {
             emailRedirectTo: window.location.origin,
-            data: { display_name: displayName || "Gorilla Miner", referral_code_used: referralCode },
+            data: { display_name: displayName || "Gorilla Miner", referral_code_used: referralCode, phone },
           },
         });
         if (error) throw error;
