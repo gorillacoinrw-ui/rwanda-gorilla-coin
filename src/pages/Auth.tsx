@@ -219,6 +219,10 @@ const Auth = () => {
               </div>
             )}
             {!isLogin && (
+              <Input
+                placeholder="Referral Code (optional)"
+                value={referralCode}
+                onChange={(e) => setReferralCode(e.target.value)}
                 className="bg-muted border-border text-foreground"
               />
             )}
