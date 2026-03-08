@@ -30,7 +30,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       </div>
 
       {/* Top bar with notification bell */}
-      <div className="fixed top-2 right-4 z-[60]">
+      <div className="fixed top-2 left-4 z-[60]">
         <NotificationBell />
       </div>
 
