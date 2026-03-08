@@ -30,8 +30,8 @@ export function useAppSettings() {
   });
 
   const settings = query.data ?? {};
-  const baseValue = (settings.coin_base_value as number) ?? 35;
-  const growthPer100 = (settings.coin_growth_per_100_users as number) ?? 5;
+  const baseValue = Number(settings.coin_base_value ?? settings.base_coin_value ?? 50);
+  const growthPer100 = Number(settings.coin_growth_per_100_users ?? settings.growth_rate_per_100_users ?? settings.coin_increment_per_100_users ?? 5);
   const taxPoolBalance = Number(settings.tax_pool_balance ?? 0);
   const minUsersForTrading = Number(settings.min_users_for_trading ?? 100);
   const totalUsers = userCountQuery.data ?? 0;
