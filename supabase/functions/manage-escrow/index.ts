@@ -216,8 +216,14 @@ Deno.serve(async (req) => {
 
       if (updateErr) throw updateErr;
 
-      // For sell orders: coins are already locked at creation time, no need to deduct again
-      // For buy orders: no coin locking needed (buyer pays cash)
+      // Notify seller that their trade was accepted
+      await notify(
+        trade.seller_id,
+        "Trade Accepted! ⏱️",
+        `A buyer has accepted your ${trade.trade_type} order for ${trade.amount} GOR. Escrow started (20 min).`,
+        "trade",
+        "/trade"
+      );
 
       return new Response(JSON.stringify({ success: true, expires_at: expiresAt }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
