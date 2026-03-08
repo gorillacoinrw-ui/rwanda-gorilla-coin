@@ -58,6 +58,23 @@ const AdminAdManager = () => {
     setUploading(false);
   };
 
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingVideo(true);
+    const ext = file.name.split(".").pop();
+    const path = `videos/${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from("ad-images").upload(path, file);
+    if (error) {
+      toast({ title: "Upload failed", description: error.message, variant: "destructive" });
+      setUploadingVideo(false);
+      return;
+    }
+    const { data: urlData } = supabase.storage.from("ad-images").getPublicUrl(path);
+    setForm((f) => ({ ...f, video_url: urlData.publicUrl }));
+    setUploadingVideo(false);
+  };
+
   const handleSubmit = () => {
     if (!form.title.trim()) return;
     if (!user) return;
