@@ -90,6 +90,10 @@ const translations: Record<Language, Record<string, string>> = {
     "history.noMining": "Nta gucukura byabayeho",
     "history.noTrades": "Nta bicuruzwa byabayeho",
     "history.inProgress": "Biracyakora...",
+
+    "app.about": "Ibyerekeye Gorilla Coin",
+    "app.hide": "Hisha",
+    "app.description": "Murakaza neza kuri Gorilla Coin — urubuga rwa mbere rw'igihembo cy'ikoranabuhanga mu Rwanda rugengwa n'abaturage. Cukura coins buri munsi, guhana neza n'abandi bakoresha ukoresheje mobile money, kandi wongere umutungo wawe binyuze mu butumire. Rwubatswe n'Abanyarwanda, ku Banyarwanda, Gorilla Coin iguha amahirwe yo guhemba, guhana, no gushora mu buryo bwizewe. Kora ibikoresho kugira ngo wongere inyungu zawe, kurikirana amateka y'ibyo wacukuye, kandi winjire mu muryango w'abahanga mu ikoranabuhanga ugenda ukura. Tangira gucukura uyu munsi kandi ube igice cy'impinduka z'ubukungu bw'ikoranabuhanga mu Rwanda. 🦍",
   },
   en: {
     "nav.home": "Home",
