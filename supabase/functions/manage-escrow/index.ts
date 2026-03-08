@@ -324,20 +324,20 @@ Deno.serve(async (req) => {
 
       // Calculate 25% tax
       const taxAmount = Math.floor(trade.amount * 0.25);
-      const buyerReceives = trade.amount - taxAmount;
+      const receiverGets = trade.amount - taxAmount;
 
-      // Credit buyer with coins (minus tax)
-      const { data: buyerProfile } = await supabase
+      // Credit coin receiver (minus tax)
+      const { data: receiverProfile } = await supabase
         .from("profiles")
         .select("coin_balance")
-        .eq("user_id", trade.buyer_id)
+        .eq("user_id", coinReceiverId)
         .single();
 
-      if (buyerProfile) {
+      if (receiverProfile) {
         await supabase
           .from("profiles")
-          .update({ coin_balance: buyerProfile.coin_balance + buyerReceives })
-          .eq("user_id", trade.buyer_id);
+          .update({ coin_balance: receiverProfile.coin_balance + receiverGets })
+          .eq("user_id", coinReceiverId);
       }
 
       // Add tax to tax pool
@@ -364,27 +364,27 @@ Deno.serve(async (req) => {
         .from("tax_records")
         .insert({ trade_id: trade.id, amount: taxAmount });
 
-      console.log(`Trade ${trade.id} completed. Tax: ${taxAmount} GOR added to pool. Buyer receives: ${buyerReceives} GOR.`);
+      console.log(`Trade ${trade.id} completed. Tax: ${taxAmount} GOR added to pool. Receiver gets: ${receiverGets} GOR.`);
 
       // Notify both parties
       await Promise.all([
         notify(
-          trade.buyer_id!,
+          coinReceiverId!,
           "Trade Completed! 🎉",
-          `You received ${buyerReceives} GOR (${taxAmount} GOR tax). Trade completed successfully.`,
+          `You received ${receiverGets} GOR (${taxAmount} GOR tax). Trade completed successfully.`,
           "trade",
           "/history"
         ),
         notify(
-          trade.seller_id,
+          coinSenderId!,
           "Trade Completed! 🎉",
-          `Your sell order for ${trade.amount} GOR has been completed. Payment confirmed.`,
+          `Your ${trade.trade_type} order for ${trade.amount} GOR has been completed.`,
           "trade",
           "/history"
         ),
       ]);
 
-      return new Response(JSON.stringify({ success: true, tax: taxAmount, received: buyerReceives }), {
+      return new Response(JSON.stringify({ success: true, tax: taxAmount, received: receiverGets }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
