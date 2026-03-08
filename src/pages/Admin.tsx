@@ -6,6 +6,7 @@ import AdminTaskManager from "@/components/AdminTaskManager";
 import AdminAdManager from "@/components/AdminAdManager";
 import AdminAnalytics from "@/components/AdminAnalytics";
 import { useAuth } from "@/contexts/AuthContext";
+import { useOnlinePresence } from "@/hooks/use-online-presence";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Users, ArrowLeftRight, Pickaxe, Landmark, UserCheck, Shield, Gift, Tv, BarChart3 } from "lucide-react";
