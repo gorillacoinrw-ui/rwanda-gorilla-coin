@@ -904,6 +904,10 @@ function MyOrderCard({
 }) {
   const isEscrow = trade.status === "escrow";
   const isSeller = trade.seller_id === userId;
+  // Determine real roles: for sell orders, seller_id = coin seller; for buy orders, seller_id = coin buyer
+  const isCoinSeller = trade.trade_type === "sell"
+    ? trade.seller_id === userId
+    : trade.buyer_id === userId;
   const pm = PAYMENT_METHODS.find((p) => p.id === trade.payment_method);
   const totalRwf = trade.amount * Number(trade.price_rwf);
 
@@ -988,12 +992,12 @@ function MyOrderCard({
           <div className="bg-muted/50 rounded-lg p-3 text-xs flex items-start gap-2">
             <Clock className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
             <span className="text-muted-foreground">
-              {isSeller
+              {isCoinSeller
                 ? "Waiting for buyer's payment. Confirm once received."
                 : "Send payment to the seller within the time limit."}
             </span>
           </div>
-          {!isSeller && trade.payment_details && (
+          {!isCoinSeller && trade.payment_details && (
             <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 text-xs space-y-2">
               <div className="flex items-center justify-between">
                 <span className="font-semibold text-primary flex items-center gap-1">
@@ -1025,7 +1029,7 @@ function MyOrderCard({
 
       {/* Actions */}
       <div className="px-4 pb-4 flex gap-2">
-        {isEscrow && isSeller && (
+        {isEscrow && isCoinSeller && (
           <Button
             size="sm"
             className="flex-1 gap-1 bg-accent hover:bg-accent/90"
@@ -1040,7 +1044,7 @@ function MyOrderCard({
           <Button
             size="sm"
             variant="outline"
-            className={`gap-1 border-destructive/50 text-destructive hover:bg-destructive/10 ${isEscrow && isSeller ? "" : "flex-1"}`}
+            className={`gap-1 border-destructive/50 text-destructive hover:bg-destructive/10 ${isEscrow && isCoinSeller ? "" : "flex-1"}`}
             onClick={onCancel}
             disabled={cancelling}
           >
