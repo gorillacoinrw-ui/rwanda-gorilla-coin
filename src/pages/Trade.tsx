@@ -661,8 +661,11 @@ function AdvertiserRow({
             <p className="text-sm font-medium text-foreground">
               {trade.seller_profile?.display_name ?? "Trader"}
             </p>
-            {isOnline && (
-              <span className="text-[10px] text-accent font-medium">● Online</span>
+            {/* Verified merchant badge for 10+ orders and 80%+ completion */}
+            {(trade.seller_stats?.total_orders ?? 0) >= 10 && (trade.seller_stats?.completion_rate ?? 0) >= 80 && (
+              <span className="w-4 h-4 rounded-full bg-[hsl(48,95%,55%)] flex items-center justify-center" title="Verified Merchant">
+                <CheckCircle className="w-3 h-3 text-background" />
+              </span>
             )}
           </div>
           <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground flex-wrap">
@@ -670,14 +673,24 @@ function AdvertiserRow({
             <span className="text-border">|</span>
             <span>{trade.seller_stats?.completion_rate ?? 0}% completion</span>
           </div>
+          <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground mt-0.5">
+            {isOnline && (
+              <span className="text-accent font-medium">Online</span>
+            )}
+            {isOnline && <span className="text-border">|</span>}
+            <span className="flex items-center gap-0.5">
+              <Clock className="w-2.5 h-2.5" /> 20 min
+            </span>
+          </div>
         </div>
       </div>
 
       {/* Price */}
       <div className="flex justify-between md:block mb-2 md:mb-0">
         <span className="text-xs text-muted-foreground md:hidden">Price</span>
-        <p className="text-sm font-semibold text-foreground">
-          {Number(trade.price_rwf).toLocaleString()} <span className="text-xs text-muted-foreground">RWF</span>
+        <p className="text-base font-bold text-foreground">
+          <span className="text-xs font-normal text-muted-foreground mr-0.5">RWF</span>
+          {Number(trade.price_rwf).toLocaleString()}
         </p>
       </div>
 
@@ -690,7 +703,7 @@ function AdvertiserRow({
             <span className="text-xs text-muted-foreground">GOR</span>
           </p>
           <p className="text-xs text-muted-foreground">
-            Limit {trade.min_amount.toLocaleString()}-{trade.max_amount.toLocaleString()} GOR
+            {(trade.min_amount * Number(trade.price_rwf)).toLocaleString()} RWF - {(trade.max_amount * Number(trade.price_rwf)).toLocaleString()} RWF
           </p>
         </div>
       </div>
