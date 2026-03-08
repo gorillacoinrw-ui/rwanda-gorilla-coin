@@ -144,20 +144,14 @@
     transform: translateY(-5px) rotate(-1deg) scale(0.98);
 }
 
-@keyframes float-coin {
-  0% {
-    transform: translateY(-10%) rotate(0deg);
-    opacity: 0;
+@keyframes twinkle-coin {
+  0%, 100% {
+    opacity: 0.05;
+    transform: scale(0.8);
   }
-  10% {
-    opacity: 0.12;
-  }
-  90% {
-    opacity: 0.12;
-  }
-  100% {
-    transform: translateY(110vh) rotate(720deg);
-    opacity: 0;
+  50% {
+    opacity: 0.25;
+    transform: scale(1.1);
   }
 }
   100% {

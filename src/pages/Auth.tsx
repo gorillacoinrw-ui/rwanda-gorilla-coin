@@ -60,21 +60,26 @@ const Auth = () => {
     <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
       {/* Background floating coins */}
       {[
-        { size: 'w-10 h-10', left: '8%', delay: '0s', duration: '14s' },
-        { size: 'w-8 h-8', left: '25%', delay: '3s', duration: '18s' },
-        { size: 'w-12 h-12', left: '50%', delay: '1s', duration: '16s' },
-        { size: 'w-7 h-7', left: '70%', delay: '5s', duration: '20s' },
-        { size: 'w-9 h-9', left: '90%', delay: '7s', duration: '15s' },
-        { size: 'w-6 h-6', left: '35%', delay: '9s', duration: '22s' },
+        { size: 'w-5 h-5', left: '5%', top: '10%', delay: '0s', duration: '3s' },
+        { size: 'w-4 h-4', left: '20%', top: '25%', delay: '1.5s', duration: '4s' },
+        { size: 'w-6 h-6', left: '45%', top: '8%', delay: '0.5s', duration: '3.5s' },
+        { size: 'w-3 h-3', left: '65%', top: '35%', delay: '2s', duration: '5s' },
+        { size: 'w-5 h-5', left: '85%', top: '15%', delay: '3s', duration: '4.5s' },
+        { size: 'w-4 h-4', left: '15%', top: '60%', delay: '1s', duration: '3.8s' },
+        { size: 'w-3 h-3', left: '75%', top: '70%', delay: '2.5s', duration: '4.2s' },
+        { size: 'w-5 h-5', left: '55%', top: '80%', delay: '0.8s', duration: '3.2s' },
+        { size: 'w-4 h-4', left: '35%', top: '50%', delay: '3.5s', duration: '5s' },
+        { size: 'w-3 h-3', left: '92%', top: '55%', delay: '1.2s', duration: '4s' },
       ].map((coin, i) => (
         <img
           key={i}
           src={gorillaLogo}
           alt=""
-          className={`fixed top-0 ${coin.size} rounded-full pointer-events-none z-0`}
+          className={`fixed ${coin.size} rounded-full pointer-events-none z-0`}
           style={{
             left: coin.left,
-            animation: `float-coin ${coin.duration} linear ${coin.delay} infinite`,
+            top: coin.top,
+            animation: `twinkle-coin ${coin.duration} ease-in-out ${coin.delay} infinite`,
           }}
         />
       ))}
