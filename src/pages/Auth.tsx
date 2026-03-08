@@ -14,6 +14,7 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [referralCode, setReferralCode] = useState("");
+  const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
@@ -44,7 +45,7 @@ const Auth = () => {
           password,
           options: {
             emailRedirectTo: window.location.origin,
-            data: { display_name: displayName || "Gorilla Miner", referral_code_used: referralCode },
+            data: { display_name: displayName || "Gorilla Miner", referral_code_used: referralCode, phone },
           },
         });
         if (error) throw error;
@@ -187,6 +188,15 @@ const Auth = () => {
                 placeholder="Display Name"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
+                className="bg-muted border-border text-foreground"
+              />
+            )}
+            {!isLogin && (
+              <Input
+                type="tel"
+                placeholder="Phone Number (e.g. +250...)"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
                 className="bg-muted border-border text-foreground"
               />
             )}
