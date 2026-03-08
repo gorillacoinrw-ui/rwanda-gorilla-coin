@@ -14,6 +14,80 @@ export type Database = {
   }
   public: {
     Tables: {
+      ad_views: {
+        Row: {
+          ad_id: string
+          coins_earned: number
+          id: string
+          user_id: string
+          viewed_at: string
+        }
+        Insert: {
+          ad_id: string
+          coins_earned?: number
+          id?: string
+          user_id: string
+          viewed_at?: string
+        }
+        Update: {
+          ad_id?: string
+          coins_earned?: number
+          id?: string
+          user_id?: string
+          viewed_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ad_views_ad_id_fkey"
+            columns: ["ad_id"]
+            isOneToOne: false
+            referencedRelation: "ads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ads: {
+        Row: {
+          ad_type: string
+          coin_reward: number
+          created_at: string
+          created_by: string
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          link_url: string | null
+          title: string
+          video_url: string | null
+        }
+        Insert: {
+          ad_type?: string
+          coin_reward?: number
+          created_at?: string
+          created_by: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          link_url?: string | null
+          title: string
+          video_url?: string | null
+        }
+        Update: {
+          ad_type?: string
+          coin_reward?: number
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          link_url?: string | null
+          title?: string
+          video_url?: string | null
+        }
+        Relationships: []
+      }
       app_settings: {
         Row: {
           key: string
