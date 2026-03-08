@@ -3,6 +3,7 @@ import AppLayout from "@/components/AppLayout";
 import { useTrades, Trade } from "@/hooks/use-trades";
 import { useProfile } from "@/hooks/use-profile";
 import { useAppSettings } from "@/hooks/use-app-settings";
+import { useOnlinePresence } from "@/hooks/use-online-presence";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -98,6 +99,7 @@ const TradePage = () => {
   const { user } = useAuth();
   const { profile } = useProfile();
   const { tradingActive, tradingDaysLeft } = useAppSettings();
+  const { isOnline } = useOnlinePresence();
   const {
     openTrades,
     myTrades,
@@ -362,6 +364,7 @@ const TradePage = () => {
                   tab={tab}
                   onAccept={() => acceptTrade.mutate(trade.id)}
                   accepting={acceptTrade.isPending}
+                  isOnline={isOnline(trade.seller_id)}
                 />
               ))}
             </div>
@@ -573,11 +576,13 @@ function AdvertiserRow({
   tab,
   onAccept,
   accepting,
+  isOnline,
 }: {
   trade: Trade;
   tab: "buy" | "sell";
   onAccept: () => void;
   accepting: boolean;
+  isOnline: boolean;
 }) {
   const pm = PAYMENT_METHODS.find((p) => p.id === trade.payment_method);
   const totalRwf = trade.amount * Number(trade.price_rwf);
@@ -586,13 +591,27 @@ function AdvertiserRow({
     <div className="py-4 px-2 md:px-4 md:grid md:grid-cols-[2fr_1.5fr_1.5fr_1fr_1fr] md:items-center gap-4">
       {/* Advertiser */}
       <div className="flex items-center gap-3 mb-3 md:mb-0">
-        <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">
-          {(trade.seller_profile?.display_name ?? "T")[0].toUpperCase()}
+        <div className="relative">
+          <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">
+            {(trade.seller_profile?.display_name ?? "T")[0].toUpperCase()}
+          </div>
+          {/* Online indicator */}
+          <span
+            className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-background ${
+              isOnline ? "bg-accent animate-pulse" : "bg-muted-foreground/40"
+            }`}
+            title={isOnline ? "Online" : "Offline"}
+          />
         </div>
         <div>
-          <p className="text-sm font-medium text-foreground">
-            {trade.seller_profile?.display_name ?? "Trader"}
-          </p>
+          <div className="flex items-center gap-1.5">
+            <p className="text-sm font-medium text-foreground">
+              {trade.seller_profile?.display_name ?? "Trader"}
+            </p>
+            {isOnline && (
+              <span className="text-[10px] text-accent font-medium">● Online</span>
+            )}
+          </div>
           <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground flex-wrap">
             <span>{trade.seller_stats?.total_orders ?? 0} orders</span>
             <span className="text-border">|</span>
