@@ -130,3 +130,21 @@
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.02); }
 }
+
+@keyframes fall-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-120px) rotate(-15deg) scale(0.7);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(10px) rotate(3deg) scale(1.05);
+  }
+  80% {
+    transform: translateY(-5px) rotate(-1deg) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+}
