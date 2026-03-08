@@ -200,6 +200,64 @@ Deno.serve(async (req) => {
         });
       }
 
+      // If this is a buy order, the accepter is the seller — lock their coins
+      if (trade.trade_type === "buy") {
+        const { data: accepterProfile, error: profileErr } = await supabase
+          .from("profiles")
+          .select("coin_balance")
+          .eq("user_id", user.id)
+          .single();
+
+        if (profileErr || !accepterProfile) {
+          return new Response(JSON.stringify({ error: "Could not fetch your profile" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        // Calculate available balance (total minus locked in other active trades)
+        const { data: activeTrades } = await supabase
+          .from("trades")
+          .select("amount")
+          .eq("seller_id", user.id)
+          .eq("trade_type", "sell")
+          .in("status", ["open", "escrow"]);
+
+        const lockedCoins = (activeTrades || []).reduce((sum: number, t: { amount: number }) => sum + t.amount, 0);
+
+        // Also count coins locked as accepter of other buy orders
+        const { data: acceptedBuyTrades } = await supabase
+          .from("trades")
+          .select("amount")
+          .eq("buyer_id", user.id)
+          .eq("trade_type", "buy")
+          .eq("status", "escrow");
+
+        const lockedAsBuyAccepter = (acceptedBuyTrades || []).reduce((sum: number, t: { amount: number }) => sum + t.amount, 0);
+
+        const availableBalance = accepterProfile.coin_balance - lockedCoins - lockedAsBuyAccepter;
+
+        if (availableBalance < trade.amount) {
+          return new Response(JSON.stringify({ error: `Please enter the available coin. You have ${availableBalance} GOR available.` }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        // Lock coins from accepter's balance
+        const { error: deductErr } = await supabase
+          .from("profiles")
+          .update({ coin_balance: accepterProfile.coin_balance - trade.amount })
+          .eq("user_id", user.id);
+
+        if (deductErr) {
+          return new Response(JSON.stringify({ error: "Failed to lock coins" }), {
+            status: 500,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+      }
+
       const expiresAt = new Date(Date.now() + 20 * 60 * 1000).toISOString();
 
       const updateData: Record<string, unknown> = {
@@ -252,23 +310,34 @@ Deno.serve(async (req) => {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
+      if (trade.trade_type === "buy" && trade.buyer_id !== user.id) {
+        return new Response(JSON.stringify({ error: "Only the coin seller can confirm" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // For buy orders: coins were locked from buyer_id (the accepter who sells coins)
+      // The creator (seller_id) is the one buying and receiving coins
+      const coinSenderId = trade.trade_type === "sell" ? trade.seller_id : trade.buyer_id;
+      const coinReceiverId = trade.trade_type === "sell" ? trade.buyer_id : trade.seller_id;
 
       // Calculate 25% tax
       const taxAmount = Math.floor(trade.amount * 0.25);
-      const buyerReceives = trade.amount - taxAmount;
+      const receiverGets = trade.amount - taxAmount;
 
-      // Credit buyer with coins (minus tax)
-      const { data: buyerProfile } = await supabase
+      // Credit coin receiver (minus tax)
+      const { data: receiverProfile } = await supabase
         .from("profiles")
         .select("coin_balance")
-        .eq("user_id", trade.buyer_id)
+        .eq("user_id", coinReceiverId)
         .single();
 
-      if (buyerProfile) {
+      if (receiverProfile) {
         await supabase
           .from("profiles")
-          .update({ coin_balance: buyerProfile.coin_balance + buyerReceives })
-          .eq("user_id", trade.buyer_id);
+          .update({ coin_balance: receiverProfile.coin_balance + receiverGets })
+          .eq("user_id", coinReceiverId);
       }
 
       // Add tax to tax pool
@@ -295,27 +364,27 @@ Deno.serve(async (req) => {
         .from("tax_records")
         .insert({ trade_id: trade.id, amount: taxAmount });
 
-      console.log(`Trade ${trade.id} completed. Tax: ${taxAmount} GOR added to pool. Buyer receives: ${buyerReceives} GOR.`);
+      console.log(`Trade ${trade.id} completed. Tax: ${taxAmount} GOR added to pool. Receiver gets: ${receiverGets} GOR.`);
 
       // Notify both parties
       await Promise.all([
         notify(
-          trade.buyer_id!,
+          coinReceiverId!,
           "Trade Completed! 🎉",
-          `You received ${buyerReceives} GOR (${taxAmount} GOR tax). Trade completed successfully.`,
+          `You received ${receiverGets} GOR (${taxAmount} GOR tax). Trade completed successfully.`,
           "trade",
           "/history"
         ),
         notify(
-          trade.seller_id,
+          coinSenderId!,
           "Trade Completed! 🎉",
-          `Your sell order for ${trade.amount} GOR has been completed. Payment confirmed.`,
+          `Your ${trade.trade_type} order for ${trade.amount} GOR has been completed.`,
           "trade",
           "/history"
         ),
       ]);
 
-      return new Response(JSON.stringify({ success: true, tax: taxAmount, received: buyerReceives }), {
+      return new Response(JSON.stringify({ success: true, tax: taxAmount, received: receiverGets }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -423,6 +492,24 @@ Deno.serve(async (req) => {
             }
             console.log(`Refunded ${trade.amount} GOR to seller ${trade.seller_id}. New balance: ${newBalance}`);
           }
+        }
+      }
+
+      // Refund coins for buy orders (locked from accepter/buyer_id when they accepted)
+      if (trade.trade_type === "buy" && trade.buyer_id && trade.status === "escrow") {
+        const { data: accepterProfile } = await supabase
+          .from("profiles")
+          .select("coin_balance")
+          .eq("user_id", trade.buyer_id)
+          .single();
+
+        if (accepterProfile) {
+          const newBalance = accepterProfile.coin_balance + trade.amount;
+          await supabase
+            .from("profiles")
+            .update({ coin_balance: newBalance })
+            .eq("user_id", trade.buyer_id);
+          console.log(`Refunded ${trade.amount} GOR to buy-order accepter ${trade.buyer_id}. New balance: ${newBalance}`);
         }
       }
 
@@ -554,6 +641,22 @@ Deno.serve(async (req) => {
                   .update({ coin_balance: sellerProfile.coin_balance + trade.amount })
                   .eq("user_id", trade.seller_id);
               }
+            }
+          }
+
+          // Refund accepter for buy orders (coins locked from buyer_id)
+          if (trade.trade_type === "buy" && trade.buyer_id) {
+            const { data: accepterProfile } = await supabase
+              .from("profiles")
+              .select("coin_balance")
+              .eq("user_id", trade.buyer_id)
+              .single();
+
+            if (accepterProfile) {
+              await supabase
+                .from("profiles")
+                .update({ coin_balance: accepterProfile.coin_balance + trade.amount })
+                .eq("user_id", trade.buyer_id);
             }
           }
 
