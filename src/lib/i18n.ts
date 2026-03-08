@@ -158,6 +158,7 @@ const translations: Record<Language, Record<string, string>> = {
     "tasks.shareTitle": "Share & Earn",
     "nav.tasks": "Tasks",
     "nav.ads": "Ads",
+    "nav.invest": "Invest",
 
     "trade.title": "P2P Marketplace",
     "trade.create": "Create Order",
