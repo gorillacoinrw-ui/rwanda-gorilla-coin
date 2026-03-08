@@ -186,13 +186,16 @@ export function useAdminTasks() {
         .eq("id", completionId);
       if (error) throw error;
 
-      // Send notification to user
-      await supabase.from("notifications").insert({
-        user_id: userId,
-        title: "Task Rejected ❌",
-        message: "Your task submission was rejected. You can try again.",
-        type: "task",
-        action_url: "/tasks",
+      // Send notification + email to user
+      await supabase.functions.invoke("send-notification", {
+        body: {
+          user_id: userId,
+          title: "Task Rejected ❌",
+          message: "Your task submission was rejected. You can try again.",
+          type: "task",
+          action_url: "/tasks",
+          send_email: true,
+        },
       });
     },
     onSuccess: () => {
