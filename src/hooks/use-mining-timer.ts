@@ -103,13 +103,16 @@ export function useMiningTimer() {
             .eq("user_id", user.id);
         }
 
-        // Send mining completion notification
-        await supabase.from("notifications").insert({
-          user_id: user.id,
-          title: "Mining Complete! ⛏️",
-          message: "Your 24-hour mining session is complete! You earned 24 GOR coins.",
-          type: "mining",
-          action_url: "/mine",
+        // Send mining completion notification + email
+        await supabase.functions.invoke("send-notification", {
+          body: {
+            user_id: user.id,
+            title: "Mining Complete! ⛏️",
+            message: "Your 24-hour mining session is complete! You earned 24 GOR coins.",
+            type: "mining",
+            action_url: "/mine",
+            send_email: true,
+          },
         });
 
         queryClient.invalidateQueries({ queryKey: ["profile", user.id] });

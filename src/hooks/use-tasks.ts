@@ -157,13 +157,16 @@ export function useAdminTasks() {
         .eq("user_id", userId);
       if (creditError) throw creditError;
 
-      // Send notification to user
-      await supabase.from("notifications").insert({
-        user_id: userId,
-        title: "Task Approved! 🎉",
-        message: `Your task has been approved! You earned ${reward} GOR coins.`,
-        type: "task",
-        action_url: "/tasks",
+      // Send notification + email to user
+      await supabase.functions.invoke("send-notification", {
+        body: {
+          user_id: userId,
+          title: "Task Approved! 🎉",
+          message: `Your task has been approved! You earned ${reward} GOR coins.`,
+          type: "task",
+          action_url: "/tasks",
+          send_email: true,
+        },
       });
     },
     onSuccess: () => {
@@ -183,13 +186,16 @@ export function useAdminTasks() {
         .eq("id", completionId);
       if (error) throw error;
 
-      // Send notification to user
-      await supabase.from("notifications").insert({
-        user_id: userId,
-        title: "Task Rejected ❌",
-        message: "Your task submission was rejected. You can try again.",
-        type: "task",
-        action_url: "/tasks",
+      // Send notification + email to user
+      await supabase.functions.invoke("send-notification", {
+        body: {
+          user_id: userId,
+          title: "Task Rejected ❌",
+          message: "Your task submission was rejected. You can try again.",
+          type: "task",
+          action_url: "/tasks",
+          send_email: true,
+        },
       });
     },
     onSuccess: () => {
