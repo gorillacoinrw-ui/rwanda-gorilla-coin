@@ -1,6 +1,5 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect } from "react";
 import AppLayout from "@/components/AppLayout";
-import gorillaLogo from "@/assets/gorilla-coin-logo.png";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -138,41 +137,11 @@ const Chat = () => {
     }
   };
 
-  const floatingCoins = useMemo(() => 
-    Array.from({ length: 10 }).map((_, i) => ({
-      id: i,
-      left: `${Math.random() * 80 + 10}%`,
-      size: Math.random() * 60 + 80,
-      duration: Math.random() * 10 + 10,
-      delay: Math.random() * 8,
-      opacity: Math.random() * 0.12 + 0.06,
-    })), []);
-
   return (
     <AppLayout>
-      <div className="max-w-2xl mx-auto flex flex-col h-[calc(100vh-8rem)] relative overflow-hidden">
-        {/* Floating gorilla coins background */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-          {floatingCoins.map((coin) => (
-            <img
-              key={coin.id}
-              src={gorillaLogo}
-              alt=""
-              className="absolute rounded-full"
-              style={{
-                left: coin.left,
-                width: coin.size,
-                height: coin.size,
-                opacity: coin.opacity,
-                
-                bottom: "-30px",
-                animation: `floatUp ${coin.duration}s linear ${coin.delay}s infinite`,
-              }}
-            />
-          ))}
-        </div>
+      <div className="max-w-2xl mx-auto flex flex-col h-[calc(100vh-8rem)]">
         {/* Header */}
-        <div className="flex items-center gap-3 p-4 border-b border-border relative z-10">
+        <div className="flex items-center gap-3 p-4 border-b border-border">
           <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
             <Bot className="w-5 h-5 text-primary" />
           </div>
@@ -183,7 +152,7 @@ const Chat = () => {
         </div>
 
         {/* Messages */}
-        <ScrollArea className="flex-1 p-4 relative z-10" ref={scrollRef}>
+        <ScrollArea className="flex-1 p-4" ref={scrollRef}>
           {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center h-full text-center gap-3 py-12">
               <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
@@ -261,7 +230,7 @@ const Chat = () => {
         </ScrollArea>
 
         {/* Input */}
-        <div className="p-4 border-t border-border relative z-10">
+        <div className="p-4 border-t border-border">
           <div className="flex gap-2 items-end">
             <Textarea
               ref={textareaRef}

@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useMemo } from "react";
 import gorillaLogo from "@/assets/gorilla-coin-logo.png";
 import { Home, Pickaxe, ArrowLeftRight, User, Clock, Gift, Shield, Crown } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -16,6 +16,36 @@ const navItems = [
   { icon: User, labelKey: "nav.profile", path: "/profile" },
 ];
 
+const FLOATING_COINS = Array.from({ length: 10 }).map((_, i) => ({
+  id: i,
+  left: `${Math.random() * 80 + 10}%`,
+  size: Math.random() * 16 + 20,
+  duration: Math.random() * 10 + 12,
+  delay: Math.random() * 10,
+  opacity: Math.random() * 0.08 + 0.03,
+}));
+
+const FloatingCoins = () => (
+  <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+    {FLOATING_COINS.map((coin) => (
+      <img
+        key={coin.id}
+        src={gorillaLogo}
+        alt=""
+        className="absolute rounded-full"
+        style={{
+          left: coin.left,
+          width: coin.size,
+          height: coin.size,
+          opacity: coin.opacity,
+          bottom: "-30px",
+          animation: `floatUp ${coin.duration}s linear ${coin.delay}s infinite`,
+        }}
+      />
+    ))}
+  </div>
+);
+
 interface AppLayoutProps {
   children: ReactNode;
 }
@@ -27,7 +57,9 @@ const AppLayout = ({ children }: AppLayoutProps) => {
   const { data: isAdmin } = useAdminCheck();
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
+      {/* Floating gorilla coins background */}
+      <FloatingCoins />
       <div className="h-1 w-full flex">
         <div className="flex-1 bg-rwanda-blue" />
         <div className="flex-1 bg-rwanda-yellow" />
