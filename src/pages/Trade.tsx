@@ -174,7 +174,7 @@ const TradePage = () => {
       return t.trade_type === "buy" && t.seller_id !== user?.id;
     });
 
-    return orders.filter((t) => {
+    const filtered = orders.filter((t) => {
       if (paymentFilter !== "all" && t.payment_method !== paymentFilter) return false;
       if (amountFilter) {
         const filterAmt = parseFloat(amountFilter);
@@ -182,7 +182,15 @@ const TradePage = () => {
       }
       return true;
     });
-  }, [openTrades, tab, paymentFilter, amountFilter, user?.id]);
+
+    // Sort
+    filtered.sort((a, b) => {
+      if (sortBy === "price_asc") return Number(a.price_rwf) - Number(b.price_rwf);
+      return Number(b.price_rwf) - Number(a.price_rwf);
+    });
+
+    return filtered;
+  }, [openTrades, tab, paymentFilter, amountFilter, sortBy, user?.id]);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
