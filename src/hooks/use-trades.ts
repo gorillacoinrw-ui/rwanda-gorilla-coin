@@ -204,7 +204,7 @@ export function useTrades() {
       const { data, error } = await supabase.functions.invoke("manage-escrow", {
         body: { action: "confirm", trade_id: tradeId },
       });
-      if (error) throw error;
+      if (error) throw new Error(await extractError(error, "Failed to confirm trade"));
       if (data?.error) throw new Error(data.error);
       return data;
     },
