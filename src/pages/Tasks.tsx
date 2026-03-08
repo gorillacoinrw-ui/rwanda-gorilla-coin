@@ -50,7 +50,7 @@ const Tasks = () => {
   const followTasks = tasks.filter((t) => t.task_type !== "share");
   const shareTasks = tasks.filter((t) => t.task_type === "share");
 
-  const handleSubmit = (task: SocialTask) => {
+  const openAndSubmit = (task: SocialTask) => {
     if (task.url) {
       window.open(task.url, "_blank");
     }
@@ -65,7 +65,19 @@ const Tasks = () => {
         window.open("https://www.instagram.com/", "_blank");
       }
     }
+  };
+
+  const handleSubmit = (task: SocialTask) => {
+    openAndSubmit(task);
     submitTask.mutate(task.id);
+  };
+
+  const handleRetry = (task: SocialTask) => {
+    openAndSubmit(task);
+    const completion = completions.find((c) => c.task_id === task.id && c.status === "rejected");
+    if (completion) {
+      retryTask.mutate({ completionId: completion.id, taskId: task.id });
+    }
   };
 
   const renderTaskCard = (task: SocialTask) => {
