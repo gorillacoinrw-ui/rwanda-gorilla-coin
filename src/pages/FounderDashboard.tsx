@@ -130,20 +130,25 @@ const FounderDashboard = () => {
         </div>
 
         {/* Trading status */}
-        <div className={`p-4 rounded-xl border ${tradingActive ? "border-accent/30 bg-accent/5" : "border-destructive/30 bg-destructive/5"}`}>
+        <div className={`p-4 rounded-xl border ${tradingActive ? "border-accent/30 bg-accent/5" : "border-primary/30 bg-primary/5"}`}>
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-foreground">
-                {tradingActive ? "Trading is Active" : "Trading Period Ended"}
+                {tradingActive ? "Trading is Active" : "Trading Not Yet Open"}
               </p>
               <p className="text-xs text-muted-foreground">
-                {format(tradingStart, "dd MMM yyyy")} → {format(tradingEnd, "dd MMM yyyy")}
+                {totalUsers} / {minUsersForTrading} users registered
               </p>
             </div>
-            <Badge variant={tradingActive ? "default" : "destructive"}>
-              {tradingActive ? `${daysLeft} days left` : "Closed"}
+            <Badge variant={tradingActive ? "default" : "secondary"}>
+              {tradingActive ? "Live" : `${usersNeeded} more needed`}
             </Badge>
           </div>
+          {!tradingActive && (
+            <div className="w-full h-2 bg-muted rounded-full overflow-hidden mt-3">
+              <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${Math.min(100, (totalUsers / minUsersForTrading) * 100)}%` }} />
+            </div>
+          )}
         </div>
 
         {/* Metrics Grid */}
