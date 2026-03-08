@@ -147,11 +147,12 @@ export function useInvestments() {
   return {
     investments: investmentsQuery.data ?? [],
     activeInvestments,
-    claimedInvestments,
+    completedInvestments,
     totalInvested,
     totalEarnings,
     isLoading: investmentsQuery.isLoading,
     invest,
     claim,
+  };
   };
 }
