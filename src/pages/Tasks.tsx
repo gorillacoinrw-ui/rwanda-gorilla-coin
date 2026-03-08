@@ -50,30 +50,24 @@ const Tasks = () => {
   const followTasks = tasks.filter((t) => t.task_type !== "share");
   const shareTasks = tasks.filter((t) => t.task_type === "share");
 
-  const openAndSubmit = (task: SocialTask) => {
-    if (task.url) {
-      window.open(task.url, "_blank");
-    }
+  const getTaskUrl = (task: SocialTask): string | null => {
     if (task.task_type === "share") {
       const shareText = "Join Gorilla Coin 🦍💰! Mine free coins and earn rewards! Download now: " + window.location.origin;
-      if (task.platform === "whatsapp") {
-        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, "_blank");
-      } else if (task.platform === "facebook") {
-        window.open(`https://www.facebook.com/dialog/share?app_id=966242223397117&href=${encodeURIComponent(window.location.origin)}&quote=${encodeURIComponent(shareText)}&display=popup`, "_blank");
-      } else if (task.platform === "instagram") {
+      if (task.platform === "whatsapp") return `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
+      if (task.platform === "facebook") return `https://www.facebook.com/dialog/share?app_id=966242223397117&href=${encodeURIComponent(window.location.origin)}&quote=${encodeURIComponent(shareText)}&display=popup`;
+      if (task.platform === "instagram") {
         navigator.clipboard.writeText(shareText);
-        window.open("https://www.instagram.com/", "_blank");
+        return "https://www.instagram.com/";
       }
     }
+    return task.url || null;
   };
 
   const handleSubmit = (task: SocialTask) => {
-    openAndSubmit(task);
     submitTask.mutate(task.id);
   };
 
   const handleRetry = (task: SocialTask) => {
-    openAndSubmit(task);
     const completion = completions.find((c) => c.task_id === task.id && c.status === "rejected");
     if (completion) {
       retryTask.mutate({ completionId: completion.id, taskId: task.id });
