@@ -136,6 +136,48 @@ export type Database = {
         }
         Relationships: []
       }
+      social_tasks: {
+        Row: {
+          coin_reward: number
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          is_active: boolean
+          platform: string
+          requires_approval: boolean
+          task_type: string
+          title: string
+          url: string | null
+        }
+        Insert: {
+          coin_reward?: number
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          platform: string
+          requires_approval?: boolean
+          task_type?: string
+          title: string
+          url?: string | null
+        }
+        Update: {
+          coin_reward?: number
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          platform?: string
+          requires_approval?: boolean
+          task_type?: string
+          title?: string
+          url?: string | null
+        }
+        Relationships: []
+      }
       tax_records: {
         Row: {
           amount: number
@@ -274,6 +316,47 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_task_completions: {
+        Row: {
+          coins_credited: boolean
+          id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          submitted_at: string
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          coins_credited?: boolean
+          id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          submitted_at?: string
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          coins_credited?: boolean
+          id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          submitted_at?: string
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_task_completions_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "social_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

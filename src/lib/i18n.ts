@@ -57,6 +57,15 @@ const translations: Record<Language, Record<string, string>> = {
     "profile.referralCode": "Kode y'ubutumire",
     "profile.memberSince": "Iyandikwa",
 
+    // Tasks
+    "tasks.title": "Ibikoresho & Ihembo",
+    "tasks.subtitle": "Kora ibikoresho uhembwe coins!",
+    "tasks.progress": "Aho ugeze",
+    "tasks.earned": "Wahembwe",
+    "tasks.followTitle": "Kurikira & Kwiyandikisha",
+    "tasks.shareTitle": "Sangira & Uhembwe",
+    "nav.tasks": "Ibikoresho",
+
     // Trade
     "trade.title": "Isoko rya P2P",
     "trade.create": "Kora Itangaza",
@@ -132,6 +141,15 @@ const translations: Record<Language, Record<string, string>> = {
     "profile.referralCode": "Referral Code",
     "profile.memberSince": "Member Since",
 
+    // Tasks
+    "tasks.title": "Tasks & Rewards",
+    "tasks.subtitle": "Complete tasks to earn free coins!",
+    "tasks.progress": "Progress",
+    "tasks.earned": "Earned",
+    "tasks.followTitle": "Follow & Subscribe",
+    "tasks.shareTitle": "Share & Earn",
+    "nav.tasks": "Tasks",
+
     "trade.title": "P2P Marketplace",
     "trade.create": "Create Order",
     "trade.orders": "Order Book",
@@ -204,6 +222,15 @@ const translations: Record<Language, Record<string, string>> = {
     "profile.email": "Email",
     "profile.referralCode": "Code de Parrainage",
     "profile.memberSince": "Membre depuis",
+
+    // Tasks
+    "tasks.title": "Tâches & Récompenses",
+    "tasks.subtitle": "Complétez des tâches pour gagner des coins !",
+    "tasks.progress": "Progrès",
+    "tasks.earned": "Gagné",
+    "tasks.followTitle": "Suivre & S'abonner",
+    "tasks.shareTitle": "Partager & Gagner",
+    "nav.tasks": "Tâches",
 
     "trade.title": "Marché P2P",
     "trade.create": "Créer un Ordre",

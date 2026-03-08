@@ -11,6 +11,7 @@ import Trade from "./pages/Trade";
 import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 import History from "./pages/History";
+import Tasks from "./pages/Tasks";
 import Admin from "./pages/Admin";
 import FounderDashboard from "./pages/FounderDashboard";
 import NotFound from "./pages/NotFound";
@@ -38,6 +39,7 @@ const App = () => (
               <Route path="/mine" element={<ProtectedRoute><Mine /></ProtectedRoute>} />
               <Route path="/trade" element={<ProtectedRoute><Trade /></ProtectedRoute>} />
               <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+              <Route path="/tasks" element={<ProtectedRoute><Tasks /></ProtectedRoute>} />
               <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
               <Route path="/founder" element={<ProtectedRoute><FounderDashboard /></ProtectedRoute>} />
