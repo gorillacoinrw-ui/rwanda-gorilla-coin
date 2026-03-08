@@ -77,23 +77,26 @@ export function useInvestments() {
 
       let totalReturn: number;
       let earnedInterest: number;
+      let taxAmount: number;
 
       if (earlyStop) {
-        // Calculate proportional profit based on elapsed time
         const start = new Date(investment.started_at).getTime();
         const end = new Date(investment.matures_at).getTime();
         const now = Date.now();
         const elapsed = Math.min(now - start, end - start);
         const ratio = elapsed / (end - start);
         earnedInterest = Math.floor(investment.coins_earned * ratio);
-        totalReturn = investment.amount + earnedInterest;
       } else {
         if (new Date(investment.matures_at) > new Date()) throw new Error("Not matured yet");
         earnedInterest = investment.coins_earned;
-        totalReturn = investment.amount + earnedInterest;
       }
 
-      // Credit coins back
+      // 2% tax on total return (capital + interest)
+      const gross = investment.amount + earnedInterest;
+      taxAmount = Math.max(1, Math.floor(gross * 0.02));
+      totalReturn = gross - taxAmount;
+
+      // Credit coins back (minus tax)
       const { data: profile, error: profileErr } = await supabase
         .from("profiles")
         .select("coin_balance")
