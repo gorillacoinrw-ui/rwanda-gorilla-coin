@@ -52,7 +52,7 @@ const Mine = () => {
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-primary">•</span>
-                Coins start at 35 RWF, +5 per 100 users
+                Coins start at 50 RWF, +5 per 100 users
               </li>
             </ul>
           </div>
