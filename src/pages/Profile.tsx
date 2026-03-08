@@ -1,7 +1,8 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTheme } from "next-themes";
 import AppLayout from "@/components/AppLayout";
-import { User, Settings, Globe, Shield, LogOut, Camera, Loader2, Mail, Phone, Check, ShieldCheck } from "lucide-react";
+import { User, Settings, Globe, Shield, LogOut, Camera, Loader2, Mail, Phone, Check, ShieldCheck, Sun, Moon } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/use-profile";
 import { useLanguage } from "@/contexts/LanguageContext";
