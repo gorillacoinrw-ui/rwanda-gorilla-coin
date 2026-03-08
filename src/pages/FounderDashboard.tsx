@@ -6,9 +6,11 @@ import { useAdminCheck, useAdminData } from "@/hooks/use-admin";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAppSettings } from "@/hooks/use-app-settings";
 import { useTrades } from "@/hooks/use-trades";
+import { useOnlinePresence } from "@/hooks/use-online-presence";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
   Dialog,
   DialogContent,
@@ -26,6 +28,7 @@ import {
   Calendar,
   Shield,
   Phone,
+  ShoppingCart,
 } from "lucide-react";
 import { format, differenceInDays } from "date-fns";
 
