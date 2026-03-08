@@ -260,7 +260,7 @@ const Chat = () => {
         </ScrollArea>
 
         {/* Input */}
-        <div className="p-4 border-t border-border">
+        <div className="p-4 border-t border-border relative z-10">
           <div className="flex gap-2 items-end">
             <Textarea
               ref={textareaRef}
