@@ -42,8 +42,8 @@ const FounderDashboard = () => {
   const { user, loading: authLoading } = useAuth();
   const { data: isAdmin, isLoading: adminLoading } = useAdminCheck();
   const { users, trades, taxRecords, stats } = useAdminData();
-  const { settings } = useAppSettings();
   const { settings, tradingActive, totalUsers, minUsersForTrading, usersNeeded } = useAppSettings();
+  const { isOnline } = useOnlinePresence();
   const [sellOpen, setSellOpen] = useState(false);
   const [sellAmount, setSellAmount] = useState("");
   const [sellPrice, setSellPrice] = useState("");
