@@ -77,23 +77,26 @@ export function useInvestments() {
 
       let totalReturn: number;
       let earnedInterest: number;
+      let taxAmount: number;
 
       if (earlyStop) {
-        // Calculate proportional profit based on elapsed time
         const start = new Date(investment.started_at).getTime();
         const end = new Date(investment.matures_at).getTime();
         const now = Date.now();
         const elapsed = Math.min(now - start, end - start);
         const ratio = elapsed / (end - start);
         earnedInterest = Math.floor(investment.coins_earned * ratio);
-        totalReturn = investment.amount + earnedInterest;
       } else {
         if (new Date(investment.matures_at) > new Date()) throw new Error("Not matured yet");
         earnedInterest = investment.coins_earned;
-        totalReturn = investment.amount + earnedInterest;
       }
 
-      // Credit coins back
+      // 2% tax on total return (capital + interest)
+      const gross = investment.amount + earnedInterest;
+      taxAmount = Math.max(1, Math.floor(gross * 0.02));
+      totalReturn = gross - taxAmount;
+
+      // Credit coins back (minus tax)
       const { data: profile, error: profileErr } = await supabase
         .from("profiles")
         .select("coin_balance")
@@ -117,22 +120,34 @@ export function useInvestments() {
         .eq("id", investmentId);
       if (error) throw error;
 
+      // Add tax to tax_pool_balance in app_settings
+      const { data: poolSetting } = await supabase
+        .from("app_settings")
+        .select("value")
+        .eq("key", "tax_pool_balance")
+        .single();
+      const currentPool = Number(poolSetting?.value ?? 0);
+      await supabase
+        .from("app_settings")
+        .upsert({ key: "tax_pool_balance", value: currentPool + taxAmount, updated_at: new Date().toISOString() });
+
       await supabase.functions.invoke("send-notification", {
         body: {
           user_id: user!.id,
           title: earlyStop ? "Investment Stopped ⏹️" : "Investment Matured! 🎉",
           message: earlyStop
-            ? `You stopped your investment early. ${investment.amount} GOR capital + ${earnedInterest} GOR profit returned.`
-            : `Your investment of ${investment.amount} GOR has matured! You earned ${earnedInterest} GOR interest.`,
+            ? `Investment stopped. ${totalReturn} GOR returned (2% tax: ${taxAmount} GOR deducted).`
+            : `Investment matured! ${totalReturn} GOR returned (2% tax: ${taxAmount} GOR deducted). You earned ${earnedInterest} GOR interest.`,
           type: "investment",
           send_email: true,
         },
       });
     },
     onSuccess: () => {
-      toast.success("Coins returned to your balance!");
+      toast.success("Coins returned to your balance (2% tax applied)!");
       queryClient.invalidateQueries({ queryKey: ["investments"] });
       queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: ["app_settings"] });
     },
     onError: (err: Error) => {
       toast.error(err.message || "Failed to process");

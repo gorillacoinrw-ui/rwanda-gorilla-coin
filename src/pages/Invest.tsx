@@ -121,13 +121,17 @@ const Invest = () => {
                   <span className="text-accent font-medium">+{estimatedEarnings} GOR</span>
                 </div>
                 <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Withdrawal Tax (2%)</span>
+                  <span className="text-destructive font-medium">-{Math.max(1, Math.floor((numAmount + estimatedEarnings) * 0.02))} GOR</span>
+                </div>
+                <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Duration</span>
                   <span className="text-foreground font-medium">7 days</span>
                 </div>
                 <hr className="border-border" />
                 <div className="flex justify-between text-sm font-bold">
-                  <span className="text-foreground">Total Return</span>
-                  <span className="text-primary">{numAmount + estimatedEarnings} GOR</span>
+                  <span className="text-foreground">Net Return</span>
+                  <span className="text-primary">{numAmount + estimatedEarnings - Math.max(1, Math.floor((numAmount + estimatedEarnings) * 0.02))} GOR</span>
                 </div>
               </div>
             )}

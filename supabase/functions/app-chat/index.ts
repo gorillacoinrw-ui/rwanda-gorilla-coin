@@ -64,10 +64,12 @@ Gorilla Coin is Rwanda's first community-driven digital reward platform where us
 - Investment period: 7 days
 - Coins are locked during the investment period
 - Users CAN stop their investment early at any time
-- If stopped early, they get their full capital back PLUS proportional profit based on how much time has passed
+- If stopped early, they get their capital back PLUS proportional profit based on elapsed time
 - If they wait the full 7 days, they get the full 12% return
-- Example: Invest 100 GOR → earn 12 GOR interest after 7 days (total 112 GOR returned)
-- Example early stop: Invest 100 GOR, stop after 3.5 days → get 100 GOR capital + 6 GOR profit (half of 12%)
+- A 2% withdrawal tax is deducted from the total return (capital + interest) when claiming or stopping
+- This 2% tax goes to the platform's tax pool (visible on the Founder Dashboard)
+- Example: Invest 100 GOR → earn 12 GOR interest after 7 days → 2% tax on 112 = 2 GOR → you receive 110 GOR
+- Example early stop: Invest 100 GOR, stop after 3.5 days → 100 + 6 = 106 GOR gross → 2% tax = 2 GOR → you receive 104 GOR
 - Users can have multiple active investments at the same time
 - Investment page is accessible from the "Invest" tab in the navigation
 

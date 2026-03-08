@@ -41,7 +41,7 @@ const PAYMENT_METHODS = [
 const FounderDashboard = () => {
   const { user, loading: authLoading } = useAuth();
   const { data: isAdmin, isLoading: adminLoading } = useAdminCheck();
-  const { users, trades, taxRecords, stats } = useAdminData();
+  const { users, trades, taxRecords, investments, stats } = useAdminData();
   const { settings, tradingActive, totalUsers, minUsersForTrading, usersNeeded } = useAppSettings();
   const { isOnline } = useOnlinePresence();
   const [sellOpen, setSellOpen] = useState(false);
@@ -104,12 +104,22 @@ const FounderDashboard = () => {
     );
   };
 
+  const completedInvestments = investments.filter(i => i.status === "claimed" || i.status === "stopped");
+  const investmentTaxEstimate = completedInvestments.reduce((s, i) => {
+    const gross = i.amount + i.coins_earned;
+    return s + Math.max(1, Math.floor(gross * 0.02));
+  }, 0);
+  const activeInvestmentCount = investments.filter(i => i.status === "active").length;
+  const totalLockedInvestments = investments.filter(i => i.status === "active").reduce((s, i) => s + i.amount, 0);
+
   const metricCards = [
     { label: "Total Users", value: stats.totalUsers, icon: Users, color: "text-primary" },
     { label: "Coin Circulation", value: `${totalCoinCirculation.toLocaleString()} GOR`, icon: Coins, color: "text-accent" },
     { label: "Total Revenue", value: `${totalRevenue.toLocaleString()} RWF`, icon: TrendingUp, color: "text-accent" },
     { label: "Tax Pool", value: `${taxPool.toLocaleString()} GOR`, icon: Landmark, color: "text-primary" },
     { label: "Total Tax Collected", value: `${totalTaxCollected.toLocaleString()} GOR`, icon: DollarSign, color: "text-accent" },
+    { label: "Invest Tax Earned", value: `${investmentTaxEstimate.toLocaleString()} GOR`, icon: TrendingUp, color: "text-primary" },
+    { label: "Active Investments", value: `${activeInvestmentCount} (${totalLockedInvestments} GOR)`, icon: Coins, color: "text-accent" },
     { label: "Tax Cashed Out", value: `${totalCashedOut.toLocaleString()} RWF`, icon: ArrowLeftRight, color: "text-primary" },
     { label: "Completed Trades", value: completedTrades.length, icon: ArrowLeftRight, color: "text-accent" },
     { label: "Trading Status", value: tradingActive ? "Active" : `${usersNeeded} users needed`, icon: Calendar, color: tradingActive ? "text-primary" : "text-destructive" },
