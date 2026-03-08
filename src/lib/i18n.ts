@@ -57,6 +57,15 @@ const translations: Record<Language, Record<string, string>> = {
     "profile.referralCode": "Kode y'ubutumire",
     "profile.memberSince": "Iyandikwa",
 
+    // Tasks
+    "tasks.title": "Ibikoresho & Ihembo",
+    "tasks.subtitle": "Kora ibikoresho uhembwe coins!",
+    "tasks.progress": "Aho ugeze",
+    "tasks.earned": "Wahembwe",
+    "tasks.followTitle": "Kurikira & Kwiyandikisha",
+    "tasks.shareTitle": "Sangira & Uhembwe",
+    "nav.tasks": "Ibikoresho",
+
     // Trade
     "trade.title": "Isoko rya P2P",
     "trade.create": "Kora Itangaza",
