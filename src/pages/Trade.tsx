@@ -126,6 +126,7 @@ const TradePage = () => {
   const [minAmount, setMinAmount] = useState("");
   const [maxAmount, setMaxAmount] = useState("");
   const [paymentDetails, setPaymentDetails] = useState("");
+  const [accountName, setAccountName] = useState("");
 
   const handleCreate = () => {
     const amt = parseInt(amount);
