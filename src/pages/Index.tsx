@@ -6,6 +6,7 @@ import StatsGrid from "@/components/StatsGrid";
 import ReferralCard from "@/components/ReferralCard";
 import { useMiningTimer } from "@/hooks/use-mining-timer";
 import { useProfile } from "@/hooks/use-profile";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useAppSettings } from "@/hooks/use-app-settings";
 import { useTrades } from "@/hooks/use-trades";
 import { useAuth } from "@/contexts/AuthContext";
