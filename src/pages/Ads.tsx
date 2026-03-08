@@ -51,7 +51,7 @@ const AdCard = ({
         </div>
 
         {viewed ? (
-          <Button variant="outline" className="w-full gap-2 text-green-500 border-green-500/30" disabled>
+          <Button variant="outline" className="w-full gap-2 text-accent border-accent/30" disabled>
             <CheckCircle className="w-4 h-4" />
             Watched — Coins earned
           </Button>
