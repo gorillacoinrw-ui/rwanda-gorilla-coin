@@ -26,7 +26,7 @@ export function useMiningTimer() {
         .is("completed_at", null)
         .order("started_at", { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
       if (data) {
         setMiningStartTime(new Date(data.started_at).getTime());
