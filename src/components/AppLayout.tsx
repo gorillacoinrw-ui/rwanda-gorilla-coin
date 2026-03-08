@@ -38,11 +38,12 @@ const AppLayout = ({ children }: AppLayoutProps) => {
         <NotificationBell />
         <button
           onClick={() => navigate("/chat")}
-          className={`relative w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent border-2 border-primary/50 flex items-center justify-center shadow-lg animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite] hover:scale-110 transition-transform ${
+          className={`relative w-11 h-11 rounded-full border-2 border-primary/50 flex items-center justify-center shadow-lg animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite] hover:scale-110 transition-transform overflow-hidden ${
             location.pathname === "/chat" ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : ""
           }`}
         >
-          <span className="text-xs font-display font-bold text-primary-foreground tracking-tight">AI</span>
+          <img src={gorillaLogo} alt="AI" className="w-full h-full object-cover rounded-full" />
+          <span className="absolute bottom-0 left-0 right-0 bg-black/60 text-[8px] font-display font-bold text-primary text-center leading-tight py-px">AI</span>
           <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-rwanda-green border border-background animate-bounce" />
         </button>
       </div>
