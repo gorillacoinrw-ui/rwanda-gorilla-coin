@@ -117,7 +117,19 @@ const History = () => {
   return (
     <AppLayout>
       <div className="max-w-2xl mx-auto p-4 space-y-4">
-        <h1 className="text-xl font-display font-bold text-foreground">{t("history.title")}</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl font-display font-bold text-foreground">{t("history.title")}</h1>
+          {activeTab === "mining" && miningSessions.length > 0 && (
+            <Button variant="ghost" size="sm" className="gap-1 text-destructive hover:text-destructive" onClick={clearMiningHistory}>
+              <Trash2 className="w-3.5 h-3.5" /> Clear
+            </Button>
+          )}
+          {activeTab === "trades" && trades.length > 0 && (
+            <Button variant="ghost" size="sm" className="gap-1 text-destructive hover:text-destructive" onClick={clearTradeHistory}>
+              <Trash2 className="w-3.5 h-3.5" /> Clear
+            </Button>
+          )}
+        </div>
 
         <Tabs defaultValue="mining" className="w-full" onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-2">
