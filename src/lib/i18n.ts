@@ -262,6 +262,10 @@ const translations: Record<Language, Record<string, string>> = {
     "history.noMining": "Aucune session de minage",
     "history.noTrades": "Aucun échange",
     "history.inProgress": "En cours...",
+
+    "app.about": "À propos de Gorilla Coin",
+    "app.hide": "Masquer",
+    "app.description": "Bienvenue sur Gorilla Coin — la première plateforme communautaire de récompenses numériques au Rwanda. Minez des coins chaque jour, échangez en toute sécurité avec d'autres membres via mobile money, et augmentez votre solde grâce aux parrainages. Conçu par et pour les Rwandais, Gorilla Coin vous permet de gagner, échanger et investir dans un écosystème transparent. Complétez des tâches sociales, suivez votre historique de minage et rejoignez une communauté grandissante de pionniers numériques. Commencez à miner aujourd'hui et faites partie de la révolution numérique du Rwanda. 🦍",
   },
 };
 
