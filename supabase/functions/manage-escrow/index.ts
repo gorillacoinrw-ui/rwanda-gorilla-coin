@@ -63,19 +63,22 @@ Deno.serve(async (req) => {
 
   const { action, trade_id, trade_data } = await req.json();
 
-  // Helper: check if trading is still active (3-month window)
+  // Helper: check if trading is active (requires minimum user count)
   async function isTradingActive(): Promise<{ active: boolean; message?: string }> {
     const { data } = await supabase
       .from("app_settings")
       .select("value")
-      .eq("key", "trading_start_date")
+      .eq("key", "min_users_for_trading")
       .single();
-    if (!data) return { active: true };
-    const startDate = new Date(String(data.value));
-    const threeMonthsLater = new Date(startDate);
-    threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
-    if (new Date() > threeMonthsLater) {
-      return { active: false, message: `Trading ended on ${threeMonthsLater.toLocaleDateString()}. The 3-month trading window has closed.` };
+    const minUsers = Number(data?.value ?? 100);
+
+    const { count } = await supabase
+      .from("profiles")
+      .select("*", { count: "exact", head: true });
+    const totalUsers = count ?? 0;
+
+    if (totalUsers < minUsers) {
+      return { active: false, message: `Trading opens when ${minUsers} users join the platform. Currently ${totalUsers} users registered.` };
     }
     return { active: true };
   }
