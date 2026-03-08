@@ -139,13 +139,13 @@ const Chat = () => {
   };
 
   const floatingCoins = useMemo(() => 
-    Array.from({ length: 12 }).map((_, i) => ({
+    Array.from({ length: 10 }).map((_, i) => ({
       id: i,
-      left: `${Math.random() * 90 + 5}%`,
-      size: Math.random() * 20 + 14,
-      duration: Math.random() * 8 + 8,
-      delay: Math.random() * 6,
-      opacity: Math.random() * 0.12 + 0.04,
+      left: `${Math.random() * 80 + 10}%`,
+      size: Math.random() * 60 + 80,
+      duration: Math.random() * 10 + 10,
+      delay: Math.random() * 8,
+      opacity: Math.random() * 0.12 + 0.06,
     })), []);
 
   return (
