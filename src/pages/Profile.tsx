@@ -285,6 +285,27 @@ const Profile = () => {
           </DialogHeader>
           <div className="space-y-4 pt-2">
             <div className="flex items-center justify-between py-2">
+              <span className="text-sm text-foreground">Theme</span>
+              <div className="flex gap-1 bg-muted rounded-lg p-1">
+                <button
+                  onClick={() => setTheme("light")}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs transition-colors ${
+                    theme === "light" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <Sun className="w-3.5 h-3.5" /> Light
+                </button>
+                <button
+                  onClick={() => setTheme("dark")}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs transition-colors ${
+                    theme === "dark" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <Moon className="w-3.5 h-3.5" /> Dark
+                </button>
+              </div>
+            </div>
+            <div className="flex items-center justify-between py-2">
               <span className="text-sm text-foreground">{t("profile.email")}</span>
               <span className="text-sm text-muted-foreground truncate ml-4">{user?.email}</span>
             </div>
