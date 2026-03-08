@@ -76,11 +76,32 @@ export function useTasks() {
     },
   });
 
+  const retryTask = useMutation({
+    mutationFn: async ({ completionId }: { completionId: string; taskId: string }) => {
+      if (!user) throw new Error("Not authenticated");
+      const { error } = await supabase
+        .from("user_task_completions")
+        .update({ status: "pending", reviewed_at: null, reviewed_by: null, coins_credited: false, submitted_at: new Date().toISOString() })
+        .eq("id", completionId)
+        .eq("user_id", user.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["task_completions", user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["admin_task_completions"] });
+      toast({ title: "Task resubmitted!", description: "Waiting for admin approval." });
+    },
+    onError: (err: Error) => {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    },
+  });
+
   return {
     tasks: tasksQuery.data ?? [],
     completions: completionsQuery.data ?? [],
     isLoading: tasksQuery.isLoading,
     submitTask,
+    retryTask,
   };
 }
 

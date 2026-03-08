@@ -44,13 +44,13 @@ const getCompletionStatus = (task: SocialTask, completions: TaskCompletion[]) =>
 };
 
 const Tasks = () => {
-  const { tasks, completions, isLoading, submitTask } = useTasks();
+  const { tasks, completions, isLoading, submitTask, retryTask } = useTasks();
   const { t } = useLanguage();
 
   const followTasks = tasks.filter((t) => t.task_type !== "share");
   const shareTasks = tasks.filter((t) => t.task_type === "share");
 
-  const handleSubmit = (task: SocialTask) => {
+  const openAndSubmit = (task: SocialTask) => {
     if (task.url) {
       window.open(task.url, "_blank");
     }
@@ -65,7 +65,19 @@ const Tasks = () => {
         window.open("https://www.instagram.com/", "_blank");
       }
     }
+  };
+
+  const handleSubmit = (task: SocialTask) => {
+    openAndSubmit(task);
     submitTask.mutate(task.id);
+  };
+
+  const handleRetry = (task: SocialTask) => {
+    openAndSubmit(task);
+    const completion = completions.find((c) => c.task_id === task.id && c.status === "rejected");
+    if (completion) {
+      retryTask.mutate({ completionId: completion.id, taskId: task.id });
+    }
   };
 
   const renderTaskCard = (task: SocialTask) => {
@@ -104,12 +116,15 @@ const Tasks = () => {
                   <span>Pending admin approval...</span>
                 </div>
               ) : isRejected ? (
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1.5 text-xs text-red-500">
-                    <XCircle className="w-3.5 h-3.5" />
-                    <span>Rejected</span>
-                  </div>
-                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-8 text-xs border-yellow-500/30 text-yellow-600 hover:bg-yellow-500/10"
+                  onClick={() => handleRetry(task)}
+                  disabled={submitTask.isPending}
+                >
+                  <ExternalLink className="w-3.5 h-3.5 mr-1" />Try Again
+                </Button>
               ) : (
                 <Button
                   size="sm"
