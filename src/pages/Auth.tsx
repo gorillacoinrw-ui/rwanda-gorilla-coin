@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import gorillaLogo from "@/assets/gorilla-coin-logo.png";
+import Footer from "@/components/Footer";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -171,6 +172,7 @@ const Auth = () => {
           </p>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };
