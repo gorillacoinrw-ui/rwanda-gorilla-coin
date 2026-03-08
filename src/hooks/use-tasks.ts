@@ -101,6 +101,7 @@ export function useTasks() {
     completions: completionsQuery.data ?? [],
     isLoading: tasksQuery.isLoading,
     submitTask,
+    retryTask,
   };
 }
 
