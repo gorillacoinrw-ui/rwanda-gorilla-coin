@@ -2,11 +2,11 @@ import { Navigate } from "react-router-dom";
 import AppLayout from "@/components/AppLayout";
 import AccessKeyGate from "@/components/AccessKeyGate";
 import { useAdminCheck, useAdminData } from "@/hooks/use-admin";
-import { useAdminTasks } from "@/hooks/use-tasks";
+import AdminTaskManager from "@/components/AdminTaskManager";
 import { useAuth } from "@/contexts/AuthContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Users, ArrowLeftRight, Pickaxe, Landmark, UserCheck, Shield, Gift, CheckCircle2, XCircle } from "lucide-react";
+import { Users, ArrowLeftRight, Pickaxe, Landmark, UserCheck, Shield, Gift } from "lucide-react";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -30,7 +30,7 @@ const Admin = () => {
   const { user, loading: authLoading } = useAuth();
   const { data: isAdmin, isLoading: adminLoading } = useAdminCheck();
   const { users, trades, taxRecords, mining, referrals, stats, isLoading } = useAdminData();
-  const { pendingCompletions, allTasks, approveTask, rejectTask, isLoading: tasksLoading } = useAdminTasks();
+  
 
   if (authLoading || adminLoading) {
     return (
@@ -78,7 +78,7 @@ const Admin = () => {
         <Tabs defaultValue="users" className="w-full">
           <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="users" className="text-xs gap-1"><Users className="w-3.5 h-3.5" />Users</TabsTrigger>
-            <TabsTrigger value="tasks" className="text-xs gap-1"><Gift className="w-3.5 h-3.5" />Tasks ({pendingCompletions.length})</TabsTrigger>
+            <TabsTrigger value="tasks" className="text-xs gap-1"><Gift className="w-3.5 h-3.5" />Tasks</TabsTrigger>
             <TabsTrigger value="trades" className="text-xs gap-1"><ArrowLeftRight className="w-3.5 h-3.5" />Trades</TabsTrigger>
             <TabsTrigger value="mining" className="text-xs gap-1"><Pickaxe className="w-3.5 h-3.5" />Mining</TabsTrigger>
             <TabsTrigger value="tax" className="text-xs gap-1"><Landmark className="w-3.5 h-3.5" />Tax</TabsTrigger>
@@ -119,58 +119,7 @@ const Admin = () => {
 
           {/* Tasks Tab */}
           <TabsContent value="tasks" className="mt-4">
-            {tasksLoading ? <p className="text-center text-muted-foreground py-8">Loading...</p> : (
-              <div className="rounded-lg border border-border overflow-hidden">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>User</TableHead>
-                      <TableHead>Task</TableHead>
-                      <TableHead>Reward</TableHead>
-                      <TableHead>Submitted</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {pendingCompletions.length === 0 ? (
-                      <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-6">No pending tasks</TableCell></TableRow>
-                    ) : pendingCompletions.map((c) => {
-                      const task = allTasks.find((t) => t.id === c.task_id);
-                      return (
-                        <TableRow key={c.id}>
-                          <TableCell className="text-xs">{userMap.get(c.user_id) || c.user_id.slice(0, 8)}</TableCell>
-                          <TableCell className="text-xs font-medium">{task?.title ?? "Unknown"}</TableCell>
-                          <TableCell className="font-mono text-xs">+{task?.coin_reward ?? 0} GOR</TableCell>
-                          <TableCell className="text-xs text-muted-foreground">{fmt(c.submitted_at)}</TableCell>
-                          <TableCell>
-                            <div className="flex gap-1">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="h-7 text-xs text-green-500 border-green-500/20 hover:bg-green-500/10"
-                                onClick={() => approveTask.mutate({ completionId: c.id, userId: c.user_id, reward: task?.coin_reward ?? 0 })}
-                                disabled={approveTask.isPending}
-                              >
-                                <CheckCircle2 className="w-3.5 h-3.5 mr-1" />Approve
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="h-7 text-xs text-red-500 border-red-500/20 hover:bg-red-500/10"
-                                onClick={() => rejectTask.mutate(c.id)}
-                                disabled={rejectTask.isPending}
-                              >
-                                <XCircle className="w-3.5 h-3.5 mr-1" />Reject
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </div>
-            )}
+            <AdminTaskManager userMap={userMap} />
           </TabsContent>
 
           {/* Trades Tab */}
