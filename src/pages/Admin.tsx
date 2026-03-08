@@ -159,7 +159,15 @@ const Admin = () => {
                     <TableRow key={tr.id}>
                       <TableCell className="capitalize">{tr.trade_type}</TableCell>
                       <TableCell className="text-xs">{userMap.get(tr.seller_id) || tr.seller_id.slice(0, 8)}</TableCell>
-                      <TableCell className="text-xs">{tr.buyer_id ? (userMap.get(tr.buyer_id) || tr.buyer_id.slice(0, 8)) : "—"}</TableCell>
+                      <TableCell className="text-xs">
+                        {tr.buyer_id ? (
+                          <span className="flex items-center gap-1.5">
+                            <span className={`w-2 h-2 rounded-full shrink-0 ${isOnline(tr.buyer_id) ? "bg-green-500 animate-pulse" : "bg-muted-foreground/40"}`} />
+                            {userMap.get(tr.buyer_id) || tr.buyer_id.slice(0, 8)}
+                            {isOnline(tr.buyer_id) && <span className="text-[10px] text-green-500 font-medium">online</span>}
+                          </span>
+                        ) : "—"}
+                      </TableCell>
                       <TableCell className="text-right font-mono">{tr.amount}</TableCell>
                       <TableCell className="text-right font-mono">{tr.price_rwf} RWF</TableCell>
                       <TableCell className="uppercase text-xs">{tr.payment_method}</TableCell>
