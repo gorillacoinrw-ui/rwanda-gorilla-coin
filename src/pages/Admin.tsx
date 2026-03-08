@@ -6,7 +6,7 @@ import AdminTaskManager from "@/components/AdminTaskManager";
 import { useAuth } from "@/contexts/AuthContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Users, ArrowLeftRight, Pickaxe, Landmark, UserCheck, Shield, Gift, CheckCircle2, XCircle } from "lucide-react";
+import { Users, ArrowLeftRight, Pickaxe, Landmark, UserCheck, Shield, Gift } from "lucide-react";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
