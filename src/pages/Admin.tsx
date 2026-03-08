@@ -138,6 +138,64 @@ const Admin = () => {
             <AdminAdManager />
           </TabsContent>
 
+          {/* Investments Tab */}
+          <TabsContent value="investments" className="mt-4">
+            <div className="space-y-3">
+              <div className="grid grid-cols-3 gap-3">
+                <div className="p-3 rounded-lg bg-card border border-border text-center">
+                  <p className="text-xs text-muted-foreground">Active</p>
+                  <p className="text-lg font-bold text-primary">{investments.filter(i => i.status === "active").length}</p>
+                </div>
+                <div className="p-3 rounded-lg bg-card border border-border text-center">
+                  <p className="text-xs text-muted-foreground">Total Locked</p>
+                  <p className="text-lg font-bold text-foreground">{investments.filter(i => i.status === "active").reduce((s, i) => s + i.amount, 0)} GOR</p>
+                </div>
+                <div className="p-3 rounded-lg bg-card border border-border text-center">
+                  <p className="text-xs text-muted-foreground">Interest Paid</p>
+                  <p className="text-lg font-bold text-accent">{investments.filter(i => i.status === "claimed" || i.status === "stopped").reduce((s, i) => s + i.coins_earned, 0)} GOR</p>
+                </div>
+              </div>
+              <div className="rounded-lg border border-border overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>User</TableHead>
+                      <TableHead className="text-right">Amount</TableHead>
+                      <TableHead className="text-right">Interest</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Started</TableHead>
+                      <TableHead>Matures</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {investments.map((inv) => (
+                      <TableRow key={inv.id}>
+                        <TableCell className="text-xs">{userMap.get(inv.user_id) || inv.user_id.slice(0, 8)}</TableCell>
+                        <TableCell className="text-right font-mono">{inv.amount}</TableCell>
+                        <TableCell className="text-right font-mono text-accent">{inv.coins_earned}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className={`text-[10px] ${
+                            inv.status === "active" ? "bg-blue-500/10 text-blue-500 border-blue-500/20" :
+                            inv.status === "claimed" ? "bg-green-500/10 text-green-500 border-green-500/20" :
+                            inv.status === "stopped" ? "bg-yellow-500/10 text-yellow-500 border-yellow-500/20" :
+                            "bg-muted text-muted-foreground"
+                          }`}>
+                            {inv.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground">{fmt(inv.started_at)}</TableCell>
+                        <TableCell className="text-xs text-muted-foreground">{fmt(inv.matures_at)}</TableCell>
+                      </TableRow>
+                    ))}
+                    {investments.length === 0 && (
+                      <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-6">No investments yet</TableCell></TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          </TabsContent>
+
           {/* Trades Tab */}
           <TabsContent value="trades" className="mt-4">
             <div className="rounded-lg border border-border overflow-hidden">
