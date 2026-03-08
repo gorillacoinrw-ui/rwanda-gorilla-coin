@@ -16,6 +16,7 @@ import Tasks from "./pages/Tasks";
 import Admin from "./pages/Admin";
 import FounderDashboard from "./pages/FounderDashboard";
 import Ads from "./pages/Ads";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,6 +38,7 @@ const App = () => (
           <LanguageProvider>
             <Routes>
               <Route path="/auth" element={<Auth />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
               <Route path="/mine" element={<ProtectedRoute><Mine /></ProtectedRoute>} />
               <Route path="/trade" element={<ProtectedRoute><Trade /></ProtectedRoute>} />

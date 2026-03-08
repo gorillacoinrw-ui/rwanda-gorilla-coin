@@ -15,6 +15,8 @@ const Auth = () => {
   const [displayName, setDisplayName] = useState("");
   const [referralCode, setReferralCode] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -57,6 +59,67 @@ const Auth = () => {
       setLoading(false);
     }
   };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      toast({ title: "Check your email", description: "We sent you a password reset link." });
+      setShowForgotPassword(false);
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (showForgotPassword) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <div className="h-1 w-full flex">
+          <div className="flex-1 bg-rwanda-blue" />
+          <div className="flex-1 bg-rwanda-yellow" />
+          <div className="flex-1 bg-rwanda-green" />
+        </div>
+        <div className="flex-1 flex items-center justify-center px-4">
+          <div className="w-full max-w-sm space-y-6">
+            <div className="text-center space-y-3">
+              <img src={gorillaLogo} alt="Gorilla Coin" className="w-20 h-20 mx-auto rounded-full" />
+              <h1 className="text-xl font-display font-bold text-gradient-gold tracking-wider">Reset Password</h1>
+              <p className="text-xs text-muted-foreground">Enter your email to receive a reset link</p>
+            </div>
+            <form onSubmit={handleForgotPassword} className="space-y-4">
+              <Input
+                type="email"
+                placeholder="Email"
+                value={resetEmail}
+                onChange={(e) => setResetEmail(e.target.value)}
+                required
+                className="bg-muted border-border text-foreground"
+              />
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-gradient-gold text-primary-foreground font-display font-semibold tracking-wider hover:opacity-90 h-12"
+              >
+                {loading ? "Sending..." : "Send Reset Link"}
+              </Button>
+            </form>
+            <p className="text-center text-sm text-muted-foreground">
+              <button onClick={() => setShowForgotPassword(false)} className="text-primary hover:underline font-semibold">
+                Back to Sign In
+              </button>
+            </p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
@@ -144,6 +207,17 @@ const Auth = () => {
               minLength={6}
               className="bg-muted border-border text-foreground"
             />
+            {isLogin && (
+              <div className="text-right -mt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowForgotPassword(true)}
+                  className="text-xs text-primary hover:underline"
+                >
+                  Forgot password?
+                </button>
+              </div>
+            )}
             {!isLogin && (
               <Input
                 placeholder="Referral Code (optional)"
