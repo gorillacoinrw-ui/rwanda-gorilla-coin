@@ -1,3 +1,4 @@
+import { useState } from "react";
 import AppLayout from "@/components/AppLayout";
 import CoinDisplay from "@/components/CoinDisplay";
 import MiningCard from "@/components/MiningCard";
@@ -11,9 +12,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useAdminCheck } from "@/hooks/use-admin";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Shield, Crown } from "lucide-react";
+import { Shield, Crown, ChevronDown, ChevronUp } from "lucide-react";
 
 const Index = () => {
+  const [showDescription, setShowDescription] = useState(false);
   const { isMining, formattedTime, progress, miningComplete, startMining } = useMiningTimer();
   const { profile, referralCount } = useProfile();
   const { baseValue, growthPer100 } = useAppSettings();
@@ -38,9 +40,18 @@ const Index = () => {
             GORILLA COIN
           </h1>
           <p className="text-xs text-muted-foreground mt-1">Rwanda's Digital Reward</p>
-          <p className="text-sm text-muted-foreground mt-3 max-w-md mx-auto leading-relaxed">
-            Welcome to Gorilla Coin — Rwanda's first community-driven digital reward platform. Mine coins daily, trade securely with fellow members using mobile money, and grow your balance through referrals. Built for Rwandans, by Rwandans, Gorilla Coin empowers you to earn, trade, and invest in a transparent ecosystem. Complete social tasks to boost your earnings, track your mining history, and join a growing community of digital pioneers. Start mining today and be part of Rwanda's digital economy revolution. Your journey to financial freedom begins here — one coin at a time. 🦍
-          </p>
+          <button
+            onClick={() => setShowDescription(!showDescription)}
+            className="mt-2 text-xs text-primary flex items-center gap-1 mx-auto hover:underline"
+          >
+            {showDescription ? "Hide" : "About Gorilla Coin"}
+            {showDescription ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+          </button>
+          {showDescription && (
+            <p className="text-sm text-muted-foreground mt-2 max-w-md mx-auto leading-relaxed animate-in fade-in slide-in-from-top-2 duration-300">
+              Welcome to Gorilla Coin — Rwanda's first community-driven digital reward platform. Mine coins daily, trade securely with fellow members using mobile money, and grow your balance through referrals. Built for Rwandans, by Rwandans, Gorilla Coin empowers you to earn, trade, and invest in a transparent ecosystem. Complete social tasks to boost your earnings, track your mining history, and join a growing community of digital pioneers. Start mining today and be part of Rwanda's digital economy revolution. Your journey to financial freedom begins here — one coin at a time. 🦍
+            </p>
+          )}
         </div>
 
         {isAdmin && (
