@@ -99,6 +99,7 @@ const TradePage = () => {
   const { user } = useAuth();
   const { profile } = useProfile();
   const { tradingActive, tradingDaysLeft } = useAppSettings();
+  const { isOnline } = useOnlinePresence();
   const {
     openTrades,
     myTrades,
