@@ -15,6 +15,8 @@ const Auth = () => {
   const [displayName, setDisplayName] = useState("");
   const [referralCode, setReferralCode] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
