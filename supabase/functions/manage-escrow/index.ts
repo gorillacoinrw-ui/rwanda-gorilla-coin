@@ -310,6 +310,17 @@ Deno.serve(async (req) => {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
+      if (trade.trade_type === "buy" && trade.buyer_id !== user.id) {
+        return new Response(JSON.stringify({ error: "Only the coin seller can confirm" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // For buy orders: coins were locked from buyer_id (the accepter who sells coins)
+      // The creator (seller_id) is the one buying and receiving coins
+      const coinSenderId = trade.trade_type === "sell" ? trade.seller_id : trade.buyer_id;
+      const coinReceiverId = trade.trade_type === "sell" ? trade.buyer_id : trade.seller_id;
 
       // Calculate 25% tax
       const taxAmount = Math.floor(trade.amount * 0.25);
