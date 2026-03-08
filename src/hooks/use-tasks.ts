@@ -156,6 +156,15 @@ export function useAdminTasks() {
         .update({ coin_balance: (profile.coin_balance ?? 0) + reward })
         .eq("user_id", userId);
       if (creditError) throw creditError;
+
+      // Send notification to user
+      await supabase.from("notifications").insert({
+        user_id: userId,
+        title: "Task Approved! 🎉",
+        message: `Your task has been approved! You earned ${reward} GOR coins.`,
+        type: "task",
+        action_url: "/tasks",
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin_task_completions"] });
