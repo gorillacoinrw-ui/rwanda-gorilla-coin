@@ -59,7 +59,6 @@ const AppLayout = ({ children }: AppLayoutProps) => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
-      {/* Floating gorilla coins background */}
       <FloatingCoins />
       <div className="h-1 w-full flex relative z-10">
         <div className="flex-1 bg-rwanda-blue" />
@@ -68,42 +67,42 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       </div>
 
       {/* Top bar with notification bell, admin buttons, and AI coin */}
-      <div className="fixed top-2 left-4 z-[60] flex items-center gap-2">
+      <div className="fixed top-2 left-2 sm:left-4 z-[60] flex items-center gap-1.5 sm:gap-2">
         <div className="flex flex-col items-center gap-1">
           <NotificationBell />
           <button
             onClick={() => navigate("/chat")}
-            className={`relative w-9 h-9 rounded-full border-2 border-primary/50 flex items-center justify-center shadow-lg animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite] hover:scale-110 transition-transform overflow-hidden ${
+            className={`relative w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 border-primary/50 flex items-center justify-center shadow-lg animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite] hover:scale-110 transition-transform overflow-hidden ${
               location.pathname === "/chat" ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : ""
             }`}
           >
             <img src={gorillaLogo} alt="AI" className="w-full h-full object-cover rounded-full" />
-            <span className="absolute bottom-0 left-0 right-0 bg-black/60 text-[7px] font-display font-bold text-primary text-center leading-tight py-px">AI</span>
+            <span className="absolute bottom-0 left-0 right-0 bg-black/60 text-[6px] sm:text-[7px] font-display font-bold text-primary text-center leading-tight py-px">AI</span>
             <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-rwanda-green border border-background animate-bounce" />
           </button>
         </div>
 
         {isAdmin && (
-          <div className="flex gap-1 ml-1">
+          <div className="flex gap-1 ml-0.5">
             <button
               onClick={() => navigate("/admin")}
-              className="flex items-center gap-1 px-2 py-1 rounded-md border border-primary/30 text-primary hover:bg-primary/10 transition-colors text-[10px] font-medium"
+              className="flex items-center gap-1 px-1.5 sm:px-2 py-1 rounded-md border border-primary/30 text-primary hover:bg-primary/10 transition-colors text-[9px] sm:text-[10px] font-medium"
             >
               <Shield className="w-3 h-3" />
-              Admin
+              <span className="hidden sm:inline">Admin</span>
             </button>
             <button
               onClick={() => navigate("/founder")}
-              className="flex items-center gap-1 px-2 py-1 rounded-md border border-accent/30 text-accent hover:bg-accent/10 transition-colors text-[10px] font-medium"
+              className="flex items-center gap-1 px-1.5 sm:px-2 py-1 rounded-md border border-accent/30 text-accent hover:bg-accent/10 transition-colors text-[9px] sm:text-[10px] font-medium"
             >
               <Crown className="w-3 h-3" />
-              Founder
+              <span className="hidden sm:inline">Founder</span>
             </button>
           </div>
         )}
       </div>
 
-      <main className="flex-1 overflow-y-auto pb-28 md:pb-12 md:pt-20 relative z-10">
+      <main className="flex-1 overflow-y-auto pb-20 sm:pb-24 md:pb-12 md:pt-20 relative z-10">
         {children}
       </main>
 
@@ -111,20 +110,21 @@ const AppLayout = ({ children }: AppLayoutProps) => {
         <Footer />
       </div>
 
-      <nav className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-lg border-t border-border z-50 md:top-0 md:bottom-auto md:border-t-0 md:border-b">
-        <div className="flex items-center justify-around h-16 max-w-md md:max-w-4xl lg:max-w-6xl mx-auto md:justify-end md:gap-2">
+      {/* Bottom nav (mobile) / Top nav (desktop) */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-lg border-t border-border z-50 md:top-0 md:bottom-auto md:border-t-0 md:border-b safe-area-bottom">
+        <div className="flex items-center justify-around h-14 sm:h-16 max-w-full sm:max-w-md md:max-w-4xl lg:max-w-6xl mx-auto md:justify-end md:gap-1 lg:gap-2 px-1">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
               <button
                 key={item.path}
                 onClick={() => navigate(item.path)}
-                className={`flex flex-col md:flex-row items-center gap-0.5 md:gap-2 px-4 py-2 transition-colors ${
+                className={`flex flex-col md:flex-row items-center gap-0 sm:gap-0.5 md:gap-2 px-1.5 sm:px-3 md:px-4 py-1.5 sm:py-2 transition-colors min-w-0 ${
                   isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                <item.icon className={`w-5 h-5 ${isActive ? "drop-shadow-[0_0_8px_hsl(48,95%,55%)]" : ""}`} />
-                <span className="text-[10px] md:text-sm font-medium tracking-wide">{t(item.labelKey)}</span>
+                <item.icon className={`w-4 h-4 sm:w-5 sm:h-5 shrink-0 ${isActive ? "drop-shadow-[0_0_8px_hsl(48,95%,55%)]" : ""}`} />
+                <span className="text-[8px] sm:text-[10px] md:text-sm font-medium tracking-wide truncate">{t(item.labelKey)}</span>
               </button>
             );
           })}

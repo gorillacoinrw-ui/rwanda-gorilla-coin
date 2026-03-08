@@ -139,29 +139,29 @@ const Chat = () => {
 
   return (
     <AppLayout>
-      <div className="max-w-2xl mx-auto flex flex-col h-[calc(100vh-8rem)]">
+      <div className="max-w-2xl lg:max-w-3xl mx-auto flex flex-col h-[calc(100vh-8rem)] sm:h-[calc(100vh-7rem)]">
         {/* Header */}
-        <div className="flex items-center gap-3 p-4 border-b border-border">
-          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-            <Bot className="w-5 h-5 text-primary" />
+        <div className="flex items-center gap-3 p-3 sm:p-4 border-b border-border">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+            <Bot className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
           </div>
           <div>
-            <h1 className="text-base font-display font-bold text-foreground">Gorilla AI 🦍</h1>
-            <p className="text-xs text-muted-foreground">Ask me anything about Gorilla Coin</p>
+            <h1 className="text-sm sm:text-base font-display font-bold text-foreground">Gorilla AI 🦍</h1>
+            <p className="text-[10px] sm:text-xs text-muted-foreground">Ask me anything about Gorilla Coin</p>
           </div>
         </div>
 
         {/* Messages */}
-        <ScrollArea className="flex-1 p-4" ref={scrollRef}>
+        <ScrollArea className="flex-1 p-3 sm:p-4" ref={scrollRef}>
           {messages.length === 0 && (
-            <div className="flex flex-col items-center justify-center h-full text-center gap-3 py-12">
-              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                <Bot className="w-8 h-8 text-primary" />
+            <div className="flex flex-col items-center justify-center h-full text-center gap-3 py-8 sm:py-12">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                <Bot className="w-7 h-7 sm:w-8 sm:h-8 text-primary" />
               </div>
-              <p className="text-sm text-muted-foreground max-w-xs">
+              <p className="text-xs sm:text-sm text-muted-foreground max-w-xs">
                 Hi! I'm Gorilla AI 🦍 Ask me anything about mining, trading, referrals, or how to use the app!
               </p>
-              <div className="flex flex-wrap gap-2 mt-2 justify-center">
+              <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-2 justify-center">
                 {[
                   "How do I mine coins?",
                   "How does trading work?",
@@ -174,7 +174,7 @@ const Chat = () => {
                       setInput(q);
                       setTimeout(() => textareaRef.current?.focus(), 50);
                     }}
-                    className="text-xs px-3 py-1.5 rounded-full border border-border bg-card hover:bg-accent/10 text-foreground transition-colors"
+                    className="text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full border border-border bg-card hover:bg-accent/10 text-foreground transition-colors"
                   >
                     {q}
                   </button>
@@ -183,19 +183,19 @@ const Chat = () => {
             </div>
           )}
 
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {messages.map((msg, i) => (
               <div
                 key={i}
-                className={`flex gap-3 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                className={`flex gap-2 sm:gap-3 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
               >
                 {msg.role === "assistant" && (
-                  <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-1">
-                    <Bot className="w-4 h-4 text-primary" />
+                  <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-1">
+                    <Bot className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
                   </div>
                 )}
                 <div
-                  className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm ${
+                  className={`max-w-[85%] sm:max-w-[80%] rounded-2xl px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm ${
                     msg.role === "user"
                       ? "bg-primary text-primary-foreground rounded-br-md"
                       : "bg-card border border-border rounded-bl-md"
@@ -210,16 +210,16 @@ const Chat = () => {
                   )}
                 </div>
                 {msg.role === "user" && (
-                  <div className="w-7 h-7 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0 mt-1">
-                    <User className="w-4 h-4 text-accent" />
+                  <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0 mt-1">
+                    <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-accent" />
                   </div>
                 )}
               </div>
             ))}
             {isLoading && messages[messages.length - 1]?.role !== "assistant" && (
-              <div className="flex gap-3">
-                <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <Bot className="w-4 h-4 text-primary" />
+              <div className="flex gap-2 sm:gap-3">
+                <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <Bot className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
                 </div>
                 <div className="rounded-2xl rounded-bl-md bg-card border border-border px-4 py-3">
                   <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
@@ -230,7 +230,7 @@ const Chat = () => {
         </ScrollArea>
 
         {/* Input */}
-        <div className="p-4 border-t border-border">
+        <div className="p-3 sm:p-4 border-t border-border">
           <div className="flex gap-2 items-end">
             <Textarea
               ref={textareaRef}
@@ -238,14 +238,14 @@ const Chat = () => {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Ask about Gorilla Coin..."
-              className="resize-none min-h-[44px] max-h-[120px] text-sm"
+              className="resize-none min-h-[40px] sm:min-h-[44px] max-h-[120px] text-xs sm:text-sm"
               rows={1}
             />
             <Button
               size="icon"
               onClick={send}
               disabled={!input.trim() || isLoading}
-              className="flex-shrink-0 h-[44px] w-[44px]"
+              className="flex-shrink-0 h-10 w-10 sm:h-[44px] sm:w-[44px]"
             >
               {isLoading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />

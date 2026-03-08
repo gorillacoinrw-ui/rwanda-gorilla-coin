@@ -30,12 +30,12 @@ const Index = () => {
 
   return (
     <AppLayout>
-      <div className="max-w-md md:max-w-4xl lg:max-w-6xl mx-auto px-4 py-6 space-y-6">
+      <div className="max-w-md sm:max-w-lg md:max-w-4xl lg:max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-6">
         <div className="text-center">
-          <h1 className="text-xl font-display font-bold text-gradient-gold tracking-wider">
+          <h1 className="text-xl sm:text-2xl font-display font-bold text-gradient-gold tracking-wider">
             GORILLA COIN
           </h1>
-          <p className="text-xs text-muted-foreground mt-1">{t("app.subtitle")}</p>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">{t("app.subtitle")}</p>
           <button
             onClick={() => setShowDescription(!showDescription)}
             className="mt-2 text-xs text-primary flex items-center gap-1 mx-auto hover:underline"
@@ -58,18 +58,21 @@ const Index = () => {
           totalMined={profile?.total_mined ?? 0}
         />
 
-        <MiningCard
-          isMining={isMining}
-          formattedTime={formattedTime}
-          progress={progress}
-          miningComplete={miningComplete}
-          onStartMining={startMining}
-        />
+        {/* Desktop: side by side mining + referral */}
+        <div className="md:grid md:grid-cols-2 md:gap-6 space-y-6 md:space-y-0">
+          <MiningCard
+            isMining={isMining}
+            formattedTime={formattedTime}
+            progress={progress}
+            miningComplete={miningComplete}
+            onStartMining={startMining}
+          />
 
-        <ReferralCard
-          referralCode={profile?.referral_code ?? "---"}
-          referralCount={referralCount}
-        />
+          <ReferralCard
+            referralCode={profile?.referral_code ?? "---"}
+            referralCount={referralCount}
+          />
+        </div>
       </div>
     </AppLayout>
   );

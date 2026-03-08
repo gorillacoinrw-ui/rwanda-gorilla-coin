@@ -31,12 +31,12 @@ type TradeRecord = {
 const statusIcon = (status: string) => {
   switch (status) {
     case "completed":
-      return <CheckCircle className="w-4 h-4 text-green-500" />;
+      return <CheckCircle className="w-4 h-4 text-accent" />;
     case "cancelled":
     case "expired":
-      return <XCircle className="w-4 h-4 text-red-500" />;
+      return <XCircle className="w-4 h-4 text-destructive" />;
     case "escrow":
-      return <Timer className="w-4 h-4 text-yellow-500" />;
+      return <Timer className="w-4 h-4 text-primary" />;
     default:
       return <Clock className="w-4 h-4 text-muted-foreground" />;
   }
@@ -116,9 +116,9 @@ const History = () => {
 
   return (
     <AppLayout>
-      <div className="max-w-2xl mx-auto p-4 space-y-4">
+      <div className="max-w-md sm:max-w-lg md:max-w-3xl lg:max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-display font-bold text-foreground">{t("history.title")}</h1>
+          <h1 className="text-xl sm:text-2xl font-display font-bold text-foreground">{t("history.title")}</h1>
           {activeTab === "mining" && miningSessions.length > 0 && (
             <Button variant="ghost" size="sm" className="gap-1 text-destructive hover:text-destructive" onClick={clearMiningHistory}>
               <Trash2 className="w-3.5 h-3.5" /> Clear
@@ -133,11 +133,11 @@ const History = () => {
 
         <Tabs defaultValue="mining" className="w-full" onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="mining" className="gap-1.5">
+            <TabsTrigger value="mining" className="gap-1.5 text-xs sm:text-sm">
               <Pickaxe className="w-4 h-4" />
               {t("history.mining")}
             </TabsTrigger>
-            <TabsTrigger value="trades" className="gap-1.5">
+            <TabsTrigger value="trades" className="gap-1.5 text-xs sm:text-sm">
               <ArrowLeftRight className="w-4 h-4" />
               {t("history.trades")}
             </TabsTrigger>
@@ -149,29 +149,31 @@ const History = () => {
             ) : miningSessions.length === 0 ? (
               <p className="text-muted-foreground text-sm text-center py-8">{t("history.noMining")}</p>
             ) : (
-              miningSessions.map((s) => (
-                <div
-                  key={s.id}
-                  className="flex items-center justify-between p-3 rounded-lg bg-card border border-border"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Pickaxe className="w-4 h-4 text-primary" />
+              <div className="md:grid md:grid-cols-2 md:gap-3 space-y-2 md:space-y-0">
+                {miningSessions.map((s) => (
+                  <div
+                    key={s.id}
+                    className="flex items-center justify-between p-3 rounded-lg bg-card border border-border"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                        <Pickaxe className="w-4 h-4 text-primary" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-foreground">
+                          {s.completed_at ? `+${s.coins_earned ?? 24} GOR` : t("history.inProgress")}
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate">{formatDate(s.started_at)}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm font-medium text-foreground">
-                        {s.completed_at ? `+${s.coins_earned ?? 24} GOR` : t("history.inProgress")}
-                      </p>
-                      <p className="text-xs text-muted-foreground">{formatDate(s.started_at)}</p>
-                    </div>
+                    {s.completed_at ? (
+                      <CheckCircle className="w-4 h-4 text-accent shrink-0" />
+                    ) : (
+                      <Timer className="w-4 h-4 text-primary shrink-0" />
+                    )}
                   </div>
-                  {s.completed_at ? (
-                    <CheckCircle className="w-4 h-4 text-green-500" />
-                  ) : (
-                    <Timer className="w-4 h-4 text-yellow-500" />
-                  )}
-                </div>
-              ))
+                ))}
+              </div>
             )}
           </TabsContent>
 
@@ -181,39 +183,41 @@ const History = () => {
             ) : trades.length === 0 ? (
               <p className="text-muted-foreground text-sm text-center py-8">{t("history.noTrades")}</p>
             ) : (
-              trades.map((tr) => {
-                const isSeller = tr.seller_id === user?.id;
-                return (
-                  <div
-                    key={tr.id}
-                    className="flex items-center justify-between p-3 rounded-lg bg-card border border-border"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div
-                        className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                          isSeller ? "bg-red-500/10" : "bg-green-500/10"
-                        }`}
-                      >
-                        <ArrowLeftRight
-                          className={`w-4 h-4 ${isSeller ? "text-red-500" : "text-green-500"}`}
-                        />
+              <div className="md:grid md:grid-cols-2 md:gap-3 space-y-2 md:space-y-0">
+                {trades.map((tr) => {
+                  const isSeller = tr.seller_id === user?.id;
+                  return (
+                    <div
+                      key={tr.id}
+                      className="flex items-center justify-between p-3 rounded-lg bg-card border border-border"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div
+                          className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
+                            isSeller ? "bg-destructive/10" : "bg-accent/10"
+                          }`}
+                        >
+                          <ArrowLeftRight
+                            className={`w-4 h-4 ${isSeller ? "text-destructive" : "text-accent"}`}
+                          />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-foreground">
+                            {isSeller ? t("trade.sell") : t("trade.buy")} {tr.amount} GOR
+                          </p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {tr.price_rwf} RWF · {tr.payment_method.toUpperCase()} · {formatDate(tr.created_at)}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm font-medium text-foreground">
-                          {isSeller ? t("trade.sell") : t("trade.buy")} {tr.amount} GOR
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {tr.price_rwf} RWF · {tr.payment_method.toUpperCase()} · {formatDate(tr.created_at)}
-                        </p>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <span className="text-xs text-muted-foreground capitalize hidden sm:inline">{tr.status}</span>
+                        {statusIcon(tr.status)}
                       </div>
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-xs text-muted-foreground capitalize">{tr.status}</span>
-                      {statusIcon(tr.status)}
-                    </div>
-                  </div>
-                );
-              })
+                  );
+                })}
+              </div>
             )}
           </TabsContent>
         </Tabs>
