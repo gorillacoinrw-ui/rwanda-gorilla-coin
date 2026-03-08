@@ -14,7 +14,7 @@ const Invest = () => {
   const { profile } = useProfile();
   const {
     activeInvestments,
-    claimedInvestments,
+    completedInvestments,
     totalInvested,
     totalEarnings,
     isLoading,
@@ -167,17 +167,30 @@ const Invest = () => {
                       </Badge>
                     </div>
                     <Progress value={progress} className="h-2" />
-                    {matured && (
-                      <Button
-                        onClick={() => claim.mutate(inv.id)}
-                        disabled={claim.isPending}
-                        className="w-full bg-accent text-accent-foreground hover:bg-accent/90 font-display"
-                        size="sm"
-                      >
-                        <CheckCircle className="w-4 h-4 mr-2" />
-                        {claim.isPending ? "Claiming..." : `Claim ${inv.amount + inv.coins_earned} GOR`}
-                      </Button>
-                    )}
+                    <div className="flex gap-2">
+                      {!matured && (
+                        <Button
+                          onClick={() => claim.mutate({ investmentId: inv.id, earlyStop: true })}
+                          disabled={claim.isPending}
+                          variant="outline"
+                          className="flex-1 border-destructive/50 text-destructive hover:bg-destructive/10 font-display"
+                          size="sm"
+                        >
+                          {claim.isPending ? "Stopping..." : "Stop & Collect"}
+                        </Button>
+                      )}
+                      {matured && (
+                        <Button
+                          onClick={() => claim.mutate({ investmentId: inv.id })}
+                          disabled={claim.isPending}
+                          className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90 font-display"
+                          size="sm"
+                        >
+                          <CheckCircle className="w-4 h-4 mr-2" />
+                          {claim.isPending ? "Claiming..." : `Claim ${inv.amount + inv.coins_earned} GOR`}
+                        </Button>
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
               );
@@ -186,19 +199,20 @@ const Invest = () => {
         )}
 
         {/* Past Investments */}
-        {claimedInvestments.length > 0 && (
+        {completedInvestments.length > 0 && (
           <div className="space-y-3">
             <h2 className="text-sm font-display font-bold text-foreground flex items-center gap-2">
               <CheckCircle className="w-4 h-4 text-accent" />
-              Completed ({claimedInvestments.length})
+              Completed ({completedInvestments.length})
             </h2>
-            {claimedInvestments.map((inv) => (
+            {completedInvestments.map((inv) => (
               <Card key={inv.id} className="bg-card/50 border-border/50">
                 <CardContent className="p-3 flex justify-between items-center">
                   <div>
                     <p className="text-sm font-medium text-foreground">{inv.amount} GOR</p>
                     <p className="text-xs text-muted-foreground">
                       {new Date(inv.claimed_at!).toLocaleDateString()}
+                      {inv.status === "stopped" && " (stopped early)"}
                     </p>
                   </div>
                   <Badge variant="outline" className="text-accent border-accent/30">
@@ -210,7 +224,7 @@ const Invest = () => {
           </div>
         )}
 
-        {!isLoading && activeInvestments.length === 0 && claimedInvestments.length === 0 && (
+        {!isLoading && activeInvestments.length === 0 && completedInvestments.length === 0 && (
           <p className="text-center text-sm text-muted-foreground py-8">
             No investments yet. Start investing to earn 12% interest!
           </p>
