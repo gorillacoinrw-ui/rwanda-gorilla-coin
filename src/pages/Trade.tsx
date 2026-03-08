@@ -144,7 +144,7 @@ const TradePage = () => {
         .reduce((sum, t) => sum + t.amount, 0);
       const availableBalance = (profile?.coin_balance ?? 0) - lockedCoins;
       if (availableBalance < amt) {
-        toast({ title: "Insufficient balance", description: `You need ${amt} GOR but only have ${availableBalance.toLocaleString()} GOR available (${lockedCoins > 0 ? `${lockedCoins.toLocaleString()} locked in trades` : "0 locked"}).`, variant: "destructive" });
+        toast({ title: "Insufficient balance", description: `Please enter the available coin. You have ${availableBalance.toLocaleString()} GOR available.`, variant: "destructive" });
         return;
       }
     }
