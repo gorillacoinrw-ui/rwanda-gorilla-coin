@@ -29,6 +29,7 @@ const LANGUAGES: { code: Language; label: string }[] = [
 
 const Profile = () => {
   const { user, signOut } = useAuth();
+  const { theme, setTheme } = useTheme();
   const { profile, isLoading, updateProfile, uploadAvatar, referralCount } = useProfile();
   const { t, setLang } = useLanguage();
   const { data: isAdmin } = useAdminCheck();
