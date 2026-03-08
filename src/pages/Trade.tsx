@@ -992,12 +992,12 @@ function MyOrderCard({
           <div className="bg-muted/50 rounded-lg p-3 text-xs flex items-start gap-2">
             <Clock className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
             <span className="text-muted-foreground">
-              {isSeller
+              {isCoinSeller
                 ? "Waiting for buyer's payment. Confirm once received."
                 : "Send payment to the seller within the time limit."}
             </span>
           </div>
-          {!isSeller && trade.payment_details && (
+          {!isCoinSeller && trade.payment_details && (
             <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 text-xs space-y-2">
               <div className="flex items-center justify-between">
                 <span className="font-semibold text-primary flex items-center gap-1">
