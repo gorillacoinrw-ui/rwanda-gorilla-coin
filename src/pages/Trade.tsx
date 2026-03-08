@@ -3,6 +3,7 @@ import AppLayout from "@/components/AppLayout";
 import { useTrades, Trade } from "@/hooks/use-trades";
 import { useProfile } from "@/hooks/use-profile";
 import { useAppSettings } from "@/hooks/use-app-settings";
+import { useOnlinePresence } from "@/hooks/use-online-presence";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
