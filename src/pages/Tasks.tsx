@@ -104,12 +104,15 @@ const Tasks = () => {
                   <span>Pending admin approval...</span>
                 </div>
               ) : isRejected ? (
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1.5 text-xs text-red-500">
-                    <XCircle className="w-3.5 h-3.5" />
-                    <span>Rejected</span>
-                  </div>
-                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-8 text-xs border-yellow-500/30 text-yellow-600 hover:bg-yellow-500/10"
+                  onClick={() => handleRetry(task)}
+                  disabled={submitTask.isPending}
+                >
+                  <ExternalLink className="w-3.5 h-3.5 mr-1" />Try Again
+                </Button>
               ) : (
                 <Button
                   size="sm"
