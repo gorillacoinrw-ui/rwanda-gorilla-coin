@@ -191,6 +191,15 @@ const Auth = () => {
                 className="bg-muted border-border text-foreground"
               />
             )}
+            {!isLogin && (
+              <Input
+                type="tel"
+                placeholder="Phone Number (e.g. +250...)"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="bg-muted border-border text-foreground"
+              />
+            )}
             <Input
               type="email"
               placeholder="Email"
