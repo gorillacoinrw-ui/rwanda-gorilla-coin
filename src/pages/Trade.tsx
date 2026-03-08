@@ -138,9 +138,15 @@ const TradePage = () => {
     if (!price || price <= 0) return;
     if (minAmt > maxAmt) return;
 
-    if (tradeType === "sell" && (profile?.coin_balance ?? 0) < amt) {
-      toast({ title: "Insufficient balance", description: `You need ${amt} GOR but only have ${profile?.coin_balance ?? 0} GOR.`, variant: "destructive" });
-      return;
+    if (tradeType === "sell") {
+      const lockedCoins = myTrades
+        .filter((t) => t.seller_id === user?.id && (t.status === "open" || t.status === "escrow"))
+        .reduce((sum, t) => sum + t.amount, 0);
+      const availableBalance = (profile?.coin_balance ?? 0) - lockedCoins;
+      if (availableBalance < amt) {
+        toast({ title: "Insufficient balance", description: `You need ${amt} GOR but only have ${availableBalance.toLocaleString()} GOR available (${lockedCoins > 0 ? `${lockedCoins.toLocaleString()} locked in trades` : "0 locked"}).`, variant: "destructive" });
+        return;
+      }
     }
 
     if (!paymentDetails.trim()) {
