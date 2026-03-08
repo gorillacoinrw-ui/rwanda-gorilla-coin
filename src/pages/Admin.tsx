@@ -33,7 +33,7 @@ const Admin = () => {
   const { user, loading: authLoading } = useAuth();
   const { data: isAdmin, isLoading: adminLoading } = useAdminCheck();
   const { users, trades, taxRecords, mining, referrals, stats, isLoading } = useAdminData();
-  
+  const { isOnline } = useOnlinePresence();
 
   if (authLoading || adminLoading) {
     return (
