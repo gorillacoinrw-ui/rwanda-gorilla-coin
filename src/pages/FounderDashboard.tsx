@@ -41,7 +41,7 @@ const PAYMENT_METHODS = [
 const FounderDashboard = () => {
   const { user, loading: authLoading } = useAuth();
   const { data: isAdmin, isLoading: adminLoading } = useAdminCheck();
-  const { users, trades, taxRecords, stats } = useAdminData();
+  const { users, trades, taxRecords, investments, stats } = useAdminData();
   const { settings, tradingActive, totalUsers, minUsersForTrading, usersNeeded } = useAppSettings();
   const { isOnline } = useOnlinePresence();
   const [sellOpen, setSellOpen] = useState(false);
