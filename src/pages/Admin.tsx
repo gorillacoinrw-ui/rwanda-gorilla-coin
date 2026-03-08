@@ -6,6 +6,7 @@ import AdminTaskManager from "@/components/AdminTaskManager";
 import AdminAdManager from "@/components/AdminAdManager";
 import AdminAnalytics from "@/components/AdminAnalytics";
 import { useAuth } from "@/contexts/AuthContext";
+import { useOnlinePresence } from "@/hooks/use-online-presence";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Users, ArrowLeftRight, Pickaxe, Landmark, UserCheck, Shield, Gift, Tv, BarChart3 } from "lucide-react";
@@ -32,7 +33,7 @@ const Admin = () => {
   const { user, loading: authLoading } = useAuth();
   const { data: isAdmin, isLoading: adminLoading } = useAdminCheck();
   const { users, trades, taxRecords, mining, referrals, stats, isLoading } = useAdminData();
-  
+  const { isOnline } = useOnlinePresence();
 
   if (authLoading || adminLoading) {
     return (
@@ -158,7 +159,15 @@ const Admin = () => {
                     <TableRow key={tr.id}>
                       <TableCell className="capitalize">{tr.trade_type}</TableCell>
                       <TableCell className="text-xs">{userMap.get(tr.seller_id) || tr.seller_id.slice(0, 8)}</TableCell>
-                      <TableCell className="text-xs">{tr.buyer_id ? (userMap.get(tr.buyer_id) || tr.buyer_id.slice(0, 8)) : "—"}</TableCell>
+                      <TableCell className="text-xs">
+                        {tr.buyer_id ? (
+                          <span className="flex items-center gap-1.5">
+                            <span className={`w-2 h-2 rounded-full shrink-0 ${isOnline(tr.buyer_id) ? "bg-green-500 animate-pulse" : "bg-muted-foreground/40"}`} />
+                            {userMap.get(tr.buyer_id) || tr.buyer_id.slice(0, 8)}
+                            {isOnline(tr.buyer_id) && <span className="text-[10px] text-green-500 font-medium">online</span>}
+                          </span>
+                        ) : "—"}
+                      </TableCell>
                       <TableCell className="text-right font-mono">{tr.amount}</TableCell>
                       <TableCell className="text-right font-mono">{tr.price_rwf} RWF</TableCell>
                       <TableCell className="uppercase text-xs">{tr.payment_method}</TableCell>
