@@ -106,6 +106,45 @@ export type Database = {
         }
         Relationships: []
       }
+      investments: {
+        Row: {
+          amount: number
+          claimed_at: string | null
+          coins_earned: number
+          created_at: string
+          id: string
+          interest_rate: number
+          matures_at: string
+          started_at: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          claimed_at?: string | null
+          coins_earned?: number
+          created_at?: string
+          id?: string
+          interest_rate?: number
+          matures_at?: string
+          started_at?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          claimed_at?: string | null
+          coins_earned?: number
+          created_at?: string
+          id?: string
+          interest_rate?: number
+          matures_at?: string
+          started_at?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       mining_sessions: {
         Row: {
           coins_earned: number | null
