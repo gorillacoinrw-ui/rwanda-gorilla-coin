@@ -44,7 +44,7 @@ const getCompletionStatus = (task: SocialTask, completions: TaskCompletion[]) =>
 };
 
 const Tasks = () => {
-  const { tasks, completions, isLoading, submitTask } = useTasks();
+  const { tasks, completions, isLoading, submitTask, retryTask } = useTasks();
   const { t } = useLanguage();
 
   const followTasks = tasks.filter((t) => t.task_type !== "share");
