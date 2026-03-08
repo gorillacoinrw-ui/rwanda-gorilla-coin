@@ -26,9 +26,9 @@ const AdCard = ({
   isWatching: boolean;
 }) => {
   return (
-    <div className="rounded-xl border border-border bg-card overflow-hidden">
+    <div className="rounded-xl border border-border bg-card overflow-hidden transition-shadow hover:shadow-lg">
       {ad.image_url && (
-        <img src={ad.image_url} alt={ad.title} className="w-full h-40 object-cover" />
+        <img src={ad.image_url} alt={ad.title} className="w-full h-36 sm:h-44 md:h-48 lg:h-52 object-cover" />
       )}
       <div className="p-4 space-y-2">
         <div className="flex items-start justify-between gap-2">
