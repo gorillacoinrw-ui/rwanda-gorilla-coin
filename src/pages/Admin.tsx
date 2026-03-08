@@ -30,6 +30,7 @@ const Admin = () => {
   const { user, loading: authLoading } = useAuth();
   const { data: isAdmin, isLoading: adminLoading } = useAdminCheck();
   const { users, trades, taxRecords, mining, referrals, stats, isLoading } = useAdminData();
+  const { pendingCompletions, allTasks, approveTask, rejectTask, isLoading: tasksLoading } = useAdminTasks();
 
   if (authLoading || adminLoading) {
     return (
