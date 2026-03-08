@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import { Home, Pickaxe, ArrowLeftRight, User, History, Gift } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
+import NotificationBell from "@/components/NotificationBell";
 
 const navItems = [
   { icon: Home, labelKey: "nav.home", path: "/" },
@@ -26,6 +27,11 @@ const AppLayout = ({ children }: AppLayoutProps) => {
         <div className="flex-1 bg-rwanda-blue" />
         <div className="flex-1 bg-rwanda-yellow" />
         <div className="flex-1 bg-rwanda-green" />
+      </div>
+
+      {/* Top bar with notification bell */}
+      <div className="fixed top-1 right-4 z-50 md:top-[4px]">
+        <NotificationBell />
       </div>
 
       <main className="flex-1 overflow-y-auto pb-20 md:pb-6 md:pt-20">

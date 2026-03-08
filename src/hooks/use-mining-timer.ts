@@ -102,6 +102,16 @@ export function useMiningTimer() {
             })
             .eq("user_id", user.id);
         }
+
+        // Send mining completion notification
+        await supabase.from("notifications").insert({
+          user_id: user.id,
+          title: "Mining Complete! ⛏️",
+          message: "Your 24-hour mining session is complete! You earned 24 GOR coins.",
+          type: "mining",
+          action_url: "/mine",
+        });
+
         queryClient.invalidateQueries({ queryKey: ["profile", user.id] });
       }
     };

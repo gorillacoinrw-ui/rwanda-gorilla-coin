@@ -36,6 +36,31 @@ Deno.serve(async (req) => {
     });
   }
 
+  // Helper: send notification
+  async function notify(userId: string, title: string, message: string, type: string, actionUrl?: string) {
+    try {
+      await supabase.from("notifications").insert({
+        user_id: userId,
+        title,
+        message,
+        type,
+        action_url: actionUrl || null,
+      });
+      // Also try to send email
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+      const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+      try {
+        await fetch(`${supabaseUrl}/functions/v1/send-notification`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Authorization": `Bearer ${anonKey}` },
+          body: JSON.stringify({ user_id: userId, title, message, type, action_url: actionUrl, send_email: true }),
+        });
+      } catch { /* email is best-effort */ }
+    } catch (err) {
+      console.error("Notification error:", err);
+    }
+  }
+
   const { action, trade_id, trade_data } = await req.json();
 
   // Helper: check if trading is still active (3-month window)
@@ -191,8 +216,14 @@ Deno.serve(async (req) => {
 
       if (updateErr) throw updateErr;
 
-      // For sell orders: coins are already locked at creation time, no need to deduct again
-      // For buy orders: no coin locking needed (buyer pays cash)
+      // Notify seller that their trade was accepted
+      await notify(
+        trade.seller_id,
+        "Trade Accepted! ⏱️",
+        `A buyer has accepted your ${trade.trade_type} order for ${trade.amount} GOR. Escrow started (20 min).`,
+        "trade",
+        "/trade"
+      );
 
       return new Response(JSON.stringify({ success: true, expires_at: expiresAt }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -265,6 +296,24 @@ Deno.serve(async (req) => {
         .insert({ trade_id: trade.id, amount: taxAmount });
 
       console.log(`Trade ${trade.id} completed. Tax: ${taxAmount} GOR added to pool. Buyer receives: ${buyerReceives} GOR.`);
+
+      // Notify both parties
+      await Promise.all([
+        notify(
+          trade.buyer_id!,
+          "Trade Completed! 🎉",
+          `You received ${buyerReceives} GOR (${taxAmount} GOR tax). Trade completed successfully.`,
+          "trade",
+          "/history"
+        ),
+        notify(
+          trade.seller_id,
+          "Trade Completed! 🎉",
+          `Your sell order for ${trade.amount} GOR has been completed. Payment confirmed.`,
+          "trade",
+          "/history"
+        ),
+      ]);
 
       return new Response(JSON.stringify({ success: true, tax: taxAmount, received: buyerReceives }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
