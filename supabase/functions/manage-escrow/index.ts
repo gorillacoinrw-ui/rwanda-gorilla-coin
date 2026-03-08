@@ -495,6 +495,24 @@ Deno.serve(async (req) => {
         }
       }
 
+      // Refund coins for buy orders (locked from accepter/buyer_id when they accepted)
+      if (trade.trade_type === "buy" && trade.buyer_id && trade.status === "escrow") {
+        const { data: accepterProfile } = await supabase
+          .from("profiles")
+          .select("coin_balance")
+          .eq("user_id", trade.buyer_id)
+          .single();
+
+        if (accepterProfile) {
+          const newBalance = accepterProfile.coin_balance + trade.amount;
+          await supabase
+            .from("profiles")
+            .update({ coin_balance: newBalance })
+            .eq("user_id", trade.buyer_id);
+          console.log(`Refunded ${trade.amount} GOR to buy-order accepter ${trade.buyer_id}. New balance: ${newBalance}`);
+        }
+      }
+
       await supabase
         .from("trades")
         .update({ status: "cancelled" })
