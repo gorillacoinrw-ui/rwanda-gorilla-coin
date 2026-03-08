@@ -66,6 +66,7 @@ const translations: Record<Language, Record<string, string>> = {
     "tasks.followTitle": "Kurikira & Kwiyandikisha",
     "tasks.shareTitle": "Sangira & Uhembwe",
     "nav.tasks": "Ibikoresho",
+    "nav.ads": "Amashusho",
 
     // Trade
     "trade.title": "Isoko rya P2P",
