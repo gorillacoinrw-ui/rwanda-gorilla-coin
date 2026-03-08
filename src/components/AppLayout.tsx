@@ -60,7 +60,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
     <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
       {/* Floating gorilla coins background */}
       <FloatingCoins />
-      <div className="h-1 w-full flex">
+      <div className="h-1 w-full flex relative z-10">
         <div className="flex-1 bg-rwanda-blue" />
         <div className="flex-1 bg-rwanda-yellow" />
         <div className="flex-1 bg-rwanda-green" />
