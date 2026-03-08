@@ -7,6 +7,7 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.mine": "Gucukura",
     "nav.trade": "Guhana",
     "nav.history": "Amateka",
+    "nav.chat": "AI",
     "nav.profile": "Umwirondoro",
 
     // Index
@@ -100,6 +101,7 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.mine": "Mine",
     "nav.trade": "Trade",
     "nav.history": "History",
+    "nav.chat": "AI",
     "nav.profile": "Profile",
 
     "app.title": "GORILLA COIN",
@@ -186,6 +188,7 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.mine": "Miner",
     "nav.trade": "Échanger",
     "nav.history": "Historique",
+    "nav.chat": "IA",
     "nav.profile": "Profil",
 
     "app.title": "GORILLA COIN",

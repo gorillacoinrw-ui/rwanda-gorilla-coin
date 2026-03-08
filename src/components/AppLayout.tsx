@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { Home, Pickaxe, ArrowLeftRight, User, Clock, Gift } from "lucide-react";
+import { Home, Pickaxe, ArrowLeftRight, User, Clock, Gift, Bot } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Footer from "@/components/Footer";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -10,6 +10,7 @@ const navItems = [
   { icon: Pickaxe, labelKey: "nav.mine", path: "/mine" },
   { icon: Gift, labelKey: "nav.tasks", path: "/tasks" },
   { icon: ArrowLeftRight, labelKey: "nav.trade", path: "/trade" },
+  { icon: Bot, labelKey: "nav.chat", path: "/chat" },
   { icon: Clock, labelKey: "nav.history", path: "/history" },
   { icon: User, labelKey: "nav.profile", path: "/profile" },
 ];

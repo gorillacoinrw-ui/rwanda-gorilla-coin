@@ -11,6 +11,7 @@ import Trade from "./pages/Trade";
 import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 import History from "./pages/History";
+import Chat from "./pages/Chat";
 import Tasks from "./pages/Tasks";
 import Admin from "./pages/Admin";
 import FounderDashboard from "./pages/FounderDashboard";
@@ -41,6 +42,7 @@ const App = () => (
               <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="/tasks" element={<ProtectedRoute><Tasks /></ProtectedRoute>} />
               <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
+              <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
               <Route path="/founder" element={<ProtectedRoute><FounderDashboard /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
