@@ -497,39 +497,72 @@ const TradePage = () => {
 
               {/* Payment Method */}
               <div>
-                <label className="text-xs text-muted-foreground mb-2 block">Payment Method</label>
-                <div className="grid grid-cols-3 gap-2">
-                  {PAYMENT_METHODS.filter((pm) => pm.id !== "all").map((pm) => (
-                    <button
-                      key={pm.id}
-                      onClick={() => setPaymentMethod(pm.id)}
-                      className={`flex flex-col items-center gap-1 p-3 rounded-lg border text-xs transition-colors ${
-                        paymentMethod === pm.id
-                          ? "border-primary bg-primary/10 text-primary"
-                          : "border-border text-muted-foreground hover:border-muted-foreground"
-                      }`}
-                    >
-                      <pm.icon className="w-4 h-4" />
-                      {pm.label}
-                    </button>
-                  ))}
+                <label className="text-xs font-medium text-foreground mb-2 block">Payment Method</label>
+                <div className="space-y-2">
+                  {PAYMENT_METHODS.filter((pm) => pm.id !== "all").map((pm) => {
+                    const isSelected = paymentMethod === pm.id;
+                    return (
+                      <button
+                        key={pm.id}
+                        onClick={() => setPaymentMethod(pm.id)}
+                        className={`w-full flex items-center gap-3 p-3 rounded-lg border text-sm transition-all ${
+                          isSelected
+                            ? "border-primary bg-primary/5 ring-1 ring-primary/30"
+                            : "border-border hover:border-muted-foreground"
+                        }`}
+                      >
+                        <span className={`w-2 h-5 rounded-full shrink-0 ${
+                          pm.id === "mtn" ? "bg-[hsl(48,95%,55%)]" :
+                          pm.id === "airtel" ? "bg-destructive" : "bg-secondary"
+                        }`} />
+                        <div className="flex-1 text-left">
+                          <p className={`font-medium ${isSelected ? "text-primary" : "text-foreground"}`}>
+                            {pm.label}
+                          </p>
+                          <p className="text-[11px] text-muted-foreground">
+                            {pm.id === "mtn" ? "Mobile Money — MTN Rwanda" :
+                             pm.id === "airtel" ? "Mobile Money — Airtel Rwanda" :
+                             "Direct bank transfer"}
+                          </p>
+                        </div>
+                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                          isSelected ? "border-primary" : "border-muted-foreground/30"
+                        }`}>
+                          {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-primary" />}
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
               {/* Payment Details */}
-              <div>
-                <label className="text-xs text-muted-foreground mb-1 block">
-                  {paymentMethod === "bank" ? "Bank Account Number" : "Phone Number"}
-                </label>
+              <div className="bg-muted/50 rounded-lg border border-border p-4 space-y-3">
+                <div className="flex items-center gap-2">
+                  <Landmark className="w-4 h-4 text-primary" />
+                  <label className="text-sm font-medium text-foreground">
+                    {paymentMethod === "bank" ? "Bank Account Details" : "Mobile Money Number"}
+                  </label>
+                </div>
                 <Input
                   type="text"
                   placeholder={paymentMethod === "bank" ? "e.g. 0012345678" : "e.g. 0781234567"}
                   value={paymentDetails}
                   onChange={(e) => setPaymentDetails(e.target.value)}
+                  className="bg-background"
                 />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Buyers will see this to send you payment
-                </p>
+                {paymentMethod !== "bank" && (
+                  <div className="flex items-start gap-2 text-[11px] text-muted-foreground">
+                    <AlertTriangle className="w-3 h-3 mt-0.5 shrink-0 text-primary" />
+                    <span>Enter the {paymentMethod === "mtn" ? "MTN" : "Airtel"} number registered for Mobile Money. Buyers will send payment here.</span>
+                  </div>
+                )}
+                {paymentMethod === "bank" && (
+                  <div className="flex items-start gap-2 text-[11px] text-muted-foreground">
+                    <AlertTriangle className="w-3 h-3 mt-0.5 shrink-0 text-primary" />
+                    <span>Enter your full bank account number. Buyers will transfer funds to this account.</span>
+                  </div>
+                )}
               </div>
 
               {amount && priceRwf && (
