@@ -1,10 +1,11 @@
 import { ReactNode } from "react";
 import gorillaLogo from "@/assets/gorilla-coin-logo.png";
-import { Home, Pickaxe, ArrowLeftRight, User, Clock, Gift } from "lucide-react";
+import { Home, Pickaxe, ArrowLeftRight, User, Clock, Gift, Shield, Crown } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Footer from "@/components/Footer";
 import { useLanguage } from "@/contexts/LanguageContext";
 import NotificationBell from "@/components/NotificationBell";
+import { useAdminCheck } from "@/hooks/use-admin";
 
 const navItems = [
   { icon: Home, labelKey: "nav.home", path: "/" },
@@ -23,6 +24,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const { data: isAdmin } = useAdminCheck();
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -32,19 +34,40 @@ const AppLayout = ({ children }: AppLayoutProps) => {
         <div className="flex-1 bg-rwanda-green" />
       </div>
 
-      {/* Top bar with notification bell and AI coin below it */}
-      <div className="fixed top-2 left-4 z-[60] flex flex-col items-center gap-2">
-        <NotificationBell />
-        <button
-          onClick={() => navigate("/chat")}
-          className={`relative w-11 h-11 rounded-full border-2 border-primary/50 flex items-center justify-center shadow-lg animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite] hover:scale-110 transition-transform overflow-hidden ${
-            location.pathname === "/chat" ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : ""
-          }`}
-        >
-          <img src={gorillaLogo} alt="AI" className="w-full h-full object-cover rounded-full" />
-          <span className="absolute bottom-0 left-0 right-0 bg-black/60 text-[8px] font-display font-bold text-primary text-center leading-tight py-px">AI</span>
-          <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-rwanda-green border border-background animate-bounce" />
-        </button>
+      {/* Top bar with notification bell, admin buttons, and AI coin */}
+      <div className="fixed top-2 left-4 z-[60] flex items-center gap-2">
+        <div className="flex flex-col items-center gap-1">
+          <NotificationBell />
+          <button
+            onClick={() => navigate("/chat")}
+            className={`relative w-9 h-9 rounded-full border-2 border-primary/50 flex items-center justify-center shadow-lg animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite] hover:scale-110 transition-transform overflow-hidden ${
+              location.pathname === "/chat" ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : ""
+            }`}
+          >
+            <img src={gorillaLogo} alt="AI" className="w-full h-full object-cover rounded-full" />
+            <span className="absolute bottom-0 left-0 right-0 bg-black/60 text-[7px] font-display font-bold text-primary text-center leading-tight py-px">AI</span>
+            <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-rwanda-green border border-background animate-bounce" />
+          </button>
+        </div>
+
+        {isAdmin && (
+          <div className="flex gap-1 ml-1">
+            <button
+              onClick={() => navigate("/admin")}
+              className="flex items-center gap-1 px-2 py-1 rounded-md border border-primary/30 text-primary hover:bg-primary/10 transition-colors text-[10px] font-medium"
+            >
+              <Shield className="w-3 h-3" />
+              Admin
+            </button>
+            <button
+              onClick={() => navigate("/founder")}
+              className="flex items-center gap-1 px-2 py-1 rounded-md border border-accent/30 text-accent hover:bg-accent/10 transition-colors text-[10px] font-medium"
+            >
+              <Crown className="w-3 h-3" />
+              Founder
+            </button>
+          </div>
+        )}
       </div>
 
       <main className="flex-1 overflow-y-auto pb-28 md:pb-12 md:pt-20">

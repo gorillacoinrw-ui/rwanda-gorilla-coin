@@ -10,10 +10,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useAppSettings } from "@/hooks/use-app-settings";
 import { useTrades } from "@/hooks/use-trades";
 import { useAuth } from "@/contexts/AuthContext";
-import { useAdminCheck } from "@/hooks/use-admin";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Shield, Crown, ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 const Index = () => {
   const [showDescription, setShowDescription] = useState(false);
@@ -23,8 +20,6 @@ const Index = () => {
   const { baseValue, growthPer100 } = useAppSettings();
   const { user } = useAuth();
   const { myTrades } = useTrades();
-  const { data: isAdmin } = useAdminCheck();
-  const navigate = useNavigate();
 
   const balance = profile?.coin_balance ?? 0;
   const coinValue = baseValue + Math.floor((profile?.total_mined ?? 0) / 100) * growthPer100;
@@ -36,27 +31,6 @@ const Index = () => {
   return (
     <AppLayout>
       <div className="max-w-md md:max-w-4xl lg:max-w-6xl mx-auto px-4 py-6 space-y-6">
-        {isAdmin && (
-          <div className="flex gap-3">
-            <Button
-              variant="outline"
-              className="flex-1 gap-2 border-primary/30 text-primary hover:bg-primary/10"
-              onClick={() => navigate("/admin")}
-            >
-              <Shield className="w-4 h-4" />
-              Admin Panel
-            </Button>
-            <Button
-              variant="outline"
-              className="flex-1 gap-2 border-accent/30 text-accent hover:bg-accent/10"
-              onClick={() => navigate("/founder")}
-            >
-              <Crown className="w-4 h-4" />
-              Founder Dashboard
-            </Button>
-          </div>
-        )}
-
         <div className="text-center">
           <h1 className="text-xl font-display font-bold text-gradient-gold tracking-wider">
             GORILLA COIN
