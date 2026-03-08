@@ -1,3 +1,4 @@
+import { useState } from "react";
 import AppLayout from "@/components/AppLayout";
 import CoinDisplay from "@/components/CoinDisplay";
 import MiningCard from "@/components/MiningCard";
