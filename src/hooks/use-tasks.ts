@@ -176,12 +176,21 @@ export function useAdminTasks() {
   });
 
   const rejectTask = useMutation({
-    mutationFn: async (completionId: string) => {
+    mutationFn: async ({ completionId, userId }: { completionId: string; userId: string }) => {
       const { error } = await supabase
         .from("user_task_completions")
         .update({ status: "rejected", reviewed_at: new Date().toISOString() })
         .eq("id", completionId);
       if (error) throw error;
+
+      // Send notification to user
+      await supabase.from("notifications").insert({
+        user_id: userId,
+        title: "Task Rejected ❌",
+        message: "Your task submission was rejected. You can try again.",
+        type: "task",
+        action_url: "/tasks",
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin_task_completions"] });
