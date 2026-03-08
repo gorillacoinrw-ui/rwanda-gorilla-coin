@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useMemo } from "react";
 import gorillaLogo from "@/assets/gorilla-coin-logo.png";
 import { Home, Pickaxe, ArrowLeftRight, User, Clock, Gift, Shield, Crown } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";

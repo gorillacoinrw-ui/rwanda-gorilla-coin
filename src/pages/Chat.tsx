@@ -137,39 +137,9 @@ const Chat = () => {
     }
   };
 
-  const floatingCoins = useMemo(() => 
-    Array.from({ length: 10 }).map((_, i) => ({
-      id: i,
-      left: `${Math.random() * 80 + 10}%`,
-      size: Math.random() * 60 + 80,
-      duration: Math.random() * 10 + 10,
-      delay: Math.random() * 8,
-      opacity: Math.random() * 0.12 + 0.06,
-    })), []);
-
   return (
     <AppLayout>
-      <div className="max-w-2xl mx-auto flex flex-col h-[calc(100vh-8rem)] relative overflow-hidden">
-        {/* Floating gorilla coins background */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-          {floatingCoins.map((coin) => (
-            <img
-              key={coin.id}
-              src={gorillaLogo}
-              alt=""
-              className="absolute rounded-full"
-              style={{
-                left: coin.left,
-                width: coin.size,
-                height: coin.size,
-                opacity: coin.opacity,
-                
-                bottom: "-30px",
-                animation: `floatUp ${coin.duration}s linear ${coin.delay}s infinite`,
-              }}
-            />
-          ))}
-        </div>
+      <div className="max-w-2xl mx-auto flex flex-col h-[calc(100vh-8rem)]">
         {/* Header */}
         <div className="flex items-center gap-3 p-4 border-b border-border relative z-10">
           <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
