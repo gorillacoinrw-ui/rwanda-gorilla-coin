@@ -644,6 +644,22 @@ Deno.serve(async (req) => {
             }
           }
 
+          // Refund accepter for buy orders (coins locked from buyer_id)
+          if (trade.trade_type === "buy" && trade.buyer_id) {
+            const { data: accepterProfile } = await supabase
+              .from("profiles")
+              .select("coin_balance")
+              .eq("user_id", trade.buyer_id)
+              .single();
+
+            if (accepterProfile) {
+              await supabase
+                .from("profiles")
+                .update({ coin_balance: accepterProfile.coin_balance + trade.amount })
+                .eq("user_id", trade.buyer_id);
+            }
+          }
+
           await supabase
             .from("trades")
             .update({ status: "expired" })
