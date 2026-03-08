@@ -3,8 +3,10 @@ import AppLayout from "@/components/AppLayout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { Pickaxe, ArrowLeftRight, Clock, CheckCircle, XCircle, Timer } from "lucide-react";
+import { Pickaxe, ArrowLeftRight, Clock, CheckCircle, XCircle, Timer, Trash2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 
 type MiningSession = {
@@ -46,6 +48,35 @@ const History = () => {
   const [miningSessions, setMiningSessions] = useState<MiningSession[]>([]);
   const [trades, setTrades] = useState<TradeRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("mining");
+
+  const clearMiningHistory = async () => {
+    if (!user) return;
+    const { error } = await supabase
+      .from("mining_sessions")
+      .delete()
+      .eq("user_id", user.id);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      setMiningSessions([]);
+      toast({ title: "Mining history cleared" });
+    }
+  };
+
+  const clearTradeHistory = async () => {
+    if (!user) return;
+    const { error } = await supabase
+      .from("trades")
+      .delete()
+      .or(`seller_id.eq.${user.id},buyer_id.eq.${user.id}`);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      setTrades([]);
+      toast({ title: "Trade history cleared" });
+    }
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -86,9 +117,21 @@ const History = () => {
   return (
     <AppLayout>
       <div className="max-w-2xl mx-auto p-4 space-y-4">
-        <h1 className="text-xl font-display font-bold text-foreground">{t("history.title")}</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl font-display font-bold text-foreground">{t("history.title")}</h1>
+          {activeTab === "mining" && miningSessions.length > 0 && (
+            <Button variant="ghost" size="sm" className="gap-1 text-destructive hover:text-destructive" onClick={clearMiningHistory}>
+              <Trash2 className="w-3.5 h-3.5" /> Clear
+            </Button>
+          )}
+          {activeTab === "trades" && trades.length > 0 && (
+            <Button variant="ghost" size="sm" className="gap-1 text-destructive hover:text-destructive" onClick={clearTradeHistory}>
+              <Trash2 className="w-3.5 h-3.5" /> Clear
+            </Button>
+          )}
+        </div>
 
-        <Tabs defaultValue="mining" className="w-full">
+        <Tabs defaultValue="mining" className="w-full" onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="mining" className="gap-1.5">
               <Pickaxe className="w-4 h-4" />

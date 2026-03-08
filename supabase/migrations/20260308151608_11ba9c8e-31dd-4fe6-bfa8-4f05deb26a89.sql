@@ -1,0 +1,2 @@
+CREATE POLICY "Users can delete own mining sessions" ON public.mining_sessions FOR DELETE USING (auth.uid() = user_id);
+CREATE POLICY "Users can delete own trades" ON public.trades FOR DELETE USING (auth.uid() = seller_id OR auth.uid() = buyer_id);
