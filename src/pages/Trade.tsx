@@ -148,13 +148,17 @@ const TradePage = () => {
       return;
     }
 
+    const fullDetails = accountName.trim()
+      ? `${accountName.trim()} | ${paymentDetails.trim()}`
+      : paymentDetails.trim();
+
     createTrade.mutate(
       {
         trade_type: tradeType,
         amount: amt,
         price_rwf: price,
         payment_method: paymentMethod,
-        payment_details: paymentDetails.trim(),
+        payment_details: fullDetails,
         min_amount: minAmt,
         max_amount: maxAmt,
       },
@@ -166,6 +170,7 @@ const TradePage = () => {
           setMinAmount("");
           setMaxAmount("");
           setPaymentDetails("");
+          setAccountName("");
         },
       }
     );
