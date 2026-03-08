@@ -133,7 +133,7 @@ const Ads = () => {
             <p className="text-xs text-muted-foreground">Check back later for new earning opportunities!</p>
           </div>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {ads.map((ad) => (
               <AdCard
                 key={ad.id}
