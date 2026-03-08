@@ -24,6 +24,7 @@ const AdminAdManager = () => {
   const [open, setOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
 
   const [form, setForm] = useState({
     title: "",
@@ -55,6 +56,23 @@ const AdminAdManager = () => {
     const { data: urlData } = supabase.storage.from("ad-images").getPublicUrl(path);
     setForm((f) => ({ ...f, image_url: urlData.publicUrl }));
     setUploading(false);
+  };
+
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingVideo(true);
+    const ext = file.name.split(".").pop();
+    const path = `videos/${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from("ad-images").upload(path, file);
+    if (error) {
+      toast({ title: "Upload failed", description: error.message, variant: "destructive" });
+      setUploadingVideo(false);
+      return;
+    }
+    const { data: urlData } = supabase.storage.from("ad-images").getPublicUrl(path);
+    setForm((f) => ({ ...f, video_url: urlData.publicUrl }));
+    setUploadingVideo(false);
   };
 
   const handleSubmit = () => {
@@ -137,32 +155,70 @@ const AdminAdManager = () => {
               {(form.ad_type === "image" || form.ad_type === "text_image") && (
                 <div className="space-y-2">
                   <label className="text-xs text-muted-foreground">Ad Image</label>
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="Image URL"
-                      value={form.image_url}
-                      onChange={(e) => setForm((f) => ({ ...f, image_url: e.target.value }))}
-                      className="flex-1"
-                    />
-                    <label className="cursor-pointer">
-                      <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
-                      <Button type="button" size="icon" variant="outline" disabled={uploading} asChild>
-                        <span><Upload className="w-4 h-4" /></span>
-                      </Button>
-                    </label>
-                  </div>
+                  <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-border rounded-lg p-4 cursor-pointer hover:border-primary/50 transition-colors">
+                    <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+                    {uploading ? (
+                      <p className="text-xs text-muted-foreground">Uploading...</p>
+                    ) : form.image_url ? (
+                      <img src={form.image_url} alt="Preview" className="w-full h-32 object-cover rounded-lg" />
+                    ) : (
+                      <>
+                        <Upload className="w-6 h-6 text-muted-foreground" />
+                        <span className="text-xs text-muted-foreground">Tap to upload image from device</span>
+                      </>
+                    )}
+                  </label>
                   {form.image_url && (
-                    <img src={form.image_url} alt="Preview" className="w-full h-32 object-cover rounded-lg border border-border" />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="text-xs text-destructive"
+                      onClick={() => setForm((f) => ({ ...f, image_url: "" }))}
+                    >
+                      Remove image
+                    </Button>
                   )}
                 </div>
               )}
 
               {form.ad_type === "video" && (
-                <Input
-                  placeholder="Video URL (YouTube, etc.)"
-                  value={form.video_url}
-                  onChange={(e) => setForm((f) => ({ ...f, video_url: e.target.value }))}
-                />
+                <div className="space-y-2">
+                  <label className="text-xs text-muted-foreground">Video</label>
+                  <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-border rounded-lg p-4 cursor-pointer hover:border-primary/50 transition-colors">
+                    <input type="file" accept="video/*" className="hidden" onChange={handleVideoUpload} />
+                    {uploadingVideo ? (
+                      <p className="text-xs text-muted-foreground">Uploading video...</p>
+                    ) : form.video_url ? (
+                      <div className="flex items-center gap-2 text-xs text-primary">
+                        <Video className="w-4 h-4" />
+                        <span>Video uploaded</span>
+                      </div>
+                    ) : (
+                      <>
+                        <Upload className="w-6 h-6 text-muted-foreground" />
+                        <span className="text-xs text-muted-foreground">Tap to upload video from device</span>
+                      </>
+                    )}
+                  </label>
+                  <p className="text-[10px] text-muted-foreground">Or paste a YouTube/video URL below:</p>
+                  <Input
+                    placeholder="Video URL (optional)"
+                    value={form.video_url}
+                    onChange={(e) => setForm((f) => ({ ...f, video_url: e.target.value }))}
+                  />
+                  {form.video_url && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="text-xs text-destructive"
+                      onClick={() => setForm((f) => ({ ...f, video_url: "" }))}
+                    >
+                      Remove video
+                    </Button>
+                  )}
+                </div>
               )}
 
               <Input
