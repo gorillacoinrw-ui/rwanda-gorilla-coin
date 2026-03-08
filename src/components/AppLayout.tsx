@@ -29,6 +29,11 @@ const AppLayout = ({ children }: AppLayoutProps) => {
         <div className="flex-1 bg-rwanda-green" />
       </div>
 
+      {/* Top bar with notification bell */}
+      <div className="fixed top-1 right-4 z-50 md:top-[4px]">
+        <NotificationBell />
+      </div>
+
       <main className="flex-1 overflow-y-auto pb-20 md:pb-6 md:pt-20">
         {children}
       </main>
