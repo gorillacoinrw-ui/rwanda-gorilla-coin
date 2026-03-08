@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import gorillaLogo from "@/assets/gorilla-coin-logo.png";
-import { Home, Pickaxe, ArrowLeftRight, User, Clock, Gift, Bot } from "lucide-react";
+import { Home, Pickaxe, ArrowLeftRight, User, Clock, Gift } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Footer from "@/components/Footer";
 import { useLanguage } from "@/contexts/LanguageContext";
