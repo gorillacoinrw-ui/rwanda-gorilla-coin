@@ -312,35 +312,68 @@ Deno.serve(async (req) => {
 
       // Refund coins for sell orders (locked at creation)
       if (trade.trade_type === "sell") {
-        const { data: sellerProfile, error: profileErr } = await supabase
-          .from("profiles")
-          .select("coin_balance")
+        // Check if this was a founder tax sell order by seeing if the seller is admin
+        // and if the coins came from the tax pool (seller balance wasn't deducted)
+        const { data: sellerRole } = await supabase
+          .from("user_roles")
+          .select("role")
           .eq("user_id", trade.seller_id)
+          .eq("role", "admin")
+          .maybeSingle();
+
+        // Check if the trade amount was deducted from tax pool (founder sell)
+        // by looking if the trade was created via founder_sell_tax
+        // Founder tax sells: refund to tax pool, not to personal balance
+        const { data: poolSetting } = await supabase
+          .from("app_settings")
+          .select("value")
+          .eq("key", "tax_pool_balance")
           .single();
 
-        if (profileErr) {
-          console.error("Failed to fetch seller profile for refund:", profileErr);
-          return new Response(JSON.stringify({ error: "Failed to process refund" }), {
-            status: 500,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
-
-        if (sellerProfile) {
-          const newBalance = sellerProfile.coin_balance + trade.amount;
-          const { error: refundErr } = await supabase
+        // If the seller is an admin and the trade has no buyer yet (open) or is in escrow,
+        // check if coins should go back to pool. We identify founder tax trades by checking 
+        // if the seller's balance was NOT reduced (i.e., coins came from tax pool).
+        // Simple heuristic: if seller is admin, refund to tax pool.
+        if (sellerRole) {
+          // Founder tax order — refund to tax pool
+          const currentPool = Number(poolSetting?.value ?? 0);
+          await supabase
+            .from("app_settings")
+            .update({ value: currentPool + trade.amount })
+            .eq("key", "tax_pool_balance");
+          console.log(`Refunded ${trade.amount} GOR to tax pool. New pool: ${currentPool + trade.amount}`);
+        } else {
+          // Regular sell order — refund to seller's personal balance
+          const { data: sellerProfile, error: profileErr } = await supabase
             .from("profiles")
-            .update({ coin_balance: newBalance })
-            .eq("user_id", trade.seller_id);
+            .select("coin_balance")
+            .eq("user_id", trade.seller_id)
+            .single();
 
-          if (refundErr) {
-            console.error("Failed to refund seller:", refundErr);
-            return new Response(JSON.stringify({ error: "Failed to refund coins" }), {
+          if (profileErr) {
+            console.error("Failed to fetch seller profile for refund:", profileErr);
+            return new Response(JSON.stringify({ error: "Failed to process refund" }), {
               status: 500,
               headers: { ...corsHeaders, "Content-Type": "application/json" },
             });
           }
-          console.log(`Refunded ${trade.amount} GOR to seller ${trade.seller_id}. New balance: ${newBalance}`);
+
+          if (sellerProfile) {
+            const newBalance = sellerProfile.coin_balance + trade.amount;
+            const { error: refundErr } = await supabase
+              .from("profiles")
+              .update({ coin_balance: newBalance })
+              .eq("user_id", trade.seller_id);
+
+            if (refundErr) {
+              console.error("Failed to refund seller:", refundErr);
+              return new Response(JSON.stringify({ error: "Failed to refund coins" }), {
+                status: 500,
+                headers: { ...corsHeaders, "Content-Type": "application/json" },
+              });
+            }
+            console.log(`Refunded ${trade.amount} GOR to seller ${trade.seller_id}. New balance: ${newBalance}`);
+          }
         }
       }
 
