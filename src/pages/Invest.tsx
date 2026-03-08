@@ -199,19 +199,20 @@ const Invest = () => {
         )}
 
         {/* Past Investments */}
-        {claimedInvestments.length > 0 && (
+        {completedInvestments.length > 0 && (
           <div className="space-y-3">
             <h2 className="text-sm font-display font-bold text-foreground flex items-center gap-2">
               <CheckCircle className="w-4 h-4 text-accent" />
-              Completed ({claimedInvestments.length})
+              Completed ({completedInvestments.length})
             </h2>
-            {claimedInvestments.map((inv) => (
+            {completedInvestments.map((inv) => (
               <Card key={inv.id} className="bg-card/50 border-border/50">
                 <CardContent className="p-3 flex justify-between items-center">
                   <div>
                     <p className="text-sm font-medium text-foreground">{inv.amount} GOR</p>
                     <p className="text-xs text-muted-foreground">
                       {new Date(inv.claimed_at!).toLocaleDateString()}
+                      {inv.status === "stopped" && " (stopped early)"}
                     </p>
                   </div>
                   <Badge variant="outline" className="text-accent border-accent/30">
@@ -223,7 +224,7 @@ const Invest = () => {
           </div>
         )}
 
-        {!isLoading && activeInvestments.length === 0 && claimedInvestments.length === 0 && (
+        {!isLoading && activeInvestments.length === 0 && completedInvestments.length === 0 && (
           <p className="text-center text-sm text-muted-foreground py-8">
             No investments yet. Start investing to earn 12% interest!
           </p>
