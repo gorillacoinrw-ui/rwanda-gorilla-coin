@@ -112,6 +112,7 @@ const TradePage = () => {
   const [subTab, setSubTab] = useState<"p2p" | "orders">("p2p");
   const [paymentFilter, setPaymentFilter] = useState("all");
   const [amountFilter, setAmountFilter] = useState("");
+  const [sortBy, setSortBy] = useState<"price_asc" | "price_desc">("price_asc");
   const [createOpen, setCreateOpen] = useState(false);
   const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null);
 
