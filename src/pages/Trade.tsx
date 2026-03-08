@@ -557,6 +557,20 @@ const TradePage = () => {
                   onChange={(e) => setPaymentDetails(e.target.value)}
                   className="bg-background"
                 />
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block flex items-center gap-1">
+                    <User className="w-3 h-3" />
+                    Account Holder Name
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder={paymentMethod === "bank" ? "e.g. Jean Mugabo" : "e.g. Jean Mugabo"}
+                    value={accountName}
+                    onChange={(e) => setAccountName(e.target.value)}
+                    className="bg-background"
+                    maxLength={100}
+                  />
+                </div>
                 {paymentMethod !== "bank" && (
                   <div className="flex items-start gap-2 text-[11px] text-muted-foreground">
                     <AlertTriangle className="w-3 h-3 mt-0.5 shrink-0 text-primary" />
