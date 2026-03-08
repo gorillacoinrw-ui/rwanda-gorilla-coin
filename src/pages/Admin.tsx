@@ -80,8 +80,9 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="analytics" className="w-full">
-          <TabsList className="grid w-full grid-cols-9">
+          <TabsList className="grid w-full grid-cols-5 md:grid-cols-10">
             <TabsTrigger value="analytics" className="text-xs gap-1"><BarChart3 className="w-3.5 h-3.5" />Analytics</TabsTrigger>
+            <TabsTrigger value="settings" className="text-xs gap-1"><Settings className="w-3.5 h-3.5" />Settings</TabsTrigger>
             <TabsTrigger value="users" className="text-xs gap-1"><Users className="w-3.5 h-3.5" />Users</TabsTrigger>
             <TabsTrigger value="tasks" className="text-xs gap-1"><Gift className="w-3.5 h-3.5" />Tasks</TabsTrigger>
             <TabsTrigger value="ads" className="text-xs gap-1"><Tv className="w-3.5 h-3.5" />Ads</TabsTrigger>
