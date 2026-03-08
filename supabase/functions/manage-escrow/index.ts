@@ -297,6 +297,24 @@ Deno.serve(async (req) => {
 
       console.log(`Trade ${trade.id} completed. Tax: ${taxAmount} GOR added to pool. Buyer receives: ${buyerReceives} GOR.`);
 
+      // Notify both parties
+      await Promise.all([
+        notify(
+          trade.buyer_id!,
+          "Trade Completed! 🎉",
+          `You received ${buyerReceives} GOR (${taxAmount} GOR tax). Trade completed successfully.`,
+          "trade",
+          "/history"
+        ),
+        notify(
+          trade.seller_id,
+          "Trade Completed! 🎉",
+          `Your sell order for ${trade.amount} GOR has been completed. Payment confirmed.`,
+          "trade",
+          "/history"
+        ),
+      ]);
+
       return new Response(JSON.stringify({ success: true, tax: taxAmount, received: buyerReceives }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
