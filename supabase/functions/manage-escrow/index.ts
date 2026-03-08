@@ -36,6 +36,31 @@ Deno.serve(async (req) => {
     });
   }
 
+  // Helper: send notification
+  async function notify(userId: string, title: string, message: string, type: string, actionUrl?: string) {
+    try {
+      await supabase.from("notifications").insert({
+        user_id: userId,
+        title,
+        message,
+        type,
+        action_url: actionUrl || null,
+      });
+      // Also try to send email
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+      const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+      try {
+        await fetch(`${supabaseUrl}/functions/v1/send-notification`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Authorization": `Bearer ${anonKey}` },
+          body: JSON.stringify({ user_id: userId, title, message, type, action_url: actionUrl, send_email: true }),
+        });
+      } catch { /* email is best-effort */ }
+    } catch (err) {
+      console.error("Notification error:", err);
+    }
+  }
+
   const { action, trade_id, trade_data } = await req.json();
 
   // Helper: check if trading is still active (3-month window)
