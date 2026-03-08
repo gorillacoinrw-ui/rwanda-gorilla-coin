@@ -16,22 +16,39 @@ export function useAppSettings() {
     staleTime: 60_000,
   });
 
+  // Get total user count
+  const userCountQuery = useQuery({
+    queryKey: ["total_user_count"],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from("profiles")
+        .select("*", { count: "exact", head: true });
+      if (error) throw error;
+      return count ?? 0;
+    },
+    staleTime: 60_000,
+  });
+
   const settings = query.data ?? {};
   const baseValue = (settings.coin_base_value as number) ?? 35;
   const growthPer100 = (settings.coin_growth_per_100_users as number) ?? 5;
   const taxPoolBalance = Number(settings.tax_pool_balance ?? 0);
-  const tradingStartDate = settings.trading_start_date ? String(settings.trading_start_date) : null;
+  const minUsersForTrading = Number(settings.min_users_for_trading ?? 100);
+  const totalUsers = userCountQuery.data ?? 0;
 
-  // Check if trading is active (3-month window)
-  let tradingActive = true;
-  let tradingDaysLeft = 0;
-  if (tradingStartDate) {
-    const start = new Date(tradingStartDate);
-    const end = new Date(start);
-    end.setMonth(end.getMonth() + 3);
-    tradingActive = new Date() < end;
-    tradingDaysLeft = Math.max(0, Math.ceil((end.getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
-  }
+  // Trading is active only when user count reaches the minimum threshold
+  const tradingActive = totalUsers >= minUsersForTrading;
+  const usersNeeded = Math.max(0, minUsersForTrading - totalUsers);
 
-  return { settings, baseValue, growthPer100, taxPoolBalance, tradingStartDate, tradingActive, tradingDaysLeft, isLoading: query.isLoading };
+  return {
+    settings,
+    baseValue,
+    growthPer100,
+    taxPoolBalance,
+    tradingActive,
+    totalUsers,
+    minUsersForTrading,
+    usersNeeded,
+    isLoading: query.isLoading,
+  };
 }

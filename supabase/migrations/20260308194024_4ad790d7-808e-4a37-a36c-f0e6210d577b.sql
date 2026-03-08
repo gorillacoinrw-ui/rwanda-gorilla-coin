@@ -1,0 +1,1 @@
+INSERT INTO app_settings (key, value) VALUES ('min_users_for_trading', '100') ON CONFLICT (key) DO NOTHING;

@@ -30,7 +30,7 @@ import {
   Phone,
   ShoppingCart,
 } from "lucide-react";
-import { format, differenceInDays } from "date-fns";
+import { format } from "date-fns";
 
 const PAYMENT_METHODS = [
   { id: "mtn", label: "MTN MoMo", icon: Phone },
@@ -42,9 +42,8 @@ const FounderDashboard = () => {
   const { user, loading: authLoading } = useAuth();
   const { data: isAdmin, isLoading: adminLoading } = useAdminCheck();
   const { users, trades, taxRecords, stats } = useAdminData();
-  const { settings } = useAppSettings();
+  const { settings, tradingActive, totalUsers, minUsersForTrading, usersNeeded } = useAppSettings();
   const { isOnline } = useOnlinePresence();
-
   const [sellOpen, setSellOpen] = useState(false);
   const [sellAmount, setSellAmount] = useState("");
   const [sellPrice, setSellPrice] = useState("");
@@ -65,11 +64,6 @@ const FounderDashboard = () => {
   }
 
   const taxPool = Number(settings.tax_pool_balance ?? 0);
-  const tradingStart = settings.trading_start_date ? new Date(String(settings.trading_start_date)) : new Date();
-  const tradingEnd = new Date(tradingStart);
-  tradingEnd.setMonth(tradingEnd.getMonth() + 3);
-  const daysLeft = Math.max(0, differenceInDays(tradingEnd, new Date()));
-  const tradingActive = new Date() < tradingEnd;
 
   // Metrics
   const totalCoinCirculation = users.reduce((s, u) => s + u.coin_balance, 0);
@@ -118,7 +112,7 @@ const FounderDashboard = () => {
     { label: "Total Tax Collected", value: `${totalTaxCollected.toLocaleString()} GOR`, icon: DollarSign, color: "text-accent" },
     { label: "Tax Cashed Out", value: `${totalCashedOut.toLocaleString()} RWF`, icon: ArrowLeftRight, color: "text-primary" },
     { label: "Completed Trades", value: completedTrades.length, icon: ArrowLeftRight, color: "text-accent" },
-    { label: "Trading Days Left", value: tradingActive ? daysLeft : "Ended", icon: Calendar, color: tradingActive ? "text-primary" : "text-destructive" },
+    { label: "Trading Status", value: tradingActive ? "Active" : `${usersNeeded} users needed`, icon: Calendar, color: tradingActive ? "text-primary" : "text-destructive" },
   ];
 
   return (
@@ -136,20 +130,25 @@ const FounderDashboard = () => {
         </div>
 
         {/* Trading status */}
-        <div className={`p-4 rounded-xl border ${tradingActive ? "border-accent/30 bg-accent/5" : "border-destructive/30 bg-destructive/5"}`}>
+        <div className={`p-4 rounded-xl border ${tradingActive ? "border-accent/30 bg-accent/5" : "border-primary/30 bg-primary/5"}`}>
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-foreground">
-                {tradingActive ? "Trading is Active" : "Trading Period Ended"}
+                {tradingActive ? "Trading is Active" : "Trading Not Yet Open"}
               </p>
               <p className="text-xs text-muted-foreground">
-                {format(tradingStart, "dd MMM yyyy")} → {format(tradingEnd, "dd MMM yyyy")}
+                {totalUsers} / {minUsersForTrading} users registered
               </p>
             </div>
-            <Badge variant={tradingActive ? "default" : "destructive"}>
-              {tradingActive ? `${daysLeft} days left` : "Closed"}
+            <Badge variant={tradingActive ? "default" : "secondary"}>
+              {tradingActive ? "Live" : `${usersNeeded} more needed`}
             </Badge>
           </div>
+          {!tradingActive && (
+            <div className="w-full h-2 bg-muted rounded-full overflow-hidden mt-3">
+              <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${Math.min(100, (totalUsers / minUsersForTrading) * 100)}%` }} />
+            </div>
+          )}
         </div>
 
         {/* Metrics Grid */}
