@@ -248,7 +248,7 @@ export function useTrades() {
       const { data, error } = await supabase.functions.invoke("manage-escrow", {
         body: { action: "founder_sell_tax", trade_data: trade },
       });
-      if (error) throw error;
+      if (error) throw new Error(await extractError(error, "Failed to create tax sell order"));
       if (data?.error) throw new Error(data.error);
       return data;
     },
