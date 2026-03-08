@@ -167,17 +167,30 @@ const Invest = () => {
                       </Badge>
                     </div>
                     <Progress value={progress} className="h-2" />
-                    {matured && (
-                      <Button
-                        onClick={() => claim.mutate(inv.id)}
-                        disabled={claim.isPending}
-                        className="w-full bg-accent text-accent-foreground hover:bg-accent/90 font-display"
-                        size="sm"
-                      >
-                        <CheckCircle className="w-4 h-4 mr-2" />
-                        {claim.isPending ? "Claiming..." : `Claim ${inv.amount + inv.coins_earned} GOR`}
-                      </Button>
-                    )}
+                    <div className="flex gap-2">
+                      {!matured && (
+                        <Button
+                          onClick={() => claim.mutate({ investmentId: inv.id, earlyStop: true })}
+                          disabled={claim.isPending}
+                          variant="outline"
+                          className="flex-1 border-destructive/50 text-destructive hover:bg-destructive/10 font-display"
+                          size="sm"
+                        >
+                          {claim.isPending ? "Stopping..." : "Stop & Collect"}
+                        </Button>
+                      )}
+                      {matured && (
+                        <Button
+                          onClick={() => claim.mutate({ investmentId: inv.id })}
+                          disabled={claim.isPending}
+                          className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90 font-display"
+                          size="sm"
+                        >
+                          <CheckCircle className="w-4 h-4 mr-2" />
+                          {claim.isPending ? "Claiming..." : `Claim ${inv.amount + inv.coins_earned} GOR`}
+                        </Button>
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
               );
