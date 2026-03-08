@@ -64,11 +64,6 @@ const FounderDashboard = () => {
   }
 
   const taxPool = Number(settings.tax_pool_balance ?? 0);
-  const tradingStart = settings.trading_start_date ? new Date(String(settings.trading_start_date)) : new Date();
-  const tradingEnd = new Date(tradingStart);
-  tradingEnd.setMonth(tradingEnd.getMonth() + 3);
-  const daysLeft = Math.max(0, differenceInDays(tradingEnd, new Date()));
-  const tradingActive = new Date() < tradingEnd;
 
   // Metrics
   const totalCoinCirculation = users.reduce((s, u) => s + u.coin_balance, 0);
