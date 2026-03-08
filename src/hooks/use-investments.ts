@@ -140,9 +140,9 @@ export function useInvestments() {
   });
 
   const activeInvestments = investmentsQuery.data?.filter((i) => i.status === "active") ?? [];
-  const claimedInvestments = investmentsQuery.data?.filter((i) => i.status === "claimed") ?? [];
+  const completedInvestments = investmentsQuery.data?.filter((i) => i.status === "claimed" || i.status === "stopped") ?? [];
   const totalInvested = activeInvestments.reduce((sum, i) => sum + i.amount, 0);
-  const totalEarnings = claimedInvestments.reduce((sum, i) => sum + i.coins_earned, 0);
+  const totalEarnings = completedInvestments.reduce((sum, i) => sum + i.coins_earned, 0);
 
   return {
     investments: investmentsQuery.data ?? [],
