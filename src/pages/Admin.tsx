@@ -2,12 +2,14 @@ import { Navigate } from "react-router-dom";
 import AppLayout from "@/components/AppLayout";
 import AccessKeyGate from "@/components/AccessKeyGate";
 import { useAdminCheck, useAdminData } from "@/hooks/use-admin";
+import { useAdminTasks } from "@/hooks/use-tasks";
 import { useAuth } from "@/contexts/AuthContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Users, ArrowLeftRight, Pickaxe, Landmark, UserCheck, Shield } from "lucide-react";
+import { Users, ArrowLeftRight, Pickaxe, Landmark, UserCheck, Shield, Gift, CheckCircle2, XCircle } from "lucide-react";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 const fmt = (d: string) => {
   try { return format(new Date(d), "dd MMM yyyy, HH:mm"); } catch { return d; }
