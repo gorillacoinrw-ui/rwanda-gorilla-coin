@@ -146,6 +146,7 @@ const Chat = () => {
       duration: Math.random() * 10 + 10,
       delay: Math.random() * 8,
       opacity: Math.random() * 0.12 + 0.06,
+      blur: Math.random() * 4 + 1,
     })), []);
 
   return (
@@ -164,6 +165,7 @@ const Chat = () => {
                 width: coin.size,
                 height: coin.size,
                 opacity: coin.opacity,
+                filter: `blur(${coin.blur}px)`,
                 bottom: "-30px",
                 animation: `floatUp ${coin.duration}s linear ${coin.delay}s infinite`,
               }}
