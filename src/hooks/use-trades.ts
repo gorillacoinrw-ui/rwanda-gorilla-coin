@@ -161,7 +161,19 @@ export function useTrades() {
       const { data, error } = await supabase.functions.invoke("manage-escrow", {
         body: { action: "accept", trade_id: tradeId },
       });
-      if (error) throw error;
+      if (error) {
+        // Try to parse the actual error message from the response
+        try {
+          const context = (error as any).context;
+          if (context instanceof Response) {
+            const body = await context.json();
+            if (body?.error) throw new Error(body.error);
+          }
+        } catch (parseErr) {
+          if (parseErr instanceof Error && parseErr.message !== error.message) throw parseErr;
+        }
+        throw error;
+      }
       if (data?.error) throw new Error(data.error);
       return data;
     },
