@@ -67,6 +67,7 @@ const translations: Record<Language, Record<string, string>> = {
     "tasks.shareTitle": "Sangira & Uhembwe",
     "nav.tasks": "Ibikoresho",
     "nav.ads": "Amashusho",
+    "nav.invest": "Gushora",
 
     // Trade
     "trade.title": "Isoko rya P2P",
@@ -157,6 +158,7 @@ const translations: Record<Language, Record<string, string>> = {
     "tasks.shareTitle": "Share & Earn",
     "nav.tasks": "Tasks",
     "nav.ads": "Ads",
+    "nav.invest": "Invest",
 
     "trade.title": "P2P Marketplace",
     "trade.create": "Create Order",
@@ -245,6 +247,7 @@ const translations: Record<Language, Record<string, string>> = {
     "tasks.shareTitle": "Partager & Gagner",
     "nav.tasks": "Tâches",
     "nav.ads": "Pubs",
+    "nav.invest": "Investir",
 
     "trade.title": "Marché P2P",
     "trade.create": "Créer un Ordre",

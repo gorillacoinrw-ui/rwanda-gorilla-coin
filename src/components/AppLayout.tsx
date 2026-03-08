@@ -1,6 +1,6 @@
 import { ReactNode, useMemo } from "react";
 import gorillaLogo from "@/assets/gorilla-coin-logo.png";
-import { Home, Pickaxe, ArrowLeftRight, User, Clock, Gift, Shield, Crown, Tv } from "lucide-react";
+import { Home, Pickaxe, ArrowLeftRight, User, Clock, Gift, Shield, Crown, Tv, TrendingUp } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Footer from "@/components/Footer";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -12,6 +12,7 @@ const navItems = [
   { icon: Pickaxe, labelKey: "nav.mine", path: "/mine" },
   { icon: Gift, labelKey: "nav.tasks", path: "/tasks" },
   { icon: Tv, labelKey: "nav.ads", path: "/ads" },
+  { icon: TrendingUp, labelKey: "nav.invest", path: "/invest" },
   { icon: ArrowLeftRight, labelKey: "nav.trade", path: "/trade" },
   { icon: Clock, labelKey: "nav.history", path: "/history" },
   { icon: User, labelKey: "nav.profile", path: "/profile" },

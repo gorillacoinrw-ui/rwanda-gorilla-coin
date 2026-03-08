@@ -16,6 +16,7 @@ import Tasks from "./pages/Tasks";
 import Admin from "./pages/Admin";
 import FounderDashboard from "./pages/FounderDashboard";
 import Ads from "./pages/Ads";
+import Invest from "./pages/Invest";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 
@@ -49,6 +50,7 @@ const App = () => (
               <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
               <Route path="/founder" element={<ProtectedRoute><FounderDashboard /></ProtectedRoute>} />
               <Route path="/ads" element={<ProtectedRoute><Ads /></ProtectedRoute>} />
+              <Route path="/invest" element={<ProtectedRoute><Invest /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </LanguageProvider>
