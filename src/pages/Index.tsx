@@ -19,6 +19,7 @@ const Index = () => {
   const [showDescription, setShowDescription] = useState(false);
   const { isMining, formattedTime, progress, miningComplete, startMining } = useMiningTimer();
   const { profile, referralCount } = useProfile();
+  const { t } = useLanguage();
   const { baseValue, growthPer100 } = useAppSettings();
   const { user } = useAuth();
   const { myTrades } = useTrades();
