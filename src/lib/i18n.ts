@@ -7,6 +7,7 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.mine": "Gucukura",
     "nav.trade": "Guhana",
     "nav.history": "Amateka",
+    "nav.chat": "AI",
     "nav.profile": "Umwirondoro",
 
     // Index
