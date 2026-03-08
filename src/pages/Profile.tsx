@@ -293,7 +293,7 @@ const Profile = () => {
                     theme === "light" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  <Sun className="w-3.5 h-3.5" /> Light
+                  <Sun className="w-3.5 h-3.5" /> Blue Light
                 </button>
                 <button
                   onClick={() => setTheme("dark")}
