@@ -150,7 +150,7 @@ const Ads = () => {
 
       {/* Ad Viewing Dialog */}
       <Dialog open={!!viewingAd} onOpenChange={(v) => { if (!v) setViewingAd(null); }}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-[95vw] sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-sm">{viewingAd?.title}</DialogTitle>
           </DialogHeader>
