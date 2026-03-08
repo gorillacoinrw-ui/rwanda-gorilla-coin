@@ -67,9 +67,22 @@ const Auth = () => {
       <div className="flex-1 flex items-center justify-center px-4">
         <div className="w-full max-w-sm space-y-6">
           <div className="text-center space-y-3">
-            <div className="relative mx-auto w-20 h-20" style={{ animation: 'fall-in 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) both' }}>
-              <div className="absolute inset-0 rounded-full glow-gold animate-pulse-slow" />
-              <img src={gorillaLogo} alt="Gorilla Coin" className="w-20 h-20 rounded-full relative z-10 animate-spin-slow" />
+            <div className="relative mx-auto w-40 h-24 flex items-end justify-center">
+              {/* Left coin */}
+              <div className="absolute left-2 bottom-0" style={{ animation: 'fall-in 1s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both' }}>
+                <div className="absolute inset-0 rounded-full glow-gold animate-pulse-slow" />
+                <img src={gorillaLogo} alt="" className="w-14 h-14 rounded-full relative z-10 animate-spin-slow opacity-70" />
+              </div>
+              {/* Center coin (main) */}
+              <div className="relative z-20" style={{ animation: 'fall-in 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) both' }}>
+                <div className="absolute inset-0 rounded-full glow-gold animate-pulse-slow" />
+                <img src={gorillaLogo} alt="Gorilla Coin" className="w-20 h-20 rounded-full relative z-10 animate-spin-slow" />
+              </div>
+              {/* Right coin */}
+              <div className="absolute right-2 bottom-0" style={{ animation: 'fall-in 1s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both' }}>
+                <div className="absolute inset-0 rounded-full glow-gold animate-pulse-slow" />
+                <img src={gorillaLogo} alt="" className="w-14 h-14 rounded-full relative z-10 animate-spin-slow opacity-70" />
+              </div>
             </div>
             <h1 className="text-xl font-display font-bold text-gradient-gold tracking-wider">
               GORILLA COIN
