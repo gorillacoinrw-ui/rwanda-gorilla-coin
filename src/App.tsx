@@ -16,6 +16,7 @@ import Tasks from "./pages/Tasks";
 import Admin from "./pages/Admin";
 import FounderDashboard from "./pages/FounderDashboard";
 import Ads from "./pages/Ads";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();

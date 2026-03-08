@@ -207,11 +207,18 @@ const Auth = () => {
               minLength={6}
               className="bg-muted border-border text-foreground"
             />
+            {isLogin && (
+              <div className="text-right -mt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowForgotPassword(true)}
+                  className="text-xs text-primary hover:underline"
+                >
+                  Forgot password?
+                </button>
+              </div>
+            )}
             {!isLogin && (
-              <Input
-                placeholder="Referral Code (optional)"
-                value={referralCode}
-                onChange={(e) => setReferralCode(e.target.value)}
                 className="bg-muted border-border text-foreground"
               />
             )}
