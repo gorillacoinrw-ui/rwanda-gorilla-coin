@@ -200,6 +200,64 @@ Deno.serve(async (req) => {
         });
       }
 
+      // If this is a buy order, the accepter is the seller — lock their coins
+      if (trade.trade_type === "buy") {
+        const { data: accepterProfile, error: profileErr } = await supabase
+          .from("profiles")
+          .select("coin_balance")
+          .eq("user_id", user.id)
+          .single();
+
+        if (profileErr || !accepterProfile) {
+          return new Response(JSON.stringify({ error: "Could not fetch your profile" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        // Calculate available balance (total minus locked in other active trades)
+        const { data: activeTrades } = await supabase
+          .from("trades")
+          .select("amount")
+          .eq("seller_id", user.id)
+          .eq("trade_type", "sell")
+          .in("status", ["open", "escrow"]);
+
+        const lockedCoins = (activeTrades || []).reduce((sum: number, t: { amount: number }) => sum + t.amount, 0);
+
+        // Also count coins locked as accepter of other buy orders
+        const { data: acceptedBuyTrades } = await supabase
+          .from("trades")
+          .select("amount")
+          .eq("buyer_id", user.id)
+          .eq("trade_type", "buy")
+          .eq("status", "escrow");
+
+        const lockedAsBuyAccepter = (acceptedBuyTrades || []).reduce((sum: number, t: { amount: number }) => sum + t.amount, 0);
+
+        const availableBalance = accepterProfile.coin_balance - lockedCoins - lockedAsBuyAccepter;
+
+        if (availableBalance < trade.amount) {
+          return new Response(JSON.stringify({ error: `Please enter the available coin. You have ${availableBalance} GOR available.` }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        // Lock coins from accepter's balance
+        const { error: deductErr } = await supabase
+          .from("profiles")
+          .update({ coin_balance: accepterProfile.coin_balance - trade.amount })
+          .eq("user_id", user.id);
+
+        if (deductErr) {
+          return new Response(JSON.stringify({ error: "Failed to lock coins" }), {
+            status: 500,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+      }
+
       const expiresAt = new Date(Date.now() + 20 * 60 * 1000).toISOString();
 
       const updateData: Record<string, unknown> = {
