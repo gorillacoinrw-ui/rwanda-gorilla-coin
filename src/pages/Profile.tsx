@@ -102,100 +102,107 @@ const Profile = () => {
 
   return (
     <AppLayout>
-      <div className="max-w-md md:max-w-2xl lg:max-w-4xl mx-auto px-4 py-6 space-y-6">
-        <h1 className="text-xl font-display font-bold text-gradient-gold tracking-wider text-center">
+      <div className="max-w-md sm:max-w-lg md:max-w-3xl lg:max-w-4xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+        <h1 className="text-xl sm:text-2xl font-display font-bold text-gradient-gold tracking-wider text-center">
           {t("profile.title")}
         </h1>
 
-        <div className="bg-gradient-card rounded-xl border border-border p-6 text-center space-y-3">
-          <div className="relative w-20 h-20 mx-auto">
-            <Avatar className="w-20 h-20 border-2 border-primary/30">
-              <AvatarImage src={profile?.avatar_url ?? undefined} alt="Avatar" />
-              <AvatarFallback className="bg-muted text-foreground text-xl font-display">
-                {(profile?.display_name ?? "G")[0].toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-primary flex items-center justify-center text-primary-foreground"
-            >
-              {uploadAvatar.isPending ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              ) : (
-                <Camera className="w-3.5 h-3.5" />
+        {/* Desktop: profile card + settings side by side */}
+        <div className="md:grid md:grid-cols-2 md:gap-6 space-y-6 md:space-y-0">
+          {/* Profile card */}
+          <div className="bg-gradient-card rounded-xl border border-border p-6 text-center space-y-3">
+            <div className="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto">
+              <Avatar className="w-20 h-20 sm:w-24 sm:h-24 border-2 border-primary/30">
+                <AvatarImage src={profile?.avatar_url ?? undefined} alt="Avatar" />
+                <AvatarFallback className="bg-muted text-foreground text-xl sm:text-2xl font-display">
+                  {(profile?.display_name ?? "G")[0].toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-primary flex items-center justify-center text-primary-foreground"
+              >
+                {uploadAvatar.isPending ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Camera className="w-3.5 h-3.5" />
+                )}
+              </button>
+              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
+            </div>
+            <div>
+              <h3 className="font-display font-semibold text-foreground text-lg">
+                {profile?.display_name ?? "Gorilla Miner"}
+              </h3>
+              <p className="text-xs text-muted-foreground">{user?.email}</p>
+            </div>
+            <div className="flex justify-center gap-6 pt-2">
+              <div className="text-center">
+                <p className="text-lg sm:text-xl font-display font-bold text-primary">{profile?.coin_balance ?? 0}</p>
+                <p className="text-[10px] text-muted-foreground uppercase">{t("profile.coins")}</p>
+              </div>
+              <div className="text-center">
+                <p className="text-lg sm:text-xl font-display font-bold text-accent">{referralCount}</p>
+                <p className="text-[10px] text-muted-foreground uppercase">{t("profile.referrals")}</p>
+              </div>
+              <div className="text-center">
+                <p className="text-lg sm:text-xl font-display font-bold text-secondary">{profile?.total_mined ?? 0}</p>
+                <p className="text-[10px] text-muted-foreground uppercase">{t("profile.mined")}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Settings menu */}
+          <div className="space-y-4">
+            <div className="bg-gradient-card rounded-xl border border-border overflow-hidden">
+              <button onClick={openEdit} className="w-full flex items-center gap-3 px-5 py-4 text-sm text-foreground hover:bg-muted/50 transition-colors">
+                <User className="w-4 h-4 text-muted-foreground" />
+                {t("profile.edit")}
+              </button>
+              <button onClick={() => setSecurityOpen(true)} className="w-full flex items-center gap-3 px-5 py-4 text-sm text-foreground hover:bg-muted/50 transition-colors border-t border-border">
+                <Shield className="w-4 h-4 text-muted-foreground" />
+                {t("profile.security")}
+              </button>
+              <button onClick={() => setLangOpen(true)} className="w-full flex items-center gap-3 px-5 py-4 text-sm text-foreground hover:bg-muted/50 transition-colors border-t border-border">
+                <Globe className="w-4 h-4 text-muted-foreground" />
+                {t("profile.language")}
+                <span className="ml-auto text-xs text-muted-foreground uppercase">{profile?.language ?? "rw"}</span>
+              </button>
+              <button onClick={() => setSettingsOpen(true)} className="w-full flex items-center gap-3 px-5 py-4 text-sm text-foreground hover:bg-muted/50 transition-colors border-t border-border">
+                <Settings className="w-4 h-4 text-muted-foreground" />
+                {t("profile.settings")}
+              </button>
+              {isAdmin && (
+                <button onClick={() => navigate("/admin")} className="w-full flex items-center gap-3 px-5 py-4 text-sm text-primary hover:bg-muted/50 transition-colors border-t border-border font-semibold">
+                  <ShieldCheck className="w-4 h-4" />
+                  Admin Dashboard
+                </button>
               )}
+            </div>
+
+            <div className="bg-gradient-card rounded-xl border border-border p-5 space-y-3">
+              <h3 className="text-sm font-display font-semibold text-foreground">{t("profile.support")}</h3>
+              <a href="mailto:gorillacoinrw@gmail.com" className="flex items-center gap-3 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Mail className="w-4 h-4" />
+                gorillacoinrw@gmail.com
+              </a>
+              <a href="tel:0785790765" className="flex items-center gap-3 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Phone className="w-4 h-4" />
+                0785790765
+              </a>
+            </div>
+
+            <button onClick={signOut} className="w-full flex items-center justify-center gap-2 py-3 text-sm text-destructive hover:opacity-80 transition-opacity">
+              <LogOut className="w-4 h-4" />
+              {t("profile.signout")}
             </button>
-            <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
-          </div>
-          <div>
-            <h3 className="font-display font-semibold text-foreground">
-              {profile?.display_name ?? "Gorilla Miner"}
-            </h3>
-            <p className="text-xs text-muted-foreground">{user?.email}</p>
-          </div>
-          <div className="flex justify-center gap-6 pt-2">
-            <div className="text-center">
-              <p className="text-lg font-display font-bold text-primary">{profile?.coin_balance ?? 0}</p>
-              <p className="text-[10px] text-muted-foreground uppercase">{t("profile.coins")}</p>
-            </div>
-            <div className="text-center">
-              <p className="text-lg font-display font-bold text-accent">{referralCount}</p>
-              <p className="text-[10px] text-muted-foreground uppercase">{t("profile.referrals")}</p>
-            </div>
-            <div className="text-center">
-              <p className="text-lg font-display font-bold text-secondary">{profile?.total_mined ?? 0}</p>
-              <p className="text-[10px] text-muted-foreground uppercase">{t("profile.mined")}</p>
-            </div>
           </div>
         </div>
-
-        <div className="bg-gradient-card rounded-xl border border-border overflow-hidden">
-          <button onClick={openEdit} className="w-full flex items-center gap-3 px-5 py-4 text-sm text-foreground hover:bg-muted/50 transition-colors">
-            <User className="w-4 h-4 text-muted-foreground" />
-            {t("profile.edit")}
-          </button>
-          <button onClick={() => setSecurityOpen(true)} className="w-full flex items-center gap-3 px-5 py-4 text-sm text-foreground hover:bg-muted/50 transition-colors border-t border-border">
-            <Shield className="w-4 h-4 text-muted-foreground" />
-            {t("profile.security")}
-          </button>
-          <button onClick={() => setLangOpen(true)} className="w-full flex items-center gap-3 px-5 py-4 text-sm text-foreground hover:bg-muted/50 transition-colors border-t border-border">
-            <Globe className="w-4 h-4 text-muted-foreground" />
-            {t("profile.language")}
-            <span className="ml-auto text-xs text-muted-foreground uppercase">{profile?.language ?? "rw"}</span>
-          </button>
-          <button onClick={() => setSettingsOpen(true)} className="w-full flex items-center gap-3 px-5 py-4 text-sm text-foreground hover:bg-muted/50 transition-colors border-t border-border">
-            <Settings className="w-4 h-4 text-muted-foreground" />
-            {t("profile.settings")}
-          </button>
-          {isAdmin && (
-            <button onClick={() => navigate("/admin")} className="w-full flex items-center gap-3 px-5 py-4 text-sm text-primary hover:bg-muted/50 transition-colors border-t border-border font-semibold">
-              <ShieldCheck className="w-4 h-4" />
-              Admin Dashboard
-            </button>
-          )}
-        </div>
-
-        <div className="bg-gradient-card rounded-xl border border-border p-5 space-y-3">
-          <h3 className="text-sm font-display font-semibold text-foreground">{t("profile.support")}</h3>
-          <a href="mailto:gorillacoinrw@gmail.com" className="flex items-center gap-3 text-sm text-muted-foreground hover:text-foreground transition-colors">
-            <Mail className="w-4 h-4" />
-            gorillacoinrw@gmail.com
-          </a>
-          <a href="tel:0785790765" className="flex items-center gap-3 text-sm text-muted-foreground hover:text-foreground transition-colors">
-            <Phone className="w-4 h-4" />
-            0785790765
-          </a>
-        </div>
-
-        <button onClick={signOut} className="w-full flex items-center justify-center gap-2 py-3 text-sm text-destructive hover:opacity-80 transition-opacity">
-          <LogOut className="w-4 h-4" />
-          {t("profile.signout")}
-        </button>
       </div>
 
       {/* Edit Profile Dialog */}
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
-        <DialogContent className="bg-card border-border">
+        <DialogContent className="bg-card border-border max-w-[95vw] sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="font-display text-gradient-gold">{t("profile.edit")}</DialogTitle>
             <DialogDescription>{t("profile.displayName")} & {t("profile.phone")}</DialogDescription>
@@ -219,7 +226,7 @@ const Profile = () => {
 
       {/* Security Dialog */}
       <Dialog open={securityOpen} onOpenChange={setSecurityOpen}>
-        <DialogContent className="bg-card border-border">
+        <DialogContent className="bg-card border-border max-w-[95vw] sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="font-display text-gradient-gold">{t("profile.security")}</DialogTitle>
             <DialogDescription>{t("profile.newPassword")}</DialogDescription>
@@ -243,7 +250,7 @@ const Profile = () => {
 
       {/* Language Dialog */}
       <Dialog open={langOpen} onOpenChange={setLangOpen}>
-        <DialogContent className="bg-card border-border">
+        <DialogContent className="bg-card border-border max-w-[95vw] sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="font-display text-gradient-gold">{t("profile.language")}</DialogTitle>
             <DialogDescription>Choose your preferred language.</DialogDescription>
@@ -269,7 +276,7 @@ const Profile = () => {
 
       {/* Settings Dialog */}
       <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
-        <DialogContent className="bg-card border-border">
+        <DialogContent className="bg-card border-border max-w-[95vw] sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="font-display text-gradient-gold">{t("profile.settings")}</DialogTitle>
             <DialogDescription>App preferences and account settings.</DialogDescription>
@@ -277,7 +284,7 @@ const Profile = () => {
           <div className="space-y-4 pt-2">
             <div className="flex items-center justify-between py-2">
               <span className="text-sm text-foreground">{t("profile.email")}</span>
-              <span className="text-sm text-muted-foreground">{user?.email}</span>
+              <span className="text-sm text-muted-foreground truncate ml-4">{user?.email}</span>
             </div>
             <div className="flex items-center justify-between py-2">
               <span className="text-sm text-foreground">{t("profile.referralCode")}</span>

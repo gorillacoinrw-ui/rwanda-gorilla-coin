@@ -27,7 +27,7 @@ const platformIconColors: Record<string, string> = {
 };
 
 const getIcon = (icon: string | null, platform: string) => {
-  const cls = `w-6 h-6 ${platformIconColors[platform] ?? "text-primary"}`;
+  const cls = `w-5 h-5 sm:w-6 sm:h-6 ${platformIconColors[platform] ?? "text-primary"}`;
   switch (icon) {
     case "Youtube": return <Youtube className={cls} />;
     case "Facebook": return <Facebook className={cls} />;
@@ -83,14 +83,14 @@ const Tasks = () => {
     return (
       <div
         key={task.id}
-        className={`rounded-xl border p-4 transition-all ${platformColors[task.platform] ?? "bg-card border-border"} ${isCompleted ? "opacity-60" : ""}`}
+        className={`rounded-xl border p-3 sm:p-4 transition-all ${platformColors[task.platform] ?? "bg-card border-border"} ${isCompleted ? "opacity-60" : ""}`}
       >
         <div className="flex items-start gap-3">
           <div className="shrink-0 mt-0.5">
             {getIcon(task.icon, task.platform)}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <h3 className="font-semibold text-sm text-foreground">{task.title}</h3>
               <Badge variant="outline" className="text-[10px] bg-primary/10 text-primary border-primary/20 shrink-0">
                 +{task.coin_reward} GOR
@@ -100,12 +100,12 @@ const Tasks = () => {
 
             <div className="mt-3 flex flex-wrap items-center gap-2">
               {isCompleted ? (
-                <div className="flex items-center gap-1.5 text-xs text-green-500">
+                <div className="flex items-center gap-1.5 text-xs text-accent">
                   <CheckCircle2 className="w-3.5 h-3.5" />
                   <span>Completed! +{task.coin_reward} GOR earned</span>
                 </div>
               ) : isPending ? (
-                <div className="flex items-center gap-1.5 text-xs text-yellow-500">
+                <div className="flex items-center gap-1.5 text-xs text-primary">
                   <Clock className="w-3.5 h-3.5" />
                   <span>Pending admin approval...</span>
                 </div>
@@ -128,7 +128,7 @@ const Tasks = () => {
                   <Button
                     size="sm"
                     variant="outline"
-                    className={`h-8 text-xs ${isRejected ? "border-yellow-500/30 text-yellow-600 hover:bg-yellow-500/10" : "border-green-500/30 text-green-500 hover:bg-green-500/10"}`}
+                    className={`h-8 text-xs ${isRejected ? "border-primary/30 text-primary hover:bg-primary/10" : "border-accent/30 text-accent hover:bg-accent/10"}`}
                     onClick={() => isRejected ? handleRetry(task) : handleSubmit(task)}
                     disabled={submitTask.isPending || retryTask.isPending}
                   >
@@ -155,12 +155,12 @@ const Tasks = () => {
 
   return (
     <AppLayout>
-      <div className="max-w-md md:max-w-4xl lg:max-w-6xl mx-auto px-4 py-6 space-y-6">
+      <div className="max-w-md sm:max-w-lg md:max-w-4xl lg:max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-6">
         <div className="text-center">
-          <h1 className="text-xl font-display font-bold text-gradient-gold tracking-wider">
+          <h1 className="text-xl sm:text-2xl font-display font-bold text-gradient-gold tracking-wider">
             {t("tasks.title")}
           </h1>
-          <p className="text-xs text-muted-foreground mt-1">{t("tasks.subtitle")}</p>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">{t("tasks.subtitle")}</p>
         </div>
 
         {/* Progress */}
@@ -180,7 +180,7 @@ const Tasks = () => {
         {isLoading ? (
           <div className="text-center text-muted-foreground py-8">Loading tasks...</div>
         ) : (
-          <>
+          <div className="md:grid md:grid-cols-2 md:gap-6 space-y-6 md:space-y-0">
             {/* Follow/Subscribe Tasks */}
             {followTasks.length > 0 && (
               <div className="space-y-3">
@@ -206,7 +206,7 @@ const Tasks = () => {
                 </div>
               </div>
             )}
-          </>
+          </div>
         )}
       </div>
     </AppLayout>
