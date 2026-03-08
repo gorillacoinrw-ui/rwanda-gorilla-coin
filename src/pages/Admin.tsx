@@ -9,7 +9,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useOnlinePresence } from "@/hooks/use-online-presence";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Users, ArrowLeftRight, Pickaxe, Landmark, UserCheck, Shield, Gift, Tv, BarChart3, TrendingUp } from "lucide-react";
+import { Users, ArrowLeftRight, Pickaxe, Landmark, UserCheck, Shield, Gift, Tv, BarChart3, TrendingUp, Settings } from "lucide-react";
+import AdminSettings from "@/components/AdminSettings";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -79,8 +80,9 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="analytics" className="w-full">
-          <TabsList className="grid w-full grid-cols-9">
+          <TabsList className="grid w-full grid-cols-5 md:grid-cols-10">
             <TabsTrigger value="analytics" className="text-xs gap-1"><BarChart3 className="w-3.5 h-3.5" />Analytics</TabsTrigger>
+            <TabsTrigger value="settings" className="text-xs gap-1"><Settings className="w-3.5 h-3.5" />Settings</TabsTrigger>
             <TabsTrigger value="users" className="text-xs gap-1"><Users className="w-3.5 h-3.5" />Users</TabsTrigger>
             <TabsTrigger value="tasks" className="text-xs gap-1"><Gift className="w-3.5 h-3.5" />Tasks</TabsTrigger>
             <TabsTrigger value="ads" className="text-xs gap-1"><Tv className="w-3.5 h-3.5" />Ads</TabsTrigger>
@@ -90,6 +92,11 @@ const Admin = () => {
             <TabsTrigger value="tax" className="text-xs gap-1"><Landmark className="w-3.5 h-3.5" />Tax</TabsTrigger>
             <TabsTrigger value="referrals" className="text-xs gap-1"><UserCheck className="w-3.5 h-3.5" />Referrals</TabsTrigger>
           </TabsList>
+
+          {/* Settings Tab */}
+          <TabsContent value="settings" className="mt-4">
+            <AdminSettings />
+          </TabsContent>
 
           {/* Analytics Tab */}
           <TabsContent value="analytics" className="mt-4">
