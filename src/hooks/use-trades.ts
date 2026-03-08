@@ -22,6 +22,7 @@ export type Trade = {
   created_at: string;
   updated_at: string;
   seller_profile?: { display_name: string | null; coin_balance: number } | null;
+  seller_stats?: { total_orders: number; completed_orders: number; completion_rate: number } | null;
 };
 
 export function useTrades() {
@@ -73,18 +74,38 @@ export function useTrades() {
       if (error) throw error;
 
       const sellerIds = [...new Set((data ?? []).map((t) => t.seller_id))];
-      const { data: profiles } = await supabase
-        .from("profiles")
-        .select("user_id, display_name, coin_balance")
-        .in("user_id", sellerIds);
+      const [{ data: profiles }, { data: allTrades }] = await Promise.all([
+        supabase
+          .from("profiles")
+          .select("user_id, display_name, coin_balance")
+          .in("user_id", sellerIds),
+        supabase
+          .from("trades")
+          .select("seller_id, status")
+          .in("seller_id", sellerIds),
+      ]);
 
       const profileMap = new Map(
         (profiles ?? []).map((p) => [p.user_id, p])
       );
 
+      // Calculate seller stats
+      const statsMap = new Map<string, { total_orders: number; completed_orders: number; completion_rate: number }>();
+      sellerIds.forEach((sid) => {
+        const sellerTrades = (allTrades ?? []).filter((t) => t.seller_id === sid);
+        const total = sellerTrades.length;
+        const completed = sellerTrades.filter((t) => t.status === "completed").length;
+        statsMap.set(sid, {
+          total_orders: total,
+          completed_orders: completed,
+          completion_rate: total > 0 ? Math.round((completed / total) * 100) : 0,
+        });
+      });
+
       return (data ?? []).map((t) => ({
         ...t,
         seller_profile: profileMap.get(t.seller_id) ?? null,
+        seller_stats: statsMap.get(t.seller_id) ?? null,
       })) as Trade[];
     },
     enabled: !!user,

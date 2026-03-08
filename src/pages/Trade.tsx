@@ -112,6 +112,7 @@ const TradePage = () => {
   const [subTab, setSubTab] = useState<"p2p" | "orders">("p2p");
   const [paymentFilter, setPaymentFilter] = useState("all");
   const [amountFilter, setAmountFilter] = useState("");
+  const [sortBy, setSortBy] = useState<"price_asc" | "price_desc">("price_asc");
   const [createOpen, setCreateOpen] = useState(false);
   const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null);
 
@@ -173,7 +174,7 @@ const TradePage = () => {
       return t.trade_type === "buy" && t.seller_id !== user?.id;
     });
 
-    return orders.filter((t) => {
+    const filtered = orders.filter((t) => {
       if (paymentFilter !== "all" && t.payment_method !== paymentFilter) return false;
       if (amountFilter) {
         const filterAmt = parseFloat(amountFilter);
@@ -181,7 +182,15 @@ const TradePage = () => {
       }
       return true;
     });
-  }, [openTrades, tab, paymentFilter, amountFilter, user?.id]);
+
+    // Sort
+    filtered.sort((a, b) => {
+      if (sortBy === "price_asc") return Number(a.price_rwf) - Number(b.price_rwf);
+      return Number(b.price_rwf) - Number(a.price_rwf);
+    });
+
+    return filtered;
+  }, [openTrades, tab, paymentFilter, amountFilter, sortBy, user?.id]);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -251,33 +260,46 @@ const TradePage = () => {
 
         {subTab === "p2p" && (
           <>
-            {/* ===== Buy/Sell Toggle (Binance style) ===== */}
-            <div className="flex items-center gap-0 mb-4">
-              <button
-                onClick={() => setTab("buy")}
-                className={`px-6 py-2.5 text-sm font-semibold rounded-l-lg transition-all ${
-                  tab === "buy"
-                    ? "bg-accent text-accent-foreground"
-                    : "bg-muted text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Buy
-              </button>
-              <button
-                onClick={() => setTab("sell")}
-                className={`px-6 py-2.5 text-sm font-semibold rounded-r-lg transition-all ${
-                  tab === "sell"
-                    ? "bg-destructive text-destructive-foreground"
-                    : "bg-muted text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Sell
-              </button>
+            {/* ===== Buy/Sell Toggle (Binance pill style) ===== */}
+            <div className="flex items-center gap-4 mb-4">
+              <div className="inline-flex rounded-full bg-muted p-1">
+                <button
+                  onClick={() => setTab("buy")}
+                  className={`px-6 py-2 text-sm font-semibold rounded-full transition-all ${
+                    tab === "buy"
+                      ? "bg-accent text-accent-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Buy
+                </button>
+                <button
+                  onClick={() => setTab("sell")}
+                  className={`px-6 py-2 text-sm font-semibold rounded-full transition-all ${
+                    tab === "sell"
+                      ? "bg-destructive text-destructive-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Sell
+                </button>
+              </div>
 
               {/* Asset badge */}
-              <div className="ml-4 hidden md:flex items-center gap-2 px-3 py-1.5 bg-muted rounded-lg text-sm">
+              <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-muted rounded-full text-sm">
                 <span className="font-semibold text-foreground">GOR</span>
                 <ChevronDown className="w-3 h-3 text-muted-foreground" />
+              </div>
+
+              {/* Sort by */}
+              <div className="ml-auto">
+                <button
+                  onClick={() => setSortBy(sortBy === "price_asc" ? "price_desc" : "price_asc")}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Sort By <span className="text-foreground font-semibold">Price</span>
+                  <ChevronDown className={`w-3 h-3 transition-transform ${sortBy === "price_desc" ? "rotate-180" : ""}`} />
+                </button>
               </div>
             </div>
 
@@ -571,9 +593,11 @@ function AdvertiserRow({
           <p className="text-sm font-medium text-foreground">
             {trade.seller_profile?.display_name ?? "Trader"}
           </p>
-          <p className="text-xs text-muted-foreground">
-            {trade.seller_profile?.coin_balance?.toLocaleString() ?? 0} GOR balance
-          </p>
+          <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground flex-wrap">
+            <span>{trade.seller_stats?.total_orders ?? 0} orders</span>
+            <span className="text-border">|</span>
+            <span>{trade.seller_stats?.completion_rate ?? 0}% completion</span>
+          </div>
         </div>
       </div>
 
