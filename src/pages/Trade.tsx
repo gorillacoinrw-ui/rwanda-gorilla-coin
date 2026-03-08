@@ -1029,7 +1029,7 @@ function MyOrderCard({
 
       {/* Actions */}
       <div className="px-4 pb-4 flex gap-2">
-        {isEscrow && isSeller && (
+        {isEscrow && isCoinSeller && (
           <Button
             size="sm"
             className="flex-1 gap-1 bg-accent hover:bg-accent/90"
@@ -1044,7 +1044,7 @@ function MyOrderCard({
           <Button
             size="sm"
             variant="outline"
-            className={`gap-1 border-destructive/50 text-destructive hover:bg-destructive/10 ${isEscrow && isSeller ? "" : "flex-1"}`}
+            className={`gap-1 border-destructive/50 text-destructive hover:bg-destructive/10 ${isEscrow && isCoinSeller ? "" : "flex-1"}`}
             onClick={onCancel}
             disabled={cancelling}
           >
