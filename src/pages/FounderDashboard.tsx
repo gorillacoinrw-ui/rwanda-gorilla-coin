@@ -112,7 +112,7 @@ const FounderDashboard = () => {
     { label: "Total Tax Collected", value: `${totalTaxCollected.toLocaleString()} GOR`, icon: DollarSign, color: "text-accent" },
     { label: "Tax Cashed Out", value: `${totalCashedOut.toLocaleString()} RWF`, icon: ArrowLeftRight, color: "text-primary" },
     { label: "Completed Trades", value: completedTrades.length, icon: ArrowLeftRight, color: "text-accent" },
-    { label: "Trading Days Left", value: tradingActive ? daysLeft : "Ended", icon: Calendar, color: tradingActive ? "text-primary" : "text-destructive" },
+    { label: "Trading Status", value: tradingActive ? "Active" : `${usersNeeded} users needed`, icon: Calendar, color: tradingActive ? "text-primary" : "text-destructive" },
   ];
 
   return (
