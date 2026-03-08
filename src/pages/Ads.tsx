@@ -103,7 +103,7 @@ const Ads = () => {
 
   return (
     <AppLayout>
-      <div className="max-w-md md:max-w-4xl lg:max-w-6xl mx-auto px-4 py-6 space-y-6">
+      <div className="max-w-md sm:max-w-lg md:max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Tv className="w-5 h-5 text-primary" />
