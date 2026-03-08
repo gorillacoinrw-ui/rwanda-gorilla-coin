@@ -162,11 +162,59 @@ export function useAdminTasks() {
     },
   });
 
+  const createTask = useMutation({
+    mutationFn: async (task: Omit<SocialTask, "id" | "created_at">) => {
+      const { error } = await supabase.from("social_tasks").insert(task);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin_social_tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["social_tasks"] });
+      toast({ title: "Task created!" });
+    },
+    onError: (err: Error) => {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    },
+  });
+
+  const updateTask = useMutation({
+    mutationFn: async ({ id, ...updates }: Partial<SocialTask> & { id: string }) => {
+      const { error } = await supabase.from("social_tasks").update(updates).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin_social_tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["social_tasks"] });
+      toast({ title: "Task updated!" });
+    },
+    onError: (err: Error) => {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    },
+  });
+
+  const deleteTask = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("social_tasks").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin_social_tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["social_tasks"] });
+      toast({ title: "Task deleted" });
+    },
+    onError: (err: Error) => {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    },
+  });
+
   return {
     pendingCompletions: pendingQuery.data ?? [],
     allTasks: allTasksQuery.data ?? [],
     isLoading: pendingQuery.isLoading,
     approveTask,
     rejectTask,
+    createTask,
+    updateTask,
+    deleteTask,
   };
 }

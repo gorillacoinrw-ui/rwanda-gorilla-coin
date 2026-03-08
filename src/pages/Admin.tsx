@@ -2,7 +2,7 @@ import { Navigate } from "react-router-dom";
 import AppLayout from "@/components/AppLayout";
 import AccessKeyGate from "@/components/AccessKeyGate";
 import { useAdminCheck, useAdminData } from "@/hooks/use-admin";
-import { useAdminTasks } from "@/hooks/use-tasks";
+import AdminTaskManager from "@/components/AdminTaskManager";
 import { useAuth } from "@/contexts/AuthContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
