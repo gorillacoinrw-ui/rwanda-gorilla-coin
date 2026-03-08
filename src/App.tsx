@@ -11,6 +11,7 @@ import Trade from "./pages/Trade";
 import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 import History from "./pages/History";
+import Chat from "./pages/Chat";
 import Tasks from "./pages/Tasks";
 import Admin from "./pages/Admin";
 import FounderDashboard from "./pages/FounderDashboard";
