@@ -120,6 +120,17 @@ export function useInvestments() {
         .eq("id", investmentId);
       if (error) throw error;
 
+      // Add tax to tax_pool_balance in app_settings
+      const { data: poolSetting } = await supabase
+        .from("app_settings")
+        .select("value")
+        .eq("key", "tax_pool_balance")
+        .single();
+      const currentPool = Number(poolSetting?.value ?? 0);
+      await supabase
+        .from("app_settings")
+        .upsert({ key: "tax_pool_balance", value: currentPool + taxAmount, updated_at: new Date().toISOString() });
+
       await supabase.functions.invoke("send-notification", {
         body: {
           user_id: user!.id,
