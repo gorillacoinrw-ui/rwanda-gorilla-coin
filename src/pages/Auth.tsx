@@ -60,15 +60,18 @@ const Auth = () => {
     <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
       {/* Background floating coins */}
       {[
-        { size: 'w-10 h-10', left: '10%', delay: '0s', duration: '8s' },
-        { size: 'w-8 h-8', left: '75%', delay: '2s', duration: '10s' },
-        { size: 'w-12 h-12', left: '45%', delay: '4s', duration: '12s' },
+        { size: 'w-10 h-10', left: '8%', delay: '0s', duration: '14s' },
+        { size: 'w-8 h-8', left: '25%', delay: '3s', duration: '18s' },
+        { size: 'w-12 h-12', left: '50%', delay: '1s', duration: '16s' },
+        { size: 'w-7 h-7', left: '70%', delay: '5s', duration: '20s' },
+        { size: 'w-9 h-9', left: '90%', delay: '7s', duration: '15s' },
+        { size: 'w-6 h-6', left: '35%', delay: '9s', duration: '22s' },
       ].map((coin, i) => (
         <img
           key={i}
           src={gorillaLogo}
           alt=""
-          className={`absolute top-0 ${coin.size} rounded-full pointer-events-none z-0`}
+          className={`fixed top-0 ${coin.size} rounded-full pointer-events-none z-0`}
           style={{
             left: coin.left,
             animation: `float-coin ${coin.duration} linear ${coin.delay} infinite`,
