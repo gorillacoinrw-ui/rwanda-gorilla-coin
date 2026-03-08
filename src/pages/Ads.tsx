@@ -26,9 +26,9 @@ const AdCard = ({
   isWatching: boolean;
 }) => {
   return (
-    <div className="rounded-xl border border-border bg-card overflow-hidden">
+    <div className="rounded-xl border border-border bg-card overflow-hidden transition-shadow hover:shadow-lg">
       {ad.image_url && (
-        <img src={ad.image_url} alt={ad.title} className="w-full h-40 object-cover" />
+        <img src={ad.image_url} alt={ad.title} className="w-full h-36 sm:h-44 md:h-48 lg:h-52 object-cover" />
       )}
       <div className="p-4 space-y-2">
         <div className="flex items-start justify-between gap-2">
@@ -51,7 +51,7 @@ const AdCard = ({
         </div>
 
         {viewed ? (
-          <Button variant="outline" className="w-full gap-2 text-green-500 border-green-500/30" disabled>
+          <Button variant="outline" className="w-full gap-2 text-accent border-accent/30" disabled>
             <CheckCircle className="w-4 h-4" />
             Watched — Coins earned
           </Button>
@@ -103,21 +103,24 @@ const Ads = () => {
 
   return (
     <AppLayout>
-      <div className="max-w-md md:max-w-4xl lg:max-w-6xl mx-auto px-4 py-6 space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="max-w-md sm:max-w-lg md:max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
           <div className="flex items-center gap-3">
-            <Tv className="w-5 h-5 text-primary" />
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+              <Tv className="w-5 h-5 text-primary" />
+            </div>
             <div>
-              <h1 className="text-lg font-display font-bold text-foreground">Watch & Earn</h1>
-              <p className="text-xs text-muted-foreground">Watch ads to earn Gorilla Coins</p>
+              <h1 className="text-lg sm:text-xl font-display font-bold text-foreground">Watch & Earn</h1>
+              <p className="text-xs sm:text-sm text-muted-foreground">Watch ads to earn Gorilla Coins</p>
             </div>
           </div>
-          <div className="text-right">
-            <div className="flex items-center gap-1 text-primary">
+          <div className="flex items-center gap-3 bg-card border border-border rounded-xl px-4 py-2 w-full sm:w-auto justify-between sm:justify-start">
+            <div className="flex items-center gap-1.5 text-primary">
               <Coins className="w-4 h-4" />
               <span className="text-sm font-bold">{todayViewCount}/{dailyLimit}</span>
             </div>
-            <p className="text-[10px] text-muted-foreground">{remainingToday} left today</p>
+            <span className="text-[10px] sm:text-xs text-muted-foreground">{remainingToday} left today</span>
           </div>
         </div>
 
@@ -130,7 +133,7 @@ const Ads = () => {
             <p className="text-xs text-muted-foreground">Check back later for new earning opportunities!</p>
           </div>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {ads.map((ad) => (
               <AdCard
                 key={ad.id}
@@ -147,7 +150,7 @@ const Ads = () => {
 
       {/* Ad Viewing Dialog */}
       <Dialog open={!!viewingAd} onOpenChange={(v) => { if (!v) setViewingAd(null); }}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-[95vw] sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-sm">{viewingAd?.title}</DialogTitle>
           </DialogHeader>
