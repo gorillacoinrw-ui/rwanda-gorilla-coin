@@ -30,7 +30,7 @@ import {
   Phone,
   ShoppingCart,
 } from "lucide-react";
-import { format, differenceInDays } from "date-fns";
+import { format } from "date-fns";
 
 const PAYMENT_METHODS = [
   { id: "mtn", label: "MTN MoMo", icon: Phone },
