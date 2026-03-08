@@ -904,6 +904,10 @@ function MyOrderCard({
 }) {
   const isEscrow = trade.status === "escrow";
   const isSeller = trade.seller_id === userId;
+  // Determine real roles: for sell orders, seller_id = coin seller; for buy orders, seller_id = coin buyer
+  const isCoinSeller = trade.trade_type === "sell"
+    ? trade.seller_id === userId
+    : trade.buyer_id === userId;
   const pm = PAYMENT_METHODS.find((p) => p.id === trade.payment_method);
   const totalRwf = trade.amount * Number(trade.price_rwf);
 
