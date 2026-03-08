@@ -238,7 +238,7 @@ Deno.serve(async (req) => {
         const availableBalance = accepterProfile.coin_balance - lockedCoins - lockedAsBuyAccepter;
 
         if (availableBalance < trade.amount) {
-          return new Response(JSON.stringify({ error: `Please enter the available coin. You have ${availableBalance} GOR available.` }), {
+          return new Response(JSON.stringify({ error: `You don't have enough coin. You have ${availableBalance} GOR available.` }), {
             status: 400,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
