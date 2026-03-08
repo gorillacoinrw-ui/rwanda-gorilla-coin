@@ -15,6 +15,7 @@ import Chat from "./pages/Chat";
 import Tasks from "./pages/Tasks";
 import Admin from "./pages/Admin";
 import FounderDashboard from "./pages/FounderDashboard";
+import Ads from "./pages/Ads";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
