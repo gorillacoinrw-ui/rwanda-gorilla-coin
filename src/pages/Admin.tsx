@@ -8,7 +8,7 @@ import AdminAnalytics from "@/components/AdminAnalytics";
 import { useAuth } from "@/contexts/AuthContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Users, ArrowLeftRight, Pickaxe, Landmark, UserCheck, Shield, Gift, Tv } from "lucide-react";
+import { Users, ArrowLeftRight, Pickaxe, Landmark, UserCheck, Shield, Gift, Tv, BarChart3 } from "lucide-react";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
