@@ -22,6 +22,7 @@ export type Trade = {
   created_at: string;
   updated_at: string;
   seller_profile?: { display_name: string | null; coin_balance: number } | null;
+  seller_stats?: { total_orders: number; completed_orders: number; completion_rate: number } | null;
 };
 
 export function useTrades() {
