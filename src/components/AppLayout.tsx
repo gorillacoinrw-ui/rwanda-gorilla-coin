@@ -32,9 +32,20 @@ const AppLayout = ({ children }: AppLayoutProps) => {
         <div className="flex-1 bg-rwanda-green" />
       </div>
 
-      {/* Top bar with notification bell */}
+      {/* Top bar with notification bell and AI coin */}
       <div className="fixed top-2 left-4 z-[60]">
         <NotificationBell />
+      </div>
+      <div className="fixed top-2 left-1/2 -translate-x-1/2 z-[60]">
+        <button
+          onClick={() => navigate("/chat")}
+          className={`relative w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent border-2 border-primary/50 flex items-center justify-center shadow-lg animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite] hover:scale-110 transition-transform ${
+            location.pathname === "/chat" ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : ""
+          }`}
+        >
+          <span className="text-xs font-display font-bold text-primary-foreground tracking-tight">AI</span>
+          <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-rwanda-green border border-background animate-bounce" />
+        </button>
       </div>
 
       <main className="flex-1 overflow-y-auto pb-28 md:pb-12 md:pt-20">
