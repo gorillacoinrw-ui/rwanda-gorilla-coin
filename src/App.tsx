@@ -50,6 +50,7 @@ const App = () => (
               <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
               <Route path="/founder" element={<ProtectedRoute><FounderDashboard /></ProtectedRoute>} />
               <Route path="/ads" element={<ProtectedRoute><Ads /></ProtectedRoute>} />
+              <Route path="/invest" element={<ProtectedRoute><Invest /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </LanguageProvider>
