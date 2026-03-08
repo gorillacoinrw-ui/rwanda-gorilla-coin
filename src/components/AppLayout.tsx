@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { Home, Pickaxe, ArrowLeftRight, User, History } from "lucide-react";
+import { Home, Pickaxe, ArrowLeftRight, User, History, Gift } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 
