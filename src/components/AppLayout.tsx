@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { Home, Pickaxe, ArrowLeftRight, User, History, Gift } from "lucide-react";
+import { Home, Pickaxe, ArrowLeftRight, User, Clock, Gift } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import NotificationBell from "@/components/NotificationBell";
@@ -9,6 +9,7 @@ const navItems = [
   { icon: Pickaxe, labelKey: "nav.mine", path: "/mine" },
   { icon: Gift, labelKey: "nav.tasks", path: "/tasks" },
   { icon: ArrowLeftRight, labelKey: "nav.trade", path: "/trade" },
+  { icon: Clock, labelKey: "nav.history", path: "/history" },
   { icon: User, labelKey: "nav.profile", path: "/profile" },
 ];
 
