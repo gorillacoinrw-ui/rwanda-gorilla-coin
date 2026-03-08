@@ -124,6 +124,11 @@ const Admin = () => {
             <AdminTaskManager userMap={userMap} />
           </TabsContent>
 
+          {/* Ads Tab */}
+          <TabsContent value="ads" className="mt-4">
+            <AdminAdManager />
+          </TabsContent>
+
           {/* Trades Tab */}
           <TabsContent value="trades" className="mt-4">
             <div className="rounded-lg border border-border overflow-hidden">
