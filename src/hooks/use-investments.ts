@@ -136,17 +136,18 @@ export function useInvestments() {
           user_id: user!.id,
           title: earlyStop ? "Investment Stopped ⏹️" : "Investment Matured! 🎉",
           message: earlyStop
-            ? `You stopped your investment early. ${investment.amount} GOR capital + ${earnedInterest} GOR profit returned.`
-            : `Your investment of ${investment.amount} GOR has matured! You earned ${earnedInterest} GOR interest.`,
+            ? `Investment stopped. ${totalReturn} GOR returned (2% tax: ${taxAmount} GOR deducted).`
+            : `Investment matured! ${totalReturn} GOR returned (2% tax: ${taxAmount} GOR deducted). You earned ${earnedInterest} GOR interest.`,
           type: "investment",
           send_email: true,
         },
       });
     },
     onSuccess: () => {
-      toast.success("Coins returned to your balance!");
+      toast.success("Coins returned to your balance (2% tax applied)!");
       queryClient.invalidateQueries({ queryKey: ["investments"] });
       queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: ["app_settings"] });
     },
     onError: (err: Error) => {
       toast.error(err.message || "Failed to process");
