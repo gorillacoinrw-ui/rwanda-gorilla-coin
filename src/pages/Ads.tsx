@@ -104,20 +104,23 @@ const Ads = () => {
   return (
     <AppLayout>
       <div className="max-w-md sm:max-w-lg md:max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-6">
-        <div className="flex items-center justify-between">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
           <div className="flex items-center gap-3">
-            <Tv className="w-5 h-5 text-primary" />
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+              <Tv className="w-5 h-5 text-primary" />
+            </div>
             <div>
-              <h1 className="text-lg font-display font-bold text-foreground">Watch & Earn</h1>
-              <p className="text-xs text-muted-foreground">Watch ads to earn Gorilla Coins</p>
+              <h1 className="text-lg sm:text-xl font-display font-bold text-foreground">Watch & Earn</h1>
+              <p className="text-xs sm:text-sm text-muted-foreground">Watch ads to earn Gorilla Coins</p>
             </div>
           </div>
-          <div className="text-right">
-            <div className="flex items-center gap-1 text-primary">
+          <div className="flex items-center gap-3 bg-card border border-border rounded-xl px-4 py-2 w-full sm:w-auto justify-between sm:justify-start">
+            <div className="flex items-center gap-1.5 text-primary">
               <Coins className="w-4 h-4" />
               <span className="text-sm font-bold">{todayViewCount}/{dailyLimit}</span>
             </div>
-            <p className="text-[10px] text-muted-foreground">{remainingToday} left today</p>
+            <span className="text-[10px] sm:text-xs text-muted-foreground">{remainingToday} left today</span>
           </div>
         </div>
 
