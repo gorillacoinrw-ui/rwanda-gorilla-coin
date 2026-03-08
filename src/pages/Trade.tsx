@@ -217,13 +217,23 @@ const TradePage = () => {
 
         {/* Trading gate banner */}
         {!tradingActive && (
-          <div className="mb-4 p-4 rounded-xl border border-primary/30 bg-primary/5 text-center space-y-1">
-            <p className="text-sm font-medium text-foreground">P2P Trading opens at {minUsersForTrading} users</p>
+          <div className="mb-4 p-5 rounded-xl border border-primary/30 bg-primary/5 text-center space-y-3">
+            <p className="text-base font-semibold text-foreground">🚀 P2P Trading opens at {minUsersForTrading} users</p>
             <p className="text-xs text-muted-foreground">
               {totalUsers} / {minUsersForTrading} users registered — <span className="font-bold text-primary">{usersNeeded} more needed</span>
             </p>
-            <div className="w-full h-2 bg-muted rounded-full overflow-hidden mt-2">
+            <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
               <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${Math.min(100, (totalUsers / minUsersForTrading) * 100)}%` }} />
+            </div>
+            <div className="pt-2 border-t border-border mt-3 space-y-2">
+              <p className="text-sm font-medium text-foreground">📢 Share & Earn to Open Trading!</p>
+              <p className="text-xs text-muted-foreground">
+                Invite your friends using your referral code and earn <span className="font-bold text-primary">15 GOR</span> per referral. 
+                The more users join, the sooner P2P trading opens for everyone!
+              </p>
+              <a href="/profile" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors">
+                Get Your Referral Code →
+              </a>
             </div>
           </div>
         )}
