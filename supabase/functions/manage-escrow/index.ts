@@ -472,17 +472,39 @@ Deno.serve(async (req) => {
         for (const trade of expired) {
           // Refund seller for sell orders
           if (trade.trade_type === "sell") {
-            const { data: sellerProfile } = await supabase
-              .from("profiles")
-              .select("coin_balance")
+            const { data: sellerRole } = await supabase
+              .from("user_roles")
+              .select("role")
               .eq("user_id", trade.seller_id)
-              .single();
+              .eq("role", "admin")
+              .maybeSingle();
 
-            if (sellerProfile) {
+            if (sellerRole) {
+              // Founder tax order — refund to tax pool
+              const { data: poolSetting } = await supabase
+                .from("app_settings")
+                .select("value")
+                .eq("key", "tax_pool_balance")
+                .single();
+              const currentPool = Number(poolSetting?.value ?? 0);
               await supabase
+                .from("app_settings")
+                .update({ value: currentPool + trade.amount })
+                .eq("key", "tax_pool_balance");
+            } else {
+              // Regular sell order — refund to seller
+              const { data: sellerProfile } = await supabase
                 .from("profiles")
-                .update({ coin_balance: sellerProfile.coin_balance + trade.amount })
-                .eq("user_id", trade.seller_id);
+                .select("coin_balance")
+                .eq("user_id", trade.seller_id)
+                .single();
+
+              if (sellerProfile) {
+                await supabase
+                  .from("profiles")
+                  .update({ coin_balance: sellerProfile.coin_balance + trade.amount })
+                  .eq("user_id", trade.seller_id);
+              }
             }
           }
 
