@@ -162,17 +162,18 @@ export function useTrades() {
         body: { action: "accept", trade_id: tradeId },
       });
       if (error) {
-        // Try to parse the actual error message from the response
+        // Extract custom error message from FunctionsHttpError
+        let customMessage: string | null = null;
         try {
           const context = (error as any).context;
-          if (context instanceof Response) {
+          if (context && typeof context.json === "function") {
             const body = await context.json();
-            if (body?.error) throw new Error(body.error);
+            customMessage = body?.error ?? null;
           }
-        } catch (parseErr) {
-          if (parseErr instanceof Error && parseErr.message !== error.message) throw parseErr;
+        } catch {
+          // response body already consumed or not available
         }
-        throw error;
+        throw new Error(customMessage || error.message || "Failed to accept trade");
       }
       if (data?.error) throw new Error(data.error);
       return data;
