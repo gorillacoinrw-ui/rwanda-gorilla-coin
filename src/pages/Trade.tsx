@@ -260,33 +260,46 @@ const TradePage = () => {
 
         {subTab === "p2p" && (
           <>
-            {/* ===== Buy/Sell Toggle (Binance style) ===== */}
-            <div className="flex items-center gap-0 mb-4">
-              <button
-                onClick={() => setTab("buy")}
-                className={`px-6 py-2.5 text-sm font-semibold rounded-l-lg transition-all ${
-                  tab === "buy"
-                    ? "bg-accent text-accent-foreground"
-                    : "bg-muted text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Buy
-              </button>
-              <button
-                onClick={() => setTab("sell")}
-                className={`px-6 py-2.5 text-sm font-semibold rounded-r-lg transition-all ${
-                  tab === "sell"
-                    ? "bg-destructive text-destructive-foreground"
-                    : "bg-muted text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Sell
-              </button>
+            {/* ===== Buy/Sell Toggle (Binance pill style) ===== */}
+            <div className="flex items-center gap-4 mb-4">
+              <div className="inline-flex rounded-full bg-muted p-1">
+                <button
+                  onClick={() => setTab("buy")}
+                  className={`px-6 py-2 text-sm font-semibold rounded-full transition-all ${
+                    tab === "buy"
+                      ? "bg-accent text-accent-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Buy
+                </button>
+                <button
+                  onClick={() => setTab("sell")}
+                  className={`px-6 py-2 text-sm font-semibold rounded-full transition-all ${
+                    tab === "sell"
+                      ? "bg-destructive text-destructive-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Sell
+                </button>
+              </div>
 
               {/* Asset badge */}
-              <div className="ml-4 hidden md:flex items-center gap-2 px-3 py-1.5 bg-muted rounded-lg text-sm">
+              <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-muted rounded-full text-sm">
                 <span className="font-semibold text-foreground">GOR</span>
                 <ChevronDown className="w-3 h-3 text-muted-foreground" />
+              </div>
+
+              {/* Sort by */}
+              <div className="ml-auto">
+                <button
+                  onClick={() => setSortBy(sortBy === "price_asc" ? "price_desc" : "price_asc")}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Sort By <span className="text-foreground font-semibold">Price</span>
+                  <ChevronDown className={`w-3 h-3 transition-transform ${sortBy === "price_desc" ? "rotate-180" : ""}`} />
+                </button>
               </div>
             </div>
 
