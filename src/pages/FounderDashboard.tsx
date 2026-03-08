@@ -207,6 +207,58 @@ const FounderDashboard = () => {
           )}
         </div>
 
+        {/* P2P Buy Orders */}
+        <div className="p-4 rounded-xl bg-card border border-border">
+          <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+            <ShoppingCart className="w-4 h-4 text-primary" /> P2P Buy Orders
+          </h3>
+          {(() => {
+            const buyOrders = trades.filter((t) => t.trade_type === "buy" && (t.status === "open" || t.status === "escrow"));
+            const userMap = new Map(users.map((u) => [u.user_id, u.display_name || "Unknown"]));
+            if (buyOrders.length === 0) {
+              return <p className="text-sm text-muted-foreground text-center py-6">No active buy orders</p>;
+            }
+            return (
+              <div className="rounded-lg border border-border overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Buyer</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Amount</TableHead>
+                      <TableHead className="text-right">Price</TableHead>
+                      <TableHead>Payment</TableHead>
+                      <TableHead>Date</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {buyOrders.map((order) => (
+                      <TableRow key={order.id}>
+                        <TableCell className="text-xs">
+                          <span className="flex items-center gap-1.5">
+                            <span className={`w-2 h-2 rounded-full shrink-0 ${isOnline(order.seller_id) ? "bg-green-500 animate-pulse" : "bg-muted-foreground/40"}`} />
+                            {userMap.get(order.seller_id) || order.seller_id.slice(0, 8)}
+                            {isOnline(order.seller_id) && <span className="text-[10px] text-green-500 font-medium">online</span>}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className={`text-[10px] ${order.status === "open" ? "bg-blue-500/10 text-blue-500 border-blue-500/20" : "bg-yellow-500/10 text-yellow-500 border-yellow-500/20"}`}>
+                            {order.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right font-mono">{order.amount} GOR</TableCell>
+                        <TableCell className="text-right font-mono">{order.price_rwf} RWF</TableCell>
+                        <TableCell className="uppercase text-xs">{order.payment_method}</TableCell>
+                        <TableCell className="text-xs text-muted-foreground">{format(new Date(order.created_at), "dd MMM, HH:mm")}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            );
+          })()}
+        </div>
+
         {/* Sell Tax Dialog */}
         <Dialog open={sellOpen} onOpenChange={setSellOpen}>
           <DialogContent className="max-w-md">
