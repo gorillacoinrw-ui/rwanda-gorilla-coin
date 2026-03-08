@@ -154,5 +154,4 @@ export function useInvestments() {
     invest,
     claim,
   };
-  };
 }
