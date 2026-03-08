@@ -215,16 +215,16 @@ const TradePage = () => {
     <AppLayout>
       <div className="max-w-md md:max-w-5xl lg:max-w-7xl mx-auto px-4 py-4 space-y-0">
 
-        {/* Trading window banner */}
+        {/* Trading gate banner */}
         {!tradingActive && (
-          <div className="mb-4 p-4 rounded-xl border border-destructive/30 bg-destructive/5 text-center">
-            <p className="text-sm font-medium text-destructive">Trading period has ended</p>
-            <p className="text-xs text-muted-foreground">The 3-month trading window has closed. New orders cannot be created.</p>
-          </div>
-        )}
-        {tradingActive && tradingDaysLeft <= 14 && (
-          <div className="mb-4 p-3 rounded-xl border border-primary/30 bg-primary/5 text-center">
-            <p className="text-xs text-muted-foreground">⏳ Trading closes in <span className="font-bold text-foreground">{tradingDaysLeft} days</span></p>
+          <div className="mb-4 p-4 rounded-xl border border-primary/30 bg-primary/5 text-center space-y-1">
+            <p className="text-sm font-medium text-foreground">P2P Trading opens at {minUsersForTrading} users</p>
+            <p className="text-xs text-muted-foreground">
+              {totalUsers} / {minUsersForTrading} users registered — <span className="font-bold text-primary">{usersNeeded} more needed</span>
+            </p>
+            <div className="w-full h-2 bg-muted rounded-full overflow-hidden mt-2">
+              <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${Math.min(100, (totalUsers / minUsersForTrading) * 100)}%` }} />
+            </div>
           </div>
         )}
         {/* ===== Top Header ===== */}
