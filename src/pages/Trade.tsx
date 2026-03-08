@@ -98,7 +98,7 @@ function EscrowProgress({ expiresAt }: { expiresAt: string }) {
 const TradePage = () => {
   const { user } = useAuth();
   const { profile } = useProfile();
-  const { tradingActive, tradingDaysLeft } = useAppSettings();
+  const { tradingActive, totalUsers, minUsersForTrading, usersNeeded } = useAppSettings();
   const { isOnline } = useOnlinePresence();
   const {
     openTrades,
