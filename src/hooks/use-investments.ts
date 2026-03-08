@@ -70,13 +70,28 @@ export function useInvestments() {
   });
 
   const claim = useMutation({
-    mutationFn: async (investmentId: string) => {
+    mutationFn: async ({ investmentId, earlyStop = false }: { investmentId: string; earlyStop?: boolean }) => {
       const investment = investmentsQuery.data?.find((i) => i.id === investmentId);
       if (!investment) throw new Error("Investment not found");
       if (investment.status !== "active") throw new Error("Already claimed");
-      if (new Date(investment.matures_at) > new Date()) throw new Error("Not matured yet");
 
-      const totalReturn = investment.amount + investment.coins_earned;
+      let totalReturn: number;
+      let earnedInterest: number;
+
+      if (earlyStop) {
+        // Calculate proportional profit based on elapsed time
+        const start = new Date(investment.started_at).getTime();
+        const end = new Date(investment.matures_at).getTime();
+        const now = Date.now();
+        const elapsed = Math.min(now - start, end - start);
+        const ratio = elapsed / (end - start);
+        earnedInterest = Math.floor(investment.coins_earned * ratio);
+        totalReturn = investment.amount + earnedInterest;
+      } else {
+        if (new Date(investment.matures_at) > new Date()) throw new Error("Not matured yet");
+        earnedInterest = investment.coins_earned;
+        totalReturn = investment.amount + earnedInterest;
+      }
 
       // Credit coins back
       const { data: profile, error: profileErr } = await supabase
@@ -94,27 +109,33 @@ export function useInvestments() {
 
       const { error } = await supabase
         .from("investments")
-        .update({ status: "claimed", claimed_at: new Date().toISOString() })
+        .update({
+          status: earlyStop ? "stopped" : "claimed",
+          claimed_at: new Date().toISOString(),
+          coins_earned: earnedInterest,
+        })
         .eq("id", investmentId);
       if (error) throw error;
 
       await supabase.functions.invoke("send-notification", {
         body: {
           user_id: user!.id,
-          title: "Investment Matured! 🎉",
-          message: `Your investment of ${investment.amount} GOR has matured! You earned ${investment.coins_earned} GOR interest.`,
+          title: earlyStop ? "Investment Stopped ⏹️" : "Investment Matured! 🎉",
+          message: earlyStop
+            ? `You stopped your investment early. ${investment.amount} GOR capital + ${earnedInterest} GOR profit returned.`
+            : `Your investment of ${investment.amount} GOR has matured! You earned ${earnedInterest} GOR interest.`,
           type: "investment",
           send_email: true,
         },
       });
     },
     onSuccess: () => {
-      toast.success("Investment claimed! Coins returned with interest.");
+      toast.success("Coins returned to your balance!");
       queryClient.invalidateQueries({ queryKey: ["investments"] });
       queryClient.invalidateQueries({ queryKey: ["profile"] });
     },
     onError: (err: Error) => {
-      toast.error(err.message || "Failed to claim");
+      toast.error(err.message || "Failed to process");
     },
   });
 
