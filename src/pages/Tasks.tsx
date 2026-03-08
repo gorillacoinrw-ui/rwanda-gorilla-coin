@@ -50,30 +50,24 @@ const Tasks = () => {
   const followTasks = tasks.filter((t) => t.task_type !== "share");
   const shareTasks = tasks.filter((t) => t.task_type === "share");
 
-  const openAndSubmit = (task: SocialTask) => {
-    if (task.url) {
-      window.open(task.url, "_blank");
-    }
+  const getTaskUrl = (task: SocialTask): string | null => {
     if (task.task_type === "share") {
       const shareText = "Join Gorilla Coin 🦍💰! Mine free coins and earn rewards! Download now: " + window.location.origin;
-      if (task.platform === "whatsapp") {
-        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, "_blank");
-      } else if (task.platform === "facebook") {
-        window.open(`https://www.facebook.com/dialog/share?app_id=966242223397117&href=${encodeURIComponent(window.location.origin)}&quote=${encodeURIComponent(shareText)}&display=popup`, "_blank");
-      } else if (task.platform === "instagram") {
+      if (task.platform === "whatsapp") return `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
+      if (task.platform === "facebook") return `https://www.facebook.com/dialog/share?app_id=966242223397117&href=${encodeURIComponent(window.location.origin)}&quote=${encodeURIComponent(shareText)}&display=popup`;
+      if (task.platform === "instagram") {
         navigator.clipboard.writeText(shareText);
-        window.open("https://www.instagram.com/", "_blank");
+        return "https://www.instagram.com/";
       }
     }
+    return task.url || null;
   };
 
   const handleSubmit = (task: SocialTask) => {
-    openAndSubmit(task);
     submitTask.mutate(task.id);
   };
 
   const handleRetry = (task: SocialTask) => {
-    openAndSubmit(task);
     const completion = completions.find((c) => c.task_id === task.id && c.status === "rejected");
     if (completion) {
       retryTask.mutate({ completionId: completion.id, taskId: task.id });
@@ -104,7 +98,7 @@ const Tasks = () => {
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">{task.description}</p>
 
-            <div className="mt-3">
+            <div className="mt-3 flex flex-wrap items-center gap-2">
               {isCompleted ? (
                 <div className="flex items-center gap-1.5 text-xs text-green-500">
                   <CheckCircle2 className="w-3.5 h-3.5" />
@@ -115,30 +109,33 @@ const Tasks = () => {
                   <Clock className="w-3.5 h-3.5" />
                   <span>Pending admin approval...</span>
                 </div>
-              ) : isRejected ? (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="h-8 text-xs border-yellow-500/30 text-yellow-600 hover:bg-yellow-500/10"
-                  onClick={() => handleRetry(task)}
-                  disabled={submitTask.isPending}
-                >
-                  <ExternalLink className="w-3.5 h-3.5 mr-1" />Try Again
-                </Button>
               ) : (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="h-8 text-xs border-primary/30 text-primary hover:bg-primary/10"
-                  onClick={() => handleSubmit(task)}
-                  disabled={submitTask.isPending}
-                >
-                  {task.task_type === "share" ? (
-                    <><Share2 className="w-3.5 h-3.5 mr-1" />Share & Earn</>
-                  ) : (
-                    <><ExternalLink className="w-3.5 h-3.5 mr-1" />{task.task_type === "subscribe" ? "Subscribe" : "Follow"} & Earn</>
-                  )}
-                </Button>
+                <>
+                  {(() => {
+                    const url = getTaskUrl(task);
+                    return url ? (
+                      <a
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center h-8 px-3 text-xs rounded-md border border-primary/30 text-primary hover:bg-primary/10 transition-colors"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5 mr-1" />
+                        {task.task_type === "share" ? "Share" : task.task_type === "subscribe" ? "Subscribe" : "Follow"}
+                      </a>
+                    ) : null;
+                  })()}
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className={`h-8 text-xs ${isRejected ? "border-yellow-500/30 text-yellow-600 hover:bg-yellow-500/10" : "border-green-500/30 text-green-500 hover:bg-green-500/10"}`}
+                    onClick={() => isRejected ? handleRetry(task) : handleSubmit(task)}
+                    disabled={submitTask.isPending || retryTask.isPending}
+                  >
+                    <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
+                    {isRejected ? "Retry & Submit" : "I Did It — Claim"}
+                  </Button>
+                </>
               )}
             </div>
           </div>
