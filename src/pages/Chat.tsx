@@ -141,7 +141,7 @@ const Chat = () => {
     <AppLayout>
       <div className="max-w-2xl mx-auto flex flex-col h-[calc(100vh-8rem)]">
         {/* Header */}
-        <div className="flex items-center gap-3 p-4 border-b border-border relative z-10">
+        <div className="flex items-center gap-3 p-4 border-b border-border">
           <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
             <Bot className="w-5 h-5 text-primary" />
           </div>
