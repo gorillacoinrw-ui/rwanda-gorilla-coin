@@ -6,8 +6,8 @@ import { useLanguage } from "@/contexts/LanguageContext";
 const navItems = [
   { icon: Home, labelKey: "nav.home", path: "/" },
   { icon: Pickaxe, labelKey: "nav.mine", path: "/mine" },
+  { icon: Gift, labelKey: "nav.tasks", path: "/tasks" },
   { icon: ArrowLeftRight, labelKey: "nav.trade", path: "/trade" },
-  { icon: History, labelKey: "nav.history", path: "/history" },
   { icon: User, labelKey: "nav.profile", path: "/profile" },
 ];
 
