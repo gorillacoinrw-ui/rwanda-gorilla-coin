@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Shield, Crown, ChevronDown, ChevronUp } from "lucide-react";
 
 const Index = () => {
+  const [showDescription, setShowDescription] = useState(false);
   const { isMining, formattedTime, progress, miningComplete, startMining } = useMiningTimer();
   const { profile, referralCount } = useProfile();
   const { baseValue, growthPer100 } = useAppSettings();
