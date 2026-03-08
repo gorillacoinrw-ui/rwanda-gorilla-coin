@@ -48,6 +48,35 @@ const History = () => {
   const [miningSessions, setMiningSessions] = useState<MiningSession[]>([]);
   const [trades, setTrades] = useState<TradeRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("mining");
+
+  const clearMiningHistory = async () => {
+    if (!user) return;
+    const { error } = await supabase
+      .from("mining_sessions")
+      .delete()
+      .eq("user_id", user.id);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      setMiningSessions([]);
+      toast({ title: "Mining history cleared" });
+    }
+  };
+
+  const clearTradeHistory = async () => {
+    if (!user) return;
+    const { error } = await supabase
+      .from("trades")
+      .delete()
+      .or(`seller_id.eq.${user.id},buyer_id.eq.${user.id}`);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      setTrades([]);
+      toast({ title: "Trade history cleared" });
+    }
+  };
 
   useEffect(() => {
     if (!user) return;
