@@ -364,6 +364,7 @@ const TradePage = () => {
                   tab={tab}
                   onAccept={() => acceptTrade.mutate(trade.id)}
                   accepting={acceptTrade.isPending}
+                  isOnline={isOnline(trade.seller_id)}
                 />
               ))}
             </div>
