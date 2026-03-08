@@ -57,8 +57,26 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <div className="h-1 w-full flex">
+    <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
+      {/* Background floating coins */}
+      {[
+        { size: 'w-10 h-10', left: '10%', delay: '0s', duration: '8s' },
+        { size: 'w-8 h-8', left: '75%', delay: '2s', duration: '10s' },
+        { size: 'w-12 h-12', left: '45%', delay: '4s', duration: '12s' },
+      ].map((coin, i) => (
+        <img
+          key={i}
+          src={gorillaLogo}
+          alt=""
+          className={`absolute top-0 ${coin.size} rounded-full pointer-events-none z-0`}
+          style={{
+            left: coin.left,
+            animation: `float-coin ${coin.duration} linear ${coin.delay} infinite`,
+          }}
+        />
+      ))}
+
+      <div className="h-1 w-full flex relative z-10">
         <div className="flex-1 bg-rwanda-blue" />
         <div className="flex-1 bg-rwanda-yellow" />
         <div className="flex-1 bg-rwanda-green" />
