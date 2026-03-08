@@ -38,6 +38,9 @@ const Index = () => {
             GORILLA COIN
           </h1>
           <p className="text-xs text-muted-foreground mt-1">Rwanda's Digital Reward</p>
+          <p className="text-sm text-muted-foreground mt-3 max-w-md mx-auto leading-relaxed">
+            Welcome to Gorilla Coin — Rwanda's first community-driven digital reward platform. Mine coins daily, trade securely with fellow members using mobile money, and grow your balance through referrals. Built for Rwandans, by Rwandans, Gorilla Coin empowers you to earn, trade, and invest in a transparent ecosystem. Complete social tasks to boost your earnings, track your mining history, and join a growing community of digital pioneers. Start mining today and be part of Rwanda's digital economy revolution. Your journey to financial freedom begins here — one coin at a time. 🦍
+          </p>
         </div>
 
         {isAdmin && (
