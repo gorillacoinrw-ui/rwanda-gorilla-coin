@@ -593,9 +593,11 @@ function AdvertiserRow({
           <p className="text-sm font-medium text-foreground">
             {trade.seller_profile?.display_name ?? "Trader"}
           </p>
-          <p className="text-xs text-muted-foreground">
-            {trade.seller_profile?.coin_balance?.toLocaleString() ?? 0} GOR balance
-          </p>
+          <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground flex-wrap">
+            <span>{trade.seller_stats?.total_orders ?? 0} orders</span>
+            <span className="text-border">|</span>
+            <span>{trade.seller_stats?.completion_rate ?? 0}% completion</span>
+          </div>
         </div>
       </div>
 
