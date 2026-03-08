@@ -15,6 +15,7 @@ import Chat from "./pages/Chat";
 import Tasks from "./pages/Tasks";
 import Admin from "./pages/Admin";
 import FounderDashboard from "./pages/FounderDashboard";
+import Ads from "./pages/Ads";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -45,6 +46,7 @@ const App = () => (
               <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
               <Route path="/founder" element={<ProtectedRoute><FounderDashboard /></ProtectedRoute>} />
+              <Route path="/ads" element={<ProtectedRoute><Ads /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </LanguageProvider>

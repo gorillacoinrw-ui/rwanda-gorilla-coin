@@ -3,10 +3,11 @@ import AppLayout from "@/components/AppLayout";
 import AccessKeyGate from "@/components/AccessKeyGate";
 import { useAdminCheck, useAdminData } from "@/hooks/use-admin";
 import AdminTaskManager from "@/components/AdminTaskManager";
+import AdminAdManager from "@/components/AdminAdManager";
 import { useAuth } from "@/contexts/AuthContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Users, ArrowLeftRight, Pickaxe, Landmark, UserCheck, Shield, Gift } from "lucide-react";
+import { Users, ArrowLeftRight, Pickaxe, Landmark, UserCheck, Shield, Gift, Tv } from "lucide-react";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -76,9 +77,10 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="users" className="w-full">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="users" className="text-xs gap-1"><Users className="w-3.5 h-3.5" />Users</TabsTrigger>
             <TabsTrigger value="tasks" className="text-xs gap-1"><Gift className="w-3.5 h-3.5" />Tasks</TabsTrigger>
+            <TabsTrigger value="ads" className="text-xs gap-1"><Tv className="w-3.5 h-3.5" />Ads</TabsTrigger>
             <TabsTrigger value="trades" className="text-xs gap-1"><ArrowLeftRight className="w-3.5 h-3.5" />Trades</TabsTrigger>
             <TabsTrigger value="mining" className="text-xs gap-1"><Pickaxe className="w-3.5 h-3.5" />Mining</TabsTrigger>
             <TabsTrigger value="tax" className="text-xs gap-1"><Landmark className="w-3.5 h-3.5" />Tax</TabsTrigger>
@@ -120,6 +122,11 @@ const Admin = () => {
           {/* Tasks Tab */}
           <TabsContent value="tasks" className="mt-4">
             <AdminTaskManager userMap={userMap} />
+          </TabsContent>
+
+          {/* Ads Tab */}
+          <TabsContent value="ads" className="mt-4">
+            <AdminAdManager />
           </TabsContent>
 
           {/* Trades Tab */}
