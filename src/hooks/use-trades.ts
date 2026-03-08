@@ -127,6 +127,18 @@ export function useTrades() {
     enabled: !!user,
   });
 
+  const extractError = async (error: any, fallback: string) => {
+    let customMessage: string | null = null;
+    try {
+      const context = (error as any).context;
+      if (context && typeof context.json === "function") {
+        const body = await context.json();
+        customMessage = body?.error ?? null;
+      }
+    } catch { /* body already consumed */ }
+    return customMessage || error?.message || fallback;
+  };
+
   const createTrade = useMutation({
     mutationFn: async (trade: {
       trade_type: string;
@@ -138,11 +150,10 @@ export function useTrades() {
       max_amount: number;
     }) => {
       if (!user) throw new Error("Not authenticated");
-      // Use edge function for creation to handle coin locking server-side
       const { data, error } = await supabase.functions.invoke("manage-escrow", {
         body: { action: "create", trade_data: trade },
       });
-      if (error) throw error;
+      if (error) throw new Error(await extractError(error, "Failed to create trade"));
       if (data?.error) throw new Error(data.error);
       return data;
     },
