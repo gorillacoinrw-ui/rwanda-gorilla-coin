@@ -14,7 +14,7 @@ const Invest = () => {
   const { profile } = useProfile();
   const {
     activeInvestments,
-    claimedInvestments,
+    completedInvestments,
     totalInvested,
     totalEarnings,
     isLoading,
