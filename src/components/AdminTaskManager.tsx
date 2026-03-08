@@ -151,7 +151,7 @@ export default function AdminTaskManager({ userMap }: Props) {
                         <Button
                           size="sm" variant="outline"
                           className="h-7 text-xs text-red-500 border-red-500/20 hover:bg-red-500/10"
-                          onClick={() => rejectTask.mutate(c.id)}
+                          onClick={() => rejectTask.mutate({ completionId: c.id, userId: c.user_id })}
                           disabled={rejectTask.isPending}
                         >
                           <XCircle className="w-3.5 h-3.5 mr-1" />Reject
