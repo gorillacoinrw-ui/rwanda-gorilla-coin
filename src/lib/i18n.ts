@@ -141,6 +141,15 @@ const translations: Record<Language, Record<string, string>> = {
     "profile.referralCode": "Referral Code",
     "profile.memberSince": "Member Since",
 
+    // Tasks
+    "tasks.title": "Tasks & Rewards",
+    "tasks.subtitle": "Complete tasks to earn free coins!",
+    "tasks.progress": "Progress",
+    "tasks.earned": "Earned",
+    "tasks.followTitle": "Follow & Subscribe",
+    "tasks.shareTitle": "Share & Earn",
+    "nav.tasks": "Tasks",
+
     "trade.title": "P2P Marketplace",
     "trade.create": "Create Order",
     "trade.orders": "Order Book",
