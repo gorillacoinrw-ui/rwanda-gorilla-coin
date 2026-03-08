@@ -188,6 +188,7 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.mine": "Miner",
     "nav.trade": "Échanger",
     "nav.history": "Historique",
+    "nav.chat": "IA",
     "nav.profile": "Profil",
 
     "app.title": "GORILLA COIN",
