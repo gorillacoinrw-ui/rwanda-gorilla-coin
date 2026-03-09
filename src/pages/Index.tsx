@@ -4,6 +4,7 @@ import CoinDisplay from "@/components/CoinDisplay";
 import MiningCard from "@/components/MiningCard";
 import StatsGrid from "@/components/StatsGrid";
 import ReferralCard from "@/components/ReferralCard";
+import { NewsFeed } from "@/components/NewsFeed";
 import { useMiningTimer } from "@/hooks/use-mining-timer";
 import { useProfile } from "@/hooks/use-profile";
 import { useLanguage } from "@/contexts/LanguageContext";
