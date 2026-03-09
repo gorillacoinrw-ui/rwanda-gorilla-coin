@@ -81,17 +81,18 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="analytics" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 md:grid-cols-10">
-            <TabsTrigger value="analytics" className="text-xs gap-1"><BarChart3 className="w-3.5 h-3.5" />Analytics</TabsTrigger>
-            <TabsTrigger value="settings" className="text-xs gap-1"><Settings className="w-3.5 h-3.5" />Settings</TabsTrigger>
-            <TabsTrigger value="users" className="text-xs gap-1"><Users className="w-3.5 h-3.5" />Users</TabsTrigger>
-            <TabsTrigger value="tasks" className="text-xs gap-1"><Gift className="w-3.5 h-3.5" />Tasks</TabsTrigger>
-            <TabsTrigger value="ads" className="text-xs gap-1"><Tv className="w-3.5 h-3.5" />Ads</TabsTrigger>
-            <TabsTrigger value="investments" className="text-xs gap-1"><TrendingUp className="w-3.5 h-3.5" />Invest</TabsTrigger>
-            <TabsTrigger value="trades" className="text-xs gap-1"><ArrowLeftRight className="w-3.5 h-3.5" />Trades</TabsTrigger>
-            <TabsTrigger value="mining" className="text-xs gap-1"><Pickaxe className="w-3.5 h-3.5" />Mining</TabsTrigger>
-            <TabsTrigger value="tax" className="text-xs gap-1"><Landmark className="w-3.5 h-3.5" />Tax</TabsTrigger>
-            <TabsTrigger value="referrals" className="text-xs gap-1"><UserCheck className="w-3.5 h-3.5" />Referrals</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 lg:grid-cols-11 h-auto py-2 gap-1">
+            <TabsTrigger value="analytics" className="text-xs gap-1 py-2"><BarChart3 className="w-3.5 h-3.5" />Analytics</TabsTrigger>
+            <TabsTrigger value="settings" className="text-xs gap-1 py-2"><Settings className="w-3.5 h-3.5" />Settings</TabsTrigger>
+            <TabsTrigger value="news" className="text-xs gap-1 py-2"><Newspaper className="w-3.5 h-3.5" />News</TabsTrigger>
+            <TabsTrigger value="users" className="text-xs gap-1 py-2"><Users className="w-3.5 h-3.5" />Users</TabsTrigger>
+            <TabsTrigger value="tasks" className="text-xs gap-1 py-2"><Gift className="w-3.5 h-3.5" />Tasks</TabsTrigger>
+            <TabsTrigger value="ads" className="text-xs gap-1 py-2"><Tv className="w-3.5 h-3.5" />Ads</TabsTrigger>
+            <TabsTrigger value="investments" className="text-xs gap-1 py-2"><TrendingUp className="w-3.5 h-3.5" />Invest</TabsTrigger>
+            <TabsTrigger value="trades" className="text-xs gap-1 py-2"><ArrowLeftRight className="w-3.5 h-3.5" />Trades</TabsTrigger>
+            <TabsTrigger value="mining" className="text-xs gap-1 py-2"><Pickaxe className="w-3.5 h-3.5" />Mining</TabsTrigger>
+            <TabsTrigger value="tax" className="text-xs gap-1 py-2"><Landmark className="w-3.5 h-3.5" />Tax</TabsTrigger>
+            <TabsTrigger value="referrals" className="text-xs gap-1 py-2"><UserCheck className="w-3.5 h-3.5" />Referrals</TabsTrigger>
           </TabsList>
 
           {/* Settings Tab */}
