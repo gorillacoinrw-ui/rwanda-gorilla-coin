@@ -74,6 +74,8 @@ const Index = () => {
             referralCount={referralCount}
           />
         </div>
+
+        <NewsFeed />
       </div>
     </AppLayout>
   );

@@ -105,6 +105,11 @@ const Admin = () => {
             <AdminAnalytics />
           </TabsContent>
 
+          {/* News Tab */}
+          <TabsContent value="news" className="mt-4">
+            <AdminNewsManager />
+          </TabsContent>
+
           {/* Users Tab */}
           <TabsContent value="users" className="mt-4">
             {isLoading ? <p className="text-center text-muted-foreground py-8">Loading...</p> : (
