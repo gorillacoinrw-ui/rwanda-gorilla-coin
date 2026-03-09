@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Footer from "@/components/Footer";
 import { useLanguage } from "@/contexts/LanguageContext";
 import NotificationBell from "@/components/NotificationBell";
+import NewsBell from "@/components/NewsBell";
 import { useAdminCheck } from "@/hooks/use-admin";
 
 const navItems = [
