@@ -71,7 +71,10 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       {/* Top bar with notification bell, admin buttons, and AI coin */}
       <div className="fixed top-2 left-2 sm:left-4 z-[60] flex items-center gap-1.5 sm:gap-2">
         <div className="flex flex-col items-center gap-1">
-          <NotificationBell />
+          <div className="flex items-center gap-0.5">
+            <NotificationBell />
+            <NewsBell />
+          </div>
           <button
             onClick={() => navigate("/chat")}
             className={`relative w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 border-primary/50 flex items-center justify-center shadow-lg animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite] hover:scale-110 transition-transform overflow-hidden ${
