@@ -127,7 +127,7 @@ export default function AdminNewsManager() {
                 </TableCell>
                 <TableCell className="text-right">
                   <Button variant="ghost" size="icon" onClick={() => deleteNews.mutate(item.id)}>
-                    <Trash2 className="w-4 h-4 text-red-500" />
+                    <Trash2 className="w-4 h-4 text-destructive" />
                   </Button>
                 </TableCell>
               </TableRow>
