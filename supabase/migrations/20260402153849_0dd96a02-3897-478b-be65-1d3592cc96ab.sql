@@ -1,0 +1,1 @@
+ALTER TABLE public.ad_views DROP CONSTRAINT ad_views_user_id_ad_id_key;
