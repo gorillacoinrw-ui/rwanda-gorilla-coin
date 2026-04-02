@@ -132,19 +132,34 @@ const Ads = () => {
             <p className="text-sm text-muted-foreground">No ads available right now</p>
             <p className="text-xs text-muted-foreground">Check back later for new earning opportunities!</p>
           </div>
-        ) : (
-          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-            {ads.map((ad) => (
-              <AdCard
-                key={ad.id}
-                ad={ad}
-                viewed={viewedAdIds.has(ad.id)}
-                canWatch={canViewMore}
-                onWatch={handleWatch}
-                isWatching={watchAd.isPending}
-              />
-            ))}
+        ) : !canViewMore ? (
+          <div className="text-center py-12 space-y-3">
+            <CheckCircle className="w-12 h-12 text-accent mx-auto" />
+            <h2 className="text-lg font-bold text-foreground">All done for today! 🎉</h2>
+            <p className="text-sm text-muted-foreground">You've watched all {dailyLimit} ads today.</p>
+            <p className="text-xs text-muted-foreground">Come back tomorrow for new ads and more rewards!</p>
           </div>
+        ) : (
+          <>
+            {remainingToday === dailyLimit && (
+              <div className="bg-primary/10 border border-primary/20 rounded-xl px-4 py-3 flex items-center gap-3">
+                <Coins className="w-5 h-5 text-primary shrink-0" />
+                <p className="text-sm text-primary font-medium">🎉 New ads available today! Watch to earn GOR coins.</p>
+              </div>
+            )}
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+              {ads.map((ad) => (
+                <AdCard
+                  key={ad.id}
+                  ad={ad}
+                  viewed={viewedAdIds.has(ad.id)}
+                  canWatch={canViewMore}
+                  onWatch={handleWatch}
+                  isWatching={watchAd.isPending}
+                />
+              ))}
+            </div>
+          </>
         )}
       </div>
 
