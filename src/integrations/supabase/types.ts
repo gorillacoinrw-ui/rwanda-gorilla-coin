@@ -106,6 +106,27 @@ export type Database = {
         }
         Relationships: []
       }
+      device_fingerprints: {
+        Row: {
+          created_at: string
+          fingerprint: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          fingerprint: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          fingerprint?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       investments: {
         Row: {
           amount: number
@@ -306,6 +327,39 @@ export type Database = {
           id?: string
           referred_id?: string
           referrer_id?: string
+        }
+        Relationships: []
+      }
+      signup_attempts: {
+        Row: {
+          block_reason: string | null
+          blocked: boolean
+          created_at: string
+          email: string
+          fingerprint: string | null
+          id: string
+          ip_address: string | null
+          phone: string | null
+        }
+        Insert: {
+          block_reason?: string | null
+          blocked?: boolean
+          created_at?: string
+          email: string
+          fingerprint?: string | null
+          id?: string
+          ip_address?: string | null
+          phone?: string | null
+        }
+        Update: {
+          block_reason?: string | null
+          blocked?: boolean
+          created_at?: string
+          email?: string
+          fingerprint?: string | null
+          id?: string
+          ip_address?: string | null
+          phone?: string | null
         }
         Relationships: []
       }
@@ -536,6 +590,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_signup_uniqueness: {
+        Args: { _email: string; _fingerprint: string; _phone: string }
+        Returns: Json
+      }
       generate_referral_code: { Args: never; Returns: string }
       has_role: {
         Args: {
