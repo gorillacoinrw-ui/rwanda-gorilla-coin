@@ -58,7 +58,7 @@ export const useAds = () => {
     enabled: !!user,
   });
 
-  const todayViewCount = (myViews.data ?? []).filter((v) => {
+  const todayViews = (myViews.data ?? []).filter((v) => {
     const viewDate = new Date(v.viewed_at);
     const today = new Date();
     return (
@@ -66,12 +66,14 @@ export const useAds = () => {
       viewDate.getMonth() === today.getMonth() &&
       viewDate.getDate() === today.getDate()
     );
-  }).length;
+  });
 
+  const todayViewCount = todayViews.length;
   const canViewMore = todayViewCount < DAILY_AD_LIMIT;
   const remainingToday = DAILY_AD_LIMIT - todayViewCount;
 
-  const viewedAdIds = new Set((myViews.data ?? []).map((v) => v.ad_id));
+  // Only mark ads viewed TODAY as "watched" — ads reset daily
+  const viewedAdIds = new Set(todayViews.map((v) => v.ad_id));
 
   const watchAd = useMutation({
     mutationFn: async ({ adId, reward }: { adId: string; reward: number }) => {
