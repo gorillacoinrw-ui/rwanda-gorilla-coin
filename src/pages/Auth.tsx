@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
+import { getDeviceFingerprint } from "@/lib/fingerprint";
 import gorillaLogo from "@/assets/gorilla-coin-logo.png";
 import Footer from "@/components/Footer";
 
@@ -20,13 +21,21 @@ const Auth = () => {
   const [resetEmail, setResetEmail] = useState("");
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const fingerprintRef = useRef<string>("");
+
+  // Collect device fingerprint on mount
+  useEffect(() => {
+    getDeviceFingerprint().then((fp) => {
+      fingerprintRef.current = fp;
+    });
+  }, []);
 
   // Auto-fill referral code from invite link
   useEffect(() => {
     const ref = searchParams.get("ref");
     if (ref) {
       setReferralCode(ref);
-      setIsLogin(false); // Switch to signup mode
+      setIsLogin(false);
     }
   }, [searchParams]);
 
@@ -40,15 +49,52 @@ const Auth = () => {
         if (error) throw error;
         navigate("/");
       } else {
-        const { error } = await supabase.auth.signUp({
+        // Validate phone is provided
+        if (!phone.trim()) {
+          toast({ title: "Phone Required", description: "Please enter your phone number to create an account.", variant: "destructive" });
+          setLoading(false);
+          return;
+        }
+
+        // Pre-signup uniqueness check
+        const { data: checkResult, error: checkError } = await supabase.functions.invoke("check-signup", {
+          body: { email, phone: phone.trim(), fingerprint: fingerprintRef.current },
+        });
+
+        if (checkError) throw checkError;
+
+        if (!checkResult.allowed) {
+          let message = "You already have an account. Please login.";
+          if (checkResult.phone_exists) {
+            message = "This phone number is already registered. Please login with your existing account.";
+          } else if (checkResult.device_exists) {
+            message = "This device already has an account. Only one account per device is allowed.";
+          }
+          toast({ title: "Account Already Exists", description: message, variant: "destructive" });
+          setIsLogin(true);
+          setLoading(false);
+          return;
+        }
+
+        // Proceed with signup
+        const { data: signUpData, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
             emailRedirectTo: window.location.origin,
-            data: { display_name: displayName || "Gorilla Miner", referral_code_used: referralCode, phone },
+            data: { display_name: displayName || "Gorilla Miner", referral_code_used: referralCode, phone: phone.trim() },
           },
         });
         if (error) throw error;
+
+        // Store device fingerprint after successful signup
+        if (signUpData.user && fingerprintRef.current) {
+          // We'll store this via an edge function since user may not be fully authenticated yet
+          await supabase.functions.invoke("store-device-fingerprint", {
+            body: { userId: signUpData.user.id, fingerprint: fingerprintRef.current },
+          });
+        }
+
         toast({
           title: "Account created!",
           description: "Please check your email to verify your account.",
@@ -160,17 +206,14 @@ const Auth = () => {
         <div className="w-full max-w-sm space-y-6">
           <div className="text-center space-y-3">
             <div className="relative mx-auto w-40 h-24 flex items-end justify-center">
-              {/* Left coin */}
               <div className="absolute left-2 bottom-0" style={{ animation: 'fall-in 1s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both' }}>
                 <div className="absolute inset-0 rounded-full glow-gold animate-pulse-slow" />
                 <img src={gorillaLogo} alt="" className="w-14 h-14 rounded-full relative z-10 animate-spin-slow opacity-70" />
               </div>
-              {/* Center coin (main) */}
               <div className="relative z-20" style={{ animation: 'fall-in 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) both' }}>
                 <div className="absolute inset-0 rounded-full glow-gold animate-pulse-slow" />
                 <img src={gorillaLogo} alt="Gorilla Coin" className="w-20 h-20 rounded-full relative z-10 animate-spin-slow" />
               </div>
-              {/* Right coin */}
               <div className="absolute right-2 bottom-0" style={{ animation: 'fall-in 1s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both' }}>
                 <div className="absolute inset-0 rounded-full glow-gold animate-pulse-slow" />
                 <img src={gorillaLogo} alt="" className="w-14 h-14 rounded-full relative z-10 animate-spin-slow opacity-70" />
@@ -185,18 +228,20 @@ const Auth = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             {!isLogin && (
               <Input
-                placeholder="Display Name"
+                placeholder="Full Name *"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
+                required
                 className="bg-muted border-border text-foreground"
               />
             )}
             {!isLogin && (
               <Input
                 type="tel"
-                placeholder="Phone Number (e.g. +250...)"
+                placeholder="Phone Number (e.g. +250...) *"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
+                required
                 className="bg-muted border-border text-foreground"
               />
             )}
