@@ -38,6 +38,14 @@ Gorilla Coin is Rwanda's first community-driven digital reward platform where us
 - Tasks are reviewed and approved by admins
 - Coin rewards vary by task
 
+**Daily Ads:**
+- Users can watch up to 5 ads per day to earn free GOR coins
+- Ads reset every 24 hours (daily refresh system)
+- After watching all 5 daily ads, a "All done for today!" message appears
+- New ads become available the next day automatically
+- A "New ads available today!" banner appears when daily ads are ready
+- Coin rewards vary per ad
+
 **History:**
 - View all mining sessions and trade history
 - Can clear history if needed
