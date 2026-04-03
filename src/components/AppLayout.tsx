@@ -7,6 +7,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import NotificationBell from "@/components/NotificationBell";
 import NewsBell from "@/components/NewsBell";
 import { useAdminCheck } from "@/hooks/use-admin";
+import InstallButton from "@/components/InstallButton";
 
 const navItems = [
   { icon: Home, labelKey: "nav.home", path: "/" },
@@ -86,6 +87,8 @@ const AppLayout = ({ children }: AppLayoutProps) => {
             <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-rwanda-green border border-background animate-bounce" />
           </button>
         </div>
+
+        <InstallButton />
 
         {isAdmin && (
           <div className="flex gap-1 ml-0.5">
