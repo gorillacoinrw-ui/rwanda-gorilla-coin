@@ -88,6 +88,8 @@ const AppLayout = ({ children }: AppLayoutProps) => {
           </button>
         </div>
 
+        <InstallButton />
+
         {isAdmin && (
           <div className="flex gap-1 ml-0.5">
             <button
