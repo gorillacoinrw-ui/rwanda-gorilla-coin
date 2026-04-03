@@ -7,6 +7,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import NotificationBell from "@/components/NotificationBell";
 import NewsBell from "@/components/NewsBell";
 import { useAdminCheck } from "@/hooks/use-admin";
+import InstallButton from "@/components/InstallButton";
 
 const navItems = [
   { icon: Home, labelKey: "nav.home", path: "/" },
