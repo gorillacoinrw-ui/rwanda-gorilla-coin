@@ -23,7 +23,7 @@ const Index = () => {
   const { myTrades } = useTrades();
 
   const balance = profile?.coin_balance ?? 0;
-  const coinValue = 35;
+  const coinValue = 35 + Math.floor(totalUsers / 100) * 5;
 
   const lockedBalance = myTrades
     .filter((t) => t.seller_id === user?.id && (t.status === "open" || t.status === "escrow"))
