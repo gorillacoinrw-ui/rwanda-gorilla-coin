@@ -37,6 +37,7 @@ import {
   Eye,
 } from "lucide-react";
 import TradeChat from "@/components/TradeChat";
+import P2PAccessGate from "@/components/P2PAccessGate";
 
 const PAYMENT_METHODS = [
   { id: "all", label: "All Payments", icon: Filter },
