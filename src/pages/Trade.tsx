@@ -301,12 +301,16 @@ const TradePage = () => {
                   Buy
                 </button>
                 <button
-                  onClick={() => setTab("sell")}
+                  onClick={() => { if (accessLevel !== "buy_only") setTab("sell"); }}
+                  disabled={accessLevel === "buy_only"}
                   className={`px-6 py-2 text-sm font-semibold rounded-full transition-all ${
-                    tab === "sell"
-                      ? "bg-destructive text-destructive-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
+                    accessLevel === "buy_only"
+                      ? "text-muted-foreground/40 cursor-not-allowed"
+                      : tab === "sell"
+                        ? "bg-destructive text-destructive-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
                   }`}
+                  title={accessLevel === "buy_only" ? "Gura coin 100 mbere yo gucuruza" : ""}
                 >
                   Sell
                 </button>
