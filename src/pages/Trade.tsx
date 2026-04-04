@@ -638,6 +638,7 @@ const TradePage = () => {
           </DialogContent>
         </Dialog>
       </div>
+      )}
       </P2PAccessGate>
     </AppLayout>
   );
