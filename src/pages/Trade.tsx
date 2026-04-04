@@ -250,7 +250,7 @@ const TradePage = () => {
               <Shield className="w-4 h-4 text-primary" />
               <span>Escrow Protected</span>
             </div>
-            <Button size="sm" onClick={() => setCreateOpen(true)} className="gap-1.5" disabled={!tradingActive}>
+            <Button size="sm" onClick={() => setCreateOpen(true)} className="gap-1.5" disabled={!tradingActive || accessLevel === "buy_only"}>
               <Plus className="w-4 h-4" /> Post Ad
             </Button>
           </div>
