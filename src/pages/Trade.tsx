@@ -37,6 +37,7 @@ import {
   Eye,
 } from "lucide-react";
 import TradeChat from "@/components/TradeChat";
+import P2PAccessGate from "@/components/P2PAccessGate";
 
 const PAYMENT_METHODS = [
   { id: "all", label: "All Payments", icon: Filter },
@@ -213,6 +214,7 @@ const TradePage = () => {
 
   return (
     <AppLayout>
+      <P2PAccessGate>
       <div className="max-w-md md:max-w-5xl lg:max-w-7xl mx-auto px-4 py-4 space-y-0">
 
         {/* Trading gate banner */}
@@ -635,6 +637,7 @@ const TradePage = () => {
           </DialogContent>
         </Dialog>
       </div>
+      </P2PAccessGate>
     </AppLayout>
   );
 };
