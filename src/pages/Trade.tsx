@@ -215,6 +215,7 @@ const TradePage = () => {
   return (
     <AppLayout>
       <P2PAccessGate>
+      {(accessLevel) => (
       <div className="max-w-md md:max-w-5xl lg:max-w-7xl mx-auto px-4 py-4 space-y-0">
 
         {/* Trading gate banner */}
