@@ -215,6 +215,7 @@ const TradePage = () => {
   return (
     <AppLayout>
       <P2PAccessGate>
+      {(accessLevel) => (
       <div className="max-w-md md:max-w-5xl lg:max-w-7xl mx-auto px-4 py-4 space-y-0">
 
         {/* Trading gate banner */}
@@ -239,6 +240,14 @@ const TradePage = () => {
             </div>
           </div>
         )}
+
+        {accessLevel === "buy_only" && (
+          <div className="mb-4 p-4 rounded-xl border border-primary/30 bg-primary/5 text-center space-y-1">
+            <p className="text-sm font-semibold text-foreground">🔒 Ufite uburenganzira bwo kugura gusa</p>
+            <p className="text-xs text-muted-foreground">Gura coin 100 ukoresheje P2P kugira ngo ufungure isoko ryose (gucuruza no gutanga).</p>
+          </div>
+        )}
+
         {/* ===== Top Header ===== */}
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-lg md:text-xl font-display font-bold text-gradient-gold tracking-wider">
@@ -249,7 +258,7 @@ const TradePage = () => {
               <Shield className="w-4 h-4 text-primary" />
               <span>Escrow Protected</span>
             </div>
-            <Button size="sm" onClick={() => setCreateOpen(true)} className="gap-1.5" disabled={!tradingActive}>
+            <Button size="sm" onClick={() => setCreateOpen(true)} className="gap-1.5" disabled={!tradingActive || accessLevel === "buy_only"}>
               <Plus className="w-4 h-4" /> Post Ad
             </Button>
           </div>
@@ -300,12 +309,16 @@ const TradePage = () => {
                   Buy
                 </button>
                 <button
-                  onClick={() => setTab("sell")}
+                  onClick={() => { if (accessLevel !== "buy_only") setTab("sell"); }}
+                  disabled={accessLevel === "buy_only"}
                   className={`px-6 py-2 text-sm font-semibold rounded-full transition-all ${
-                    tab === "sell"
-                      ? "bg-destructive text-destructive-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
+                    accessLevel === "buy_only"
+                      ? "text-muted-foreground/40 cursor-not-allowed"
+                      : tab === "sell"
+                        ? "bg-destructive text-destructive-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
                   }`}
+                  title={accessLevel === "buy_only" ? "Gura coin 100 mbere yo gucuruza" : ""}
                 >
                   Sell
                 </button>
@@ -637,6 +650,7 @@ const TradePage = () => {
           </DialogContent>
         </Dialog>
       </div>
+      )}
       </P2PAccessGate>
     </AppLayout>
   );

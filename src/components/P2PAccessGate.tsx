@@ -1,10 +1,14 @@
 import { useP2PAccess } from "@/hooks/use-p2p-access";
 import { Progress } from "@/components/ui/progress";
-import { CheckCircle, XCircle, Coins, Users, ShoppingCart } from "lucide-react";
+import { CheckCircle, XCircle, Coins, Users, ShoppingCart, ShieldAlert } from "lucide-react";
 
-const P2PAccessGate = ({ children }: { children: React.ReactNode }) => {
+interface P2PAccessGateProps {
+  children: (accessLevel: "buy_only" | "full") => React.ReactNode;
+}
+
+const P2PAccessGate = ({ children }: P2PAccessGateProps) => {
   const {
-    p2pAccess,
+    accessLevel,
     balance,
     referrals,
     p2pPurchased,
@@ -22,8 +26,8 @@ const P2PAccessGate = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  if (p2pAccess) {
-    return <>{children}</>;
+  if (accessLevel === "full" || accessLevel === "buy_only") {
+    return <>{children(accessLevel)}</>;
   }
 
   const requirements = [
