@@ -240,6 +240,14 @@ const TradePage = () => {
             </div>
           </div>
         )}
+
+        {accessLevel === "buy_only" && (
+          <div className="mb-4 p-4 rounded-xl border border-primary/30 bg-primary/5 text-center space-y-1">
+            <p className="text-sm font-semibold text-foreground">🔒 Ufite uburenganzira bwo kugura gusa</p>
+            <p className="text-xs text-muted-foreground">Gura coin 100 ukoresheje P2P kugira ngo ufungure isoko ryose (gucuruza no gutanga).</p>
+          </div>
+        )}
+
         {/* ===== Top Header ===== */}
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-lg md:text-xl font-display font-bold text-gradient-gold tracking-wider">
