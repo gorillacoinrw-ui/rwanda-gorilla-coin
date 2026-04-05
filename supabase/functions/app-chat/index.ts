@@ -57,7 +57,9 @@ Gorilla Coin is Rwanda's first community-driven digital reward platform where us
 
 **Coin Value:**
 - Base value starts at 35 RWF
-- Value increases by 5 RWF for every 100 coins mined across the platform
+- Value increases by 5 RWF for every 100 registered users on the platform
+- Formula: 35 + (floor(totalUsers / 100) × 5) RWF
+- Example: At 250 users, coin value = 35 + (2 × 5) = 45 RWF
 
 **P2P Trading Activation:**
 - P2P trading is NOT yet open — it activates once the platform reaches 100 registered users
