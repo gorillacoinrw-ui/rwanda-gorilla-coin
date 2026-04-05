@@ -88,6 +88,27 @@ export type Database = {
         }
         Relationships: []
       }
+      app_install_rewards: {
+        Row: {
+          coins_earned: number
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          coins_earned?: number
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          coins_earned?: number
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       app_settings: {
         Row: {
           key: string
