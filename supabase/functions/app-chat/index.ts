@@ -83,6 +83,12 @@ Gorilla Coin is Rwanda's first community-driven digital reward platform where us
 - Users can have multiple active investments at the same time
 - Investment page is accessible from the "Invest" tab in the navigation
 
+**App Install Reward:**
+- Users who install the Gorilla Coin app (PWA) earn 20 GOR coins instantly
+- The reward can only be claimed once per user
+- Tap the "Install App" button in the top navigation bar to install
+- After installing, 20 GOR is automatically credited to your balance
+
 **Security:**
 - All trades use escrow protection
 - Email verification required for signup
