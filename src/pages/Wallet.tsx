@@ -6,10 +6,10 @@ import { useAppSettings } from "@/hooks/use-app-settings";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Wallet as WalletIcon, ArrowDownToLine, ArrowUpFromLine, Smartphone, Globe, CreditCard, Loader2, AlertCircle } from "lucide-react";
+import { Wallet as WalletIcon, ArrowDownToLine, ArrowUpFromLine, Smartphone, Globe, CreditCard, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 type PaymentMethod = "mtn" | "airtel" | "paypal";
 
@@ -33,11 +33,13 @@ const Wallet = () => {
   const [withdrawOpen, setWithdrawOpen] = useState(false);
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethod | null>(null);
   const [amount, setAmount] = useState("");
+  const [phone, setPhone] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const balance = profile?.coin_balance ?? 0;
   const balanceRWF = balance * coinValue;
 
-  const handleDeposit = () => {
+  const handleDeposit = async () => {
     if (!selectedMethod) {
       toast.error("Please select a payment method");
       return;
@@ -46,13 +48,51 @@ const Wallet = () => {
       toast.error("Please enter a valid amount");
       return;
     }
-    toast.info("Payment integration coming soon! You'll need Flutterwave/PayPal API keys to enable deposits.");
-    setDepositOpen(false);
-    setAmount("");
-    setSelectedMethod(null);
+
+    if (selectedMethod === "paypal") {
+      toast.info("PayPal integration requires API keys. Coming soon!");
+      return;
+    }
+
+    if (!phone || phone.length < 10) {
+      toast.error("Please enter a valid phone number");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("process-payment", {
+        body: {
+          action: "deposit",
+          amount: Number(amount),
+          phone_number: phone,
+          currency: "RWF",
+          network: selectedMethod === "mtn" ? "MTN" : "AIRTEL",
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.data?.data?.link) {
+        window.open(data.data.data.link, "_blank");
+        toast.success("Payment page opened! Complete the payment on the new tab.");
+      } else if (data?.success) {
+        toast.success("Payment initiated! Check your phone for the USSD prompt.");
+      } else {
+        toast.error(data?.error || "Payment failed");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Payment failed");
+    } finally {
+      setLoading(false);
+      setDepositOpen(false);
+      setAmount("");
+      setPhone("");
+      setSelectedMethod(null);
+    }
   };
 
-  const handleWithdraw = () => {
+  const handleWithdraw = async () => {
     if (!selectedMethod) {
       toast.error("Please select a payment method");
       return;
@@ -65,11 +105,49 @@ const Wallet = () => {
       toast.error("Insufficient balance");
       return;
     }
-    toast.info("Payment integration coming soon! You'll need Flutterwave/PayPal API keys to enable withdrawals.");
-    setWithdrawOpen(false);
-    setAmount("");
-    setSelectedMethod(null);
+
+    if (selectedMethod === "paypal") {
+      toast.info("PayPal integration requires API keys. Coming soon!");
+      return;
+    }
+
+    if (!phone || phone.length < 10) {
+      toast.error("Please enter a valid phone number");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const rwfAmount = Number(amount) * coinValue;
+      const { data, error } = await supabase.functions.invoke("process-payment", {
+        body: {
+          action: "withdraw",
+          amount: rwfAmount,
+          phone_number: phone,
+          currency: "RWF",
+          network: selectedMethod === "mtn" ? "MTN" : "AIRTEL",
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.success) {
+        toast.success("Withdrawal initiated! Funds will be sent to your phone shortly.");
+      } else {
+        toast.error(data?.error || "Withdrawal failed");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Withdrawal failed");
+    } finally {
+      setLoading(false);
+      setWithdrawOpen(false);
+      setAmount("");
+      setPhone("");
+      setSelectedMethod(null);
+    }
   };
+
+  const isMobileMoney = selectedMethod === "mtn" || selectedMethod === "airtel";
 
   const PaymentMethodSelector = () => (
     <div className="space-y-3">
@@ -146,22 +224,6 @@ const Wallet = () => {
           </Button>
         </div>
 
-        {/* Info Banner */}
-        <Card className="border-accent/30 bg-accent/5">
-          <CardContent className="pt-4 pb-4 flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-accent shrink-0 mt-0.5" />
-            <div className="text-xs text-muted-foreground">
-              <p className="font-semibold text-foreground mb-1">Payment Setup Required</p>
-              <p>Deposits and withdrawals require Flutterwave and PayPal API keys. Once configured, you'll be able to:</p>
-              <ul className="list-disc list-inside mt-1 space-y-0.5">
-                <li>Deposit via MTN/Airtel Mobile Money (Rwanda)</li>
-                <li>Deposit via PayPal (International)</li>
-                <li>Withdraw to Mobile Money or PayPal</li>
-              </ul>
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Transaction History */}
         <Card className="border-border bg-card/90">
           <CardHeader className="pb-3">
@@ -187,6 +249,17 @@ const Wallet = () => {
           </DialogHeader>
           <div className="space-y-4 pt-2">
             <PaymentMethodSelector />
+            {isMobileMoney && (
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Phone Number</label>
+                <Input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="e.g. 0781234567"
+                />
+              </div>
+            )}
             <div>
               <label className="text-xs text-muted-foreground mb-1 block">Amount (RWF)</label>
               <Input
@@ -202,9 +275,9 @@ const Wallet = () => {
                 </p>
               )}
             </div>
-            <Button onClick={handleDeposit} className="w-full bg-gradient-gold text-primary-foreground font-display">
-              <ArrowDownToLine className="w-4 h-4 mr-2" />
-              {t("wallet.deposit")}
+            <Button onClick={handleDeposit} disabled={loading} className="w-full bg-gradient-gold text-primary-foreground font-display">
+              {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <ArrowDownToLine className="w-4 h-4 mr-2" />}
+              {loading ? "Processing..." : t("wallet.deposit")}
             </Button>
           </div>
         </DialogContent>
@@ -219,6 +292,17 @@ const Wallet = () => {
           </DialogHeader>
           <div className="space-y-4 pt-2">
             <PaymentMethodSelector />
+            {isMobileMoney && (
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Phone Number</label>
+                <Input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="e.g. 0781234567"
+                />
+              </div>
+            )}
             <div>
               <label className="text-xs text-muted-foreground mb-1 block">Amount (GOR)</label>
               <Input
@@ -235,9 +319,9 @@ const Wallet = () => {
                 </p>
               )}
             </div>
-            <Button onClick={handleWithdraw} className="w-full bg-gradient-gold text-primary-foreground font-display">
-              <ArrowUpFromLine className="w-4 h-4 mr-2" />
-              {t("wallet.withdraw")}
+            <Button onClick={handleWithdraw} disabled={loading} className="w-full bg-gradient-gold text-primary-foreground font-display">
+              {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <ArrowUpFromLine className="w-4 h-4 mr-2" />}
+              {loading ? "Processing..." : t("wallet.withdraw")}
             </Button>
           </div>
         </DialogContent>
