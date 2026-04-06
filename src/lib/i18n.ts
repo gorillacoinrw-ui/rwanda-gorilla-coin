@@ -1,43 +1,32 @@
-export type Language = "rw" | "en" | "fr";
+export type Language = "rw" | "en" | "fr" | "sw";
 
 const translations: Record<Language, Record<string, string>> = {
   rw: {
-    // Nav
     "nav.home": "Ahabanza",
     "nav.mine": "Gucukura",
     "nav.trade": "Guhana",
     "nav.history": "Amateka",
     "nav.chat": "AI",
     "nav.profile": "Umwirondoro",
-
-    // Index
     "app.title": "GORILLA COIN",
     "app.subtitle": "Igihembo cy'Ikoranabuhanga cy'u Rwanda",
     "stats.users": "Abakoresha",
     "stats.value": "Agaciro",
     "stats.mined": "Byacukuwe",
-
-    // Mining
     "mining.title": "Tangira Gucukura",
     "mining.button": "Tangira Gucukura",
     "mining.active": "Gucukura...",
     "mining.complete": "Byarangiye! Kanda hano",
     "mining.claim": "Yakira Amafaranga",
-
-    // Referral
     "referral.title": "Tumira & Uhembwe",
     "referral.desc": "Uhembwa {{coins}} coins ku muntu wese utumiye!",
     "referral.joined": "inshuti zinjiye",
     "referral.earned": "coins zahembwe",
     "referral.copy": "Gukoporora Ubutumire",
-
-    // Social
     "social.whatsapp": "WhatsApp",
     "social.facebook": "Facebook",
     "social.instagram": "Instagram",
     "social.more": "Ibindi",
-
-    // Profile
     "profile.title": "Umwirondoro",
     "profile.edit": "Hindura Umwirondoro",
     "profile.security": "Umutekano & 2FA",
@@ -57,8 +46,6 @@ const translations: Record<Language, Record<string, string>> = {
     "profile.email": "Imeli",
     "profile.referralCode": "Kode y'ubutumire",
     "profile.memberSince": "Iyandikwa",
-
-    // Tasks
     "tasks.title": "Ibikoresho & Ihembo",
     "tasks.subtitle": "Kora ibikoresho uhembwe coins!",
     "tasks.progress": "Aho ugeze",
@@ -68,8 +55,6 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.tasks": "Ibikoresho",
     "nav.ads": "Amashusho",
     "nav.invest": "Gushora",
-
-    // Trade
     "trade.title": "Isoko rya P2P",
     "trade.create": "Kora Itangaza",
     "trade.orders": "Amatangaza",
@@ -84,8 +69,6 @@ const translations: Record<Language, Record<string, string>> = {
     "trade.escrow": "Igihe gisigaye",
     "trade.confirm": "Emeza",
     "trade.cancel": "Hagarika",
-
-    // History
     "history.title": "Amateka y'Ibikorwa",
     "history.mining": "Gucukura",
     "history.trades": "Ibicuruzwa",
@@ -93,10 +76,27 @@ const translations: Record<Language, Record<string, string>> = {
     "history.noMining": "Nta gucukura byabayeho",
     "history.noTrades": "Nta bicuruzwa byabayeho",
     "history.inProgress": "Biracyakora...",
-
     "app.about": "Ibyerekeye Gorilla Coin",
     "app.hide": "Hisha",
     "app.description": "Murakaza neza kuri Gorilla Coin — urubuga rwa mbere rw'igihembo cy'ikoranabuhanga mu Rwanda rugengwa n'abaturage. Cukura coins buri munsi, guhana neza n'abandi bakoresha ukoresheje mobile money, kandi wongere umutungo wawe binyuze mu butumire. Rwubatswe n'Abanyarwanda, ku Banyarwanda, Gorilla Coin iguha amahirwe yo guhemba, guhana, no gushora mu buryo bwizewe. Kora ibikoresho kugira ngo wongere inyungu zawe, kurikirana amateka y'ibyo wacukuye, kandi winjire mu muryango w'abahanga mu ikoranabuhanga ugenda ukura. Tangira gucukura uyu munsi kandi ube igice cy'impinduka z'ubukungu bw'ikoranabuhanga mu Rwanda. 🦍",
+    // Wallet
+    "wallet.title": "Agasanduku k'Amafaranga",
+    "wallet.deposit": "Kujya mu konte",
+    "wallet.withdraw": "Gukura",
+    "wallet.balance": "Umwenda",
+    "wallet.transactions": "Ibikorwa",
+    "wallet.noTransactions": "Nta bikorwa byabayeho",
+    // Leaderboard
+    "leaderboard.title": "Uruhare rw'Abambere",
+    "leaderboard.rank": "Urwego",
+    "leaderboard.user": "Umukoresha",
+    "leaderboard.coins": "Coins",
+    // Legal
+    "legal.privacy": "Politiki y'Ibanga",
+    "legal.terms": "Amategeko n'Amabwiriza",
+    // Nav
+    "nav.wallet": "Agasanduku",
+    "nav.leaderboard": "Abambere",
   },
   en: {
     "nav.home": "Home",
@@ -105,30 +105,25 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.history": "History",
     "nav.chat": "AI",
     "nav.profile": "Profile",
-
     "app.title": "GORILLA COIN",
     "app.subtitle": "Rwanda's Digital Reward",
     "stats.users": "Users",
     "stats.value": "Value",
     "stats.mined": "Mined",
-
     "mining.title": "Start Mining",
     "mining.button": "Start Mining",
     "mining.active": "Mining...",
     "mining.complete": "Complete! Tap to claim",
     "mining.claim": "Claim Coins",
-
     "referral.title": "Invite & Earn",
     "referral.desc": "Earn {{coins}} coins for each friend who joins!",
     "referral.joined": "friends joined",
     "referral.earned": "coins earned",
     "referral.copy": "Copy Invite Link",
-
     "social.whatsapp": "WhatsApp",
     "social.facebook": "Facebook",
     "social.instagram": "Instagram",
     "social.more": "More",
-
     "profile.title": "Profile",
     "profile.edit": "Edit Profile",
     "profile.security": "Security & 2FA",
@@ -148,8 +143,6 @@ const translations: Record<Language, Record<string, string>> = {
     "profile.email": "Email",
     "profile.referralCode": "Referral Code",
     "profile.memberSince": "Member Since",
-
-    // Tasks
     "tasks.title": "Tasks & Rewards",
     "tasks.subtitle": "Complete tasks to earn free coins!",
     "tasks.progress": "Progress",
@@ -159,7 +152,6 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.tasks": "Tasks",
     "nav.ads": "Ads",
     "nav.invest": "Invest",
-
     "trade.title": "P2P Marketplace",
     "trade.create": "Create Order",
     "trade.orders": "Order Book",
@@ -174,7 +166,6 @@ const translations: Record<Language, Record<string, string>> = {
     "trade.escrow": "Time left",
     "trade.confirm": "Confirm",
     "trade.cancel": "Cancel",
-
     "history.title": "Activity History",
     "history.mining": "Mining",
     "history.trades": "Trades",
@@ -182,10 +173,27 @@ const translations: Record<Language, Record<string, string>> = {
     "history.noMining": "No mining sessions yet",
     "history.noTrades": "No trades yet",
     "history.inProgress": "In progress...",
-
     "app.about": "About Gorilla Coin",
     "app.hide": "Hide",
     "app.description": "Welcome to Gorilla Coin — Rwanda's first community-driven digital reward platform. Mine coins daily, trade securely with fellow members using mobile money, and grow your balance through referrals. Built for Rwandans, by Rwandans, Gorilla Coin empowers you to earn, trade, and invest in a transparent ecosystem. Complete social tasks to boost your earnings, track your mining history, and join a growing community of digital pioneers. Start mining today and be part of Rwanda's digital economy revolution. Your journey to financial freedom begins here — one coin at a time. 🦍",
+    // Wallet
+    "wallet.title": "Wallet",
+    "wallet.deposit": "Deposit",
+    "wallet.withdraw": "Withdraw",
+    "wallet.balance": "Balance",
+    "wallet.transactions": "Transactions",
+    "wallet.noTransactions": "No transactions yet",
+    // Leaderboard
+    "leaderboard.title": "Global Leaderboard",
+    "leaderboard.rank": "Rank",
+    "leaderboard.user": "User",
+    "leaderboard.coins": "Coins",
+    // Legal
+    "legal.privacy": "Privacy Policy",
+    "legal.terms": "Terms & Conditions",
+    // Nav
+    "nav.wallet": "Wallet",
+    "nav.leaderboard": "Leaderboard",
   },
   fr: {
     "nav.home": "Accueil",
@@ -194,30 +202,25 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.history": "Historique",
     "nav.chat": "IA",
     "nav.profile": "Profil",
-
     "app.title": "GORILLA COIN",
     "app.subtitle": "Récompense Numérique du Rwanda",
     "stats.users": "Utilisateurs",
     "stats.value": "Valeur",
     "stats.mined": "Miné",
-
     "mining.title": "Commencer le Minage",
     "mining.button": "Commencer",
     "mining.active": "Minage...",
     "mining.complete": "Terminé ! Réclamez",
     "mining.claim": "Réclamer les Coins",
-
     "referral.title": "Inviter & Gagner",
     "referral.desc": "Gagnez {{coins}} coins pour chaque ami qui rejoint !",
     "referral.joined": "amis inscrits",
     "referral.earned": "coins gagnés",
     "referral.copy": "Copier le Lien",
-
     "social.whatsapp": "WhatsApp",
     "social.facebook": "Facebook",
     "social.instagram": "Instagram",
     "social.more": "Plus",
-
     "profile.title": "Profil",
     "profile.edit": "Modifier le Profil",
     "profile.security": "Sécurité & 2FA",
@@ -237,8 +240,6 @@ const translations: Record<Language, Record<string, string>> = {
     "profile.email": "Email",
     "profile.referralCode": "Code de Parrainage",
     "profile.memberSince": "Membre depuis",
-
-    // Tasks
     "tasks.title": "Tâches & Récompenses",
     "tasks.subtitle": "Complétez des tâches pour gagner des coins !",
     "tasks.progress": "Progrès",
@@ -248,7 +249,6 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.tasks": "Tâches",
     "nav.ads": "Pubs",
     "nav.invest": "Investir",
-
     "trade.title": "Marché P2P",
     "trade.create": "Créer un Ordre",
     "trade.orders": "Carnet d'Ordres",
@@ -263,7 +263,6 @@ const translations: Record<Language, Record<string, string>> = {
     "trade.escrow": "Temps restant",
     "trade.confirm": "Confirmer",
     "trade.cancel": "Annuler",
-
     "history.title": "Historique des Activités",
     "history.mining": "Minage",
     "history.trades": "Échanges",
@@ -271,10 +270,124 @@ const translations: Record<Language, Record<string, string>> = {
     "history.noMining": "Aucune session de minage",
     "history.noTrades": "Aucun échange",
     "history.inProgress": "En cours...",
-
     "app.about": "À propos de Gorilla Coin",
     "app.hide": "Masquer",
     "app.description": "Bienvenue sur Gorilla Coin — la première plateforme communautaire de récompenses numériques au Rwanda. Minez des coins chaque jour, échangez en toute sécurité avec d'autres membres via mobile money, et augmentez votre solde grâce aux parrainages. Conçu par et pour les Rwandais, Gorilla Coin vous permet de gagner, échanger et investir dans un écosystème transparent. Complétez des tâches sociales, suivez votre historique de minage et rejoignez une communauté grandissante de pionniers numériques. Commencez à miner aujourd'hui et faites partie de la révolution numérique du Rwanda. 🦍",
+    // Wallet
+    "wallet.title": "Portefeuille",
+    "wallet.deposit": "Déposer",
+    "wallet.withdraw": "Retirer",
+    "wallet.balance": "Solde",
+    "wallet.transactions": "Transactions",
+    "wallet.noTransactions": "Aucune transaction",
+    // Leaderboard
+    "leaderboard.title": "Classement Mondial",
+    "leaderboard.rank": "Rang",
+    "leaderboard.user": "Utilisateur",
+    "leaderboard.coins": "Coins",
+    // Legal
+    "legal.privacy": "Politique de Confidentialité",
+    "legal.terms": "Conditions Générales",
+    // Nav
+    "nav.wallet": "Portefeuille",
+    "nav.leaderboard": "Classement",
+  },
+  sw: {
+    "nav.home": "Nyumbani",
+    "nav.mine": "Chimba",
+    "nav.trade": "Biashara",
+    "nav.history": "Historia",
+    "nav.chat": "AI",
+    "nav.profile": "Wasifu",
+    "app.title": "GORILLA COIN",
+    "app.subtitle": "Tuzo ya Kidijitali ya Rwanda",
+    "stats.users": "Watumiaji",
+    "stats.value": "Thamani",
+    "stats.mined": "Imechimbwa",
+    "mining.title": "Anza Kuchimba",
+    "mining.button": "Anza Kuchimba",
+    "mining.active": "Inachimba...",
+    "mining.complete": "Imekamilika! Gusa kudai",
+    "mining.claim": "Dai Sarafu",
+    "referral.title": "Alika & Pata",
+    "referral.desc": "Pata sarafu {{coins}} kwa kila rafiki anayejiunga!",
+    "referral.joined": "marafiki wamejiunga",
+    "referral.earned": "sarafu zilizopatikana",
+    "referral.copy": "Nakili Kiungo",
+    "social.whatsapp": "WhatsApp",
+    "social.facebook": "Facebook",
+    "social.instagram": "Instagram",
+    "social.more": "Zaidi",
+    "profile.title": "Wasifu",
+    "profile.edit": "Hariri Wasifu",
+    "profile.security": "Usalama & 2FA",
+    "profile.language": "Lugha",
+    "profile.settings": "Mipangilio",
+    "profile.support": "Msaada wa Wateja",
+    "profile.signout": "Ondoka",
+    "profile.coins": "Sarafu",
+    "profile.referrals": "Rufaa",
+    "profile.mined": "Imechimbwa",
+    "profile.save": "Hifadhi",
+    "profile.displayName": "Jina",
+    "profile.phone": "Simu",
+    "profile.newPassword": "Nenosiri Jipya",
+    "profile.confirmPassword": "Thibitisha Nenosiri",
+    "profile.updatePassword": "Sasisha Nenosiri",
+    "profile.email": "Barua pepe",
+    "profile.referralCode": "Msimbo wa Rufaa",
+    "profile.memberSince": "Mwanachama Tangu",
+    "tasks.title": "Kazi & Tuzo",
+    "tasks.subtitle": "Kamilisha kazi ili kupata sarafu bure!",
+    "tasks.progress": "Maendeleo",
+    "tasks.earned": "Imepatikana",
+    "tasks.followTitle": "Fuata & Jiandikishe",
+    "tasks.shareTitle": "Shiriki & Pata",
+    "nav.tasks": "Kazi",
+    "nav.ads": "Matangazo",
+    "nav.invest": "Wekeza",
+    "trade.title": "Soko la P2P",
+    "trade.create": "Unda Agizo",
+    "trade.orders": "Kitabu cha Agizo",
+    "trade.myTrades": "Biashara Zangu",
+    "trade.sell": "Uza",
+    "trade.buy": "Nunua",
+    "trade.amount": "Kiasi",
+    "trade.price": "Bei (RWF)",
+    "trade.min": "Chini",
+    "trade.max": "Juu",
+    "trade.payment": "Malipo",
+    "trade.escrow": "Muda uliobaki",
+    "trade.confirm": "Thibitisha",
+    "trade.cancel": "Ghairi",
+    "history.title": "Historia ya Shughuli",
+    "history.mining": "Kuchimba",
+    "history.trades": "Biashara",
+    "history.loading": "Inapakia...",
+    "history.noMining": "Hakuna vikao vya kuchimba bado",
+    "history.noTrades": "Hakuna biashara bado",
+    "history.inProgress": "Inaendelea...",
+    "app.about": "Kuhusu Gorilla Coin",
+    "app.hide": "Ficha",
+    "app.description": "Karibu Gorilla Coin — jukwaa la kwanza la tuzo za kidijitali linaloendeshwa na jamii nchini Rwanda. Chimba sarafu kila siku, fanya biashara salama na wanachama wenzako kwa kutumia pesa za simu, na kukuza salio lako kupitia rufaa. Iliyojengwa kwa Wanyarwanda, na Wanyarwanda, Gorilla Coin inakuwezesha kupata, kufanya biashara, na kuwekeza katika mfumo wa uwazi. Kamilisha kazi za kijamii ili kuongeza mapato yako, fuatilia historia yako ya kuchimba, na jiunge na jamii inayokua ya waanzilishi wa kidijitali. 🦍",
+    // Wallet
+    "wallet.title": "Mkoba",
+    "wallet.deposit": "Weka",
+    "wallet.withdraw": "Toa",
+    "wallet.balance": "Salio",
+    "wallet.transactions": "Miamala",
+    "wallet.noTransactions": "Hakuna miamala bado",
+    // Leaderboard
+    "leaderboard.title": "Orodha ya Viongozi",
+    "leaderboard.rank": "Nafasi",
+    "leaderboard.user": "Mtumiaji",
+    "leaderboard.coins": "Sarafu",
+    // Legal
+    "legal.privacy": "Sera ya Faragha",
+    "legal.terms": "Masharti na Vigezo",
+    // Nav
+    "nav.wallet": "Mkoba",
+    "nav.leaderboard": "Orodha",
   },
 };
 

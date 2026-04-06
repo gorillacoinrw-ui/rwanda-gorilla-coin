@@ -25,6 +25,7 @@ const LANGUAGES: { code: Language; label: string }[] = [
   { code: "rw", label: "Kinyarwanda" },
   { code: "en", label: "English" },
   { code: "fr", label: "Français" },
+  { code: "sw", label: "Kiswahili" },
 ];
 
 const Profile = () => {
