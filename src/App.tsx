@@ -24,6 +24,7 @@ import Leaderboard from "./pages/Leaderboard";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
+import RewardedAdProvider from "./components/RewardedAdProvider";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +44,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <LanguageProvider>
+            <RewardedAdProvider>
             <Routes>
               <Route path="/auth" element={<Auth />} />
               <Route path="/reset-password" element={<ResetPassword />} />
@@ -63,6 +65,7 @@ const App = () => (
               <Route path="/terms" element={<ProtectedRoute><Terms /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
+            </RewardedAdProvider>
           </LanguageProvider>
         </AuthProvider>
       </BrowserRouter>
