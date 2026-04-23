@@ -19,7 +19,7 @@ import FounderDashboard from "./pages/FounderDashboard";
 import Ads from "./pages/Ads";
 import Invest from "./pages/Invest";
 import ResetPassword from "./pages/ResetPassword";
-import Wallet from "./pages/Wallet";
+
 import Leaderboard from "./pages/Leaderboard";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
@@ -57,7 +57,7 @@ const App = () => (
               <Route path="/founder" element={<ProtectedRoute><FounderDashboard /></ProtectedRoute>} />
               <Route path="/ads" element={<ProtectedRoute><Ads /></ProtectedRoute>} />
               <Route path="/invest" element={<ProtectedRoute><Invest /></ProtectedRoute>} />
-              <Route path="/wallet" element={<ProtectedRoute><Wallet /></ProtectedRoute>} />
+              
               <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
               <Route path="/privacy" element={<ProtectedRoute><Privacy /></ProtectedRoute>} />
               <Route path="/terms" element={<ProtectedRoute><Terms /></ProtectedRoute>} />
