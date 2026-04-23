@@ -148,6 +148,33 @@ export type Database = {
         }
         Relationships: []
       }
+      inactivity_reminders: {
+        Row: {
+          email_status: string
+          id: string
+          last_mining_date: string | null
+          reminder_count: number
+          sent_at: string
+          user_id: string
+        }
+        Insert: {
+          email_status?: string
+          id?: string
+          last_mining_date?: string | null
+          reminder_count?: number
+          sent_at?: string
+          user_id: string
+        }
+        Update: {
+          email_status?: string
+          id?: string
+          last_mining_date?: string | null
+          reminder_count?: number
+          sent_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       investments: {
         Row: {
           amount: number
