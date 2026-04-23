@@ -21,6 +21,10 @@ const SETTING_FIELDS: SettingField[] = [
   { key: "tax_pool_balance", label: "Tax Pool Balance (GOR)", description: "Current accumulated tax pool", type: "number" },
   { key: "min_users_for_trading", label: "Min Users for Trading", description: "Minimum users required to enable P2P trading", type: "number" },
   { key: "admin_access_key", label: "Admin Access Key", description: "Secondary access key for admin/founder panels", type: "text" },
+  { key: "rewarded_ads_enabled", label: "Rewarded Ads Enabled", description: "Toggle global rewarded ads (true/false)", type: "text" },
+  { key: "rewarded_ad_reward", label: "Rewarded Ad Reward (GOR)", description: "Coins given per rewarded ad view (default 1)", type: "number" },
+  { key: "rewarded_ad_daily_cap", label: "Rewarded Ads Daily Cap", description: "Max rewarded ads per user per day (default 10)", type: "number" },
+  { key: "rewarded_ad_interval_seconds", label: "Rewarded Ad Interval (sec)", description: "Min seconds between rewarded ads (default 300 = 5 min)", type: "number" },
 ];
 
 const AdminSettings = () => {
