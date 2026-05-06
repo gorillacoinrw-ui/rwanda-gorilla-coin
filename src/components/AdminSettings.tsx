@@ -24,7 +24,8 @@ const SETTING_FIELDS: SettingField[] = [
   { key: "rewarded_ads_enabled", label: "Rewarded Ads Enabled", description: "Toggle global rewarded ads (true/false)", type: "text" },
   { key: "rewarded_ad_reward", label: "Rewarded Ad Reward (GOR)", description: "Coins given per rewarded ad view (default 1)", type: "number" },
   { key: "rewarded_ad_daily_cap", label: "Rewarded Ads Daily Cap", description: "Max rewarded ads per user per day (default 10)", type: "number" },
-  { key: "rewarded_ad_interval_seconds", label: "Rewarded Ad Interval (sec)", description: "Min seconds between rewarded ads (default 300 = 5 min)", type: "number" },
+  { key: "rewarded_ad_interval_seconds", label: "Rewarded Ad Interval (sec)", description: "Min seconds between rewarded ads (default 600 = 10 min)", type: "number" },
+  { key: "rewarded_ad_first_delay_seconds", label: "First Ad Delay (sec)", description: "Seconds after session start before first ad (default 30)", type: "number" },
 ];
 
 const AdminSettings = () => {
