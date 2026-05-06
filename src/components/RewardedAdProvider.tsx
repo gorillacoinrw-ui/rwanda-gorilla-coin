@@ -60,7 +60,8 @@ const RewardedAdProvider = ({ children }: { children: React.ReactNode }) => {
   const enabled = settings.rewarded_ads_enabled !== false && settings.rewarded_ads_enabled !== "false";
   const rewardAmount = Number(settings.rewarded_ad_reward ?? 1);
   const dailyCap = Number(settings.rewarded_ad_daily_cap ?? 10);
-  const intervalSeconds = Number(settings.rewarded_ad_interval_seconds ?? 300);
+  const intervalSeconds = Number(settings.rewarded_ad_interval_seconds ?? 600); // 10 min between ads
+  const firstAdDelaySeconds = Number(settings.rewarded_ad_first_delay_seconds ?? 30); // 30s after session start
 
   // Track user activity
   useEffect(() => {
@@ -92,10 +93,10 @@ const RewardedAdProvider = ({ children }: { children: React.ReactNode }) => {
     const sinceLast = (Date.now() - lastShown) / 1000;
     if (lastShown && sinceLast < intervalSeconds) return;
 
-    // Initial wait: require intervalSeconds since session start if never shown
+    // Initial wait: require firstAdDelaySeconds since session start if never shown
     if (!lastShown) {
       const sinceStart = (Date.now() - sessionStartRef.current) / 1000;
-      if (sinceStart < intervalSeconds) return;
+      if (sinceStart < firstAdDelaySeconds) return;
     }
 
     // User must be active (input within last minute)
@@ -115,7 +116,7 @@ const RewardedAdProvider = ({ children }: { children: React.ReactNode }) => {
     setCloseCountdown(5);
     localStorage.setItem(STORAGE_LAST_SHOWN, String(Date.now()));
     localStorage.setItem(STORAGE_LAST_AD_ID, ad.id);
-  }, [ads, user, enabled, dailyCap, intervalSeconds, pickAd]);
+  }, [ads, user, enabled, dailyCap, intervalSeconds, firstAdDelaySeconds, pickAd]);
 
   // Polling timer to check show conditions
   useEffect(() => {
