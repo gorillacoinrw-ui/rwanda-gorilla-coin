@@ -116,7 +116,7 @@ const RewardedAdProvider = ({ children }: { children: React.ReactNode }) => {
     setCloseCountdown(5);
     localStorage.setItem(STORAGE_LAST_SHOWN, String(Date.now()));
     localStorage.setItem(STORAGE_LAST_AD_ID, ad.id);
-  }, [ads, user, enabled, dailyCap, intervalSeconds, pickAd]);
+  }, [ads, user, enabled, dailyCap, intervalSeconds, firstAdDelaySeconds, pickAd]);
 
   // Polling timer to check show conditions
   useEffect(() => {
