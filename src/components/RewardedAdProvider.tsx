@@ -93,10 +93,10 @@ const RewardedAdProvider = ({ children }: { children: React.ReactNode }) => {
     const sinceLast = (Date.now() - lastShown) / 1000;
     if (lastShown && sinceLast < intervalSeconds) return;
 
-    // Initial wait: require intervalSeconds since session start if never shown
+    // Initial wait: require firstAdDelaySeconds since session start if never shown
     if (!lastShown) {
       const sinceStart = (Date.now() - sessionStartRef.current) / 1000;
-      if (sinceStart < intervalSeconds) return;
+      if (sinceStart < firstAdDelaySeconds) return;
     }
 
     // User must be active (input within last minute)
