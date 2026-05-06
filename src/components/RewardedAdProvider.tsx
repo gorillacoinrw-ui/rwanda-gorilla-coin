@@ -60,7 +60,8 @@ const RewardedAdProvider = ({ children }: { children: React.ReactNode }) => {
   const enabled = settings.rewarded_ads_enabled !== false && settings.rewarded_ads_enabled !== "false";
   const rewardAmount = Number(settings.rewarded_ad_reward ?? 1);
   const dailyCap = Number(settings.rewarded_ad_daily_cap ?? 10);
-  const intervalSeconds = Number(settings.rewarded_ad_interval_seconds ?? 300);
+  const intervalSeconds = Number(settings.rewarded_ad_interval_seconds ?? 600); // 10 min between ads
+  const firstAdDelaySeconds = Number(settings.rewarded_ad_first_delay_seconds ?? 30); // 30s after session start
 
   // Track user activity
   useEffect(() => {
