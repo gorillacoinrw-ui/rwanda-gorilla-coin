@@ -1,0 +1,1 @@
+INSERT INTO app_settings (key, value) VALUES ('rewarded_ad_first_delay_seconds', '30'::jsonb), ('rewarded_ad_interval_seconds', '600'::jsonb) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
