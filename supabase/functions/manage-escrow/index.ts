@@ -61,7 +61,37 @@ Deno.serve(async (req) => {
     }
   }
 
-  const { action, trade_id, trade_data } = await req.json();
+  // Input validation
+  let action: string;
+  let trade_id: string | undefined;
+  let trade_data: any;
+  try {
+    const body = await req.json();
+    action = body?.action;
+    trade_id = body?.trade_id;
+    trade_data = body?.trade_data;
+    const allowedActions = new Set([
+      "create", "accept", "confirm", "cancel", "founder_sell_tax", "check_expired",
+    ]);
+    if (typeof action !== "string" || !allowedActions.has(action)) {
+      return new Response(JSON.stringify({ error: "Invalid action" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (trade_id !== undefined && (typeof trade_id !== "string" || !uuidRe.test(trade_id))) {
+      return new Response(JSON.stringify({ error: "Invalid trade_id" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+  } catch {
+    return new Response(JSON.stringify({ error: "Invalid request body" }), {
+      status: 400,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
 
   // Helper: check if trading is active (requires minimum user count)
   async function isTradingActive(): Promise<{ active: boolean; message?: string }> {
@@ -681,8 +711,7 @@ Deno.serve(async (req) => {
     });
   } catch (err) {
     console.error("manage-escrow error:", err);
-    const message = err instanceof Error ? err.message : (typeof err === 'object' && err !== null && 'message' in err) ? (err as { message: string }).message : String(err);
-    return new Response(JSON.stringify({ error: message }), {
+    return new Response(JSON.stringify({ error: "An error occurred processing the trade. Please try again." }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
