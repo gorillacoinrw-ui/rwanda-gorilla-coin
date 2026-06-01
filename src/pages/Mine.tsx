@@ -34,9 +34,9 @@ const Mine = () => {
           />
 
           <div className="bg-gradient-card rounded-xl border border-border p-5 space-y-3">
-            <h3 className="font-display text-sm font-semibold tracking-wider uppercase text-foreground">
+            <h2 className="font-display text-sm font-semibold tracking-wider uppercase text-foreground">
               How Mining Works
-            </h3>
+            </h2>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li className="flex items-start gap-2">
                 <span className="text-primary">•</span>

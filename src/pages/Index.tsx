@@ -34,7 +34,7 @@ const Index = () => {
       <div className="max-w-md sm:max-w-lg md:max-w-4xl lg:max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-6">
         <div className="text-center">
           <h1 className="text-xl sm:text-2xl font-display font-bold text-gradient-gold tracking-wider">
-            GORILLA COIN
+            GORILLA COIN — Rwanda's Digital Reward
           </h1>
           <p className="text-xs sm:text-sm text-muted-foreground mt-1">{t("app.subtitle")}</p>
           <button
