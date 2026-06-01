@@ -116,13 +116,14 @@ const Profile = () => {
           <div className="bg-gradient-card rounded-xl border border-border p-6 text-center space-y-3">
             <div className="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto">
               <Avatar className="w-20 h-20 sm:w-24 sm:h-24 border-2 border-primary/30">
-                <AvatarImage src={profile?.avatar_url ?? undefined} alt="Avatar" />
+                <AvatarImage src={profile?.avatar_url ?? undefined} alt="User profile avatar" />
                 <AvatarFallback className="bg-muted text-foreground text-xl sm:text-2xl font-display">
                   {(profile?.display_name ?? "G")[0].toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <button
                 onClick={() => fileInputRef.current?.click()}
+                aria-label="Upload profile picture"
                 className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-primary flex items-center justify-center text-primary-foreground"
               >
                 {uploadAvatar.isPending ? (
@@ -134,9 +135,9 @@ const Profile = () => {
               <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
             </div>
             <div>
-              <h3 className="font-display font-semibold text-foreground text-lg">
+              <h2 className="font-display font-semibold text-foreground text-lg">
                 {profile?.display_name ?? "Gorilla Miner"}
-              </h3>
+              </h2>
               <p className="text-xs text-muted-foreground">{user?.email}</p>
             </div>
             <div className="flex justify-center gap-6 pt-2">
@@ -184,7 +185,7 @@ const Profile = () => {
             </div>
 
             <div className="bg-gradient-card rounded-xl border border-border p-5 space-y-3">
-              <h3 className="text-sm font-display font-semibold text-foreground">{t("profile.support")}</h3>
+              <h2 className="text-sm font-display font-semibold text-foreground">{t("profile.support")}</h2>
               <a href="mailto:gorillacoinrw@gmail.com" className="flex items-center gap-3 text-sm text-muted-foreground hover:text-foreground transition-colors">
                 <Mail className="w-4 h-4" />
                 gorillacoinrw@gmail.com

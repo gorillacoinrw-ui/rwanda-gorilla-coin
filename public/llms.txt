@@ -1,0 +1,14 @@
+# Gorilla Coin Rwanda
+
+> Rwanda's first community-driven reward and loyalty platform. Earn Gorilla Coins (GOR) daily, trade peer-to-peer with mobile money, and grow a national digital economy.
+
+Gorilla Coin is a mobile-first reward and mining game for Rwandan users. Users earn coins through 24-hour mining cycles, referrals, social tasks, ads, and investments, and trade with each other in a Binance-style P2P marketplace settled via MTN, Airtel, and PayPal. The platform is fully gated behind authentication — only the landing/auth page is public.
+
+## Pages
+
+- [Home / Sign in](/auth): Create an account or sign in to start mining Gorilla Coins.
+
+## Optional
+
+- [Privacy Policy](/privacy): How user data is collected, stored, and protected.
+- [Terms & Conditions](/terms): Platform rules, reward economy, and P2P trading terms.
