@@ -48,11 +48,11 @@ Deno.serve(async (req) => {
       });
       // Also try to send email
       const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-      const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+      const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
       try {
         await fetch(`${supabaseUrl}/functions/v1/send-notification`, {
           method: "POST",
-          headers: { "Content-Type": "application/json", "Authorization": `Bearer ${anonKey}` },
+          headers: { "Content-Type": "application/json", "Authorization": `Bearer ${serviceRoleKey}` },
           body: JSON.stringify({ user_id: userId, title, message, type, action_url: actionUrl, send_email: true }),
         });
       } catch { /* email is best-effort */ }
