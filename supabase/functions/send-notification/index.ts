@@ -15,16 +15,56 @@ Deno.serve(async (req) => {
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
   const resendApiKey = Deno.env.get("RESEND_API_KEY");
   const supabase = createClient(supabaseUrl, serviceRoleKey);
 
   try {
+    // Authn: accept service-role bearer (internal calls) OR a valid user JWT.
+    const authHeader = req.headers.get("Authorization") || "";
+    const bearer = authHeader.replace(/^Bearer\s+/i, "");
+    const isServiceRole = bearer && bearer === serviceRoleKey;
+
+    let callerUserId: string | null = null;
+    let callerIsAdmin = false;
+    if (!isServiceRole) {
+      if (!bearer) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const userClient = createClient(supabaseUrl, anonKey, {
+        global: { headers: { Authorization: authHeader } },
+      });
+      const { data: userData, error: userErr } = await userClient.auth.getUser();
+      if (userErr || !userData?.user) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      callerUserId = userData.user.id;
+      const { data: roleRow } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", callerUserId)
+        .eq("role", "admin")
+        .maybeSingle();
+      callerIsAdmin = !!roleRow;
+    }
+
     const { user_id, title, message, type, action_url, send_email } = await req.json();
 
     if (!user_id || !title || !message) {
       return new Response(JSON.stringify({ error: "Missing required fields: user_id, title, message" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Authz: regular users may only send notifications to themselves
+    if (!isServiceRole && !callerIsAdmin && user_id !== callerUserId) {
+      return new Response(JSON.stringify({ error: "Forbidden" }), {
+        status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
@@ -127,8 +167,7 @@ Deno.serve(async (req) => {
     });
   } catch (err) {
     console.error("send-notification error:", err);
-    const errMessage = err instanceof Error ? err.message : String(err);
-    return new Response(JSON.stringify({ error: errMessage }), {
+    return new Response(JSON.stringify({ error: "Notification request failed" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
